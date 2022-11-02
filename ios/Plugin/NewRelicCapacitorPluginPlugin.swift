@@ -10,12 +10,17 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     private let implementation = NewRelicCapacitorPlugin()
     
     public override func load() {
-        
-        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova);
-        NewRelic.start(withApplicationToken:"AA0bdcf0840aa947658bfb3c276ca6760e00dba650-NRMA")   
-        
+                
   }
 
+    @objc func start(_ call: CAPPluginCall) {
+        let appKey = call.getString("appKey") ?? ""
+        
+        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova);
+        NewRelic.start(withApplicationToken: appKey)
+        
+        call.resolve()
+    }
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
         call.resolve([

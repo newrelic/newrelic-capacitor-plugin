@@ -1,5 +1,6 @@
 export interface NewRelicCapacitorPluginPlugin {
   echo(options: { value: string }): Promise<{ value: string }>;
+  start(options: { appKey: string }): void;
   setUserId(options: { userId: string }): void;
   setAttribute(optins:{name: any, value: any}): void;
   removeAttribute(options:{name: any}): void;

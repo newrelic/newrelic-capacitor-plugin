@@ -14,6 +14,7 @@ npx cap sync
 <docgen-index>
 
 * [`echo(...)`](#echo)
+* [`start(...)`](#start)
 * [`setUserId(...)`](#setuserid)
 * [`setAttribute(...)`](#setattribute)
 * [`removeAttribute(...)`](#removeattribute)
@@ -38,6 +39,19 @@ echo(options: { value: string; }) => Promise<{ value: string; }>
 | **`options`** | <code>{ value: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+
+--------------------
+
+
+### start(...)
+
+```typescript
+start(options: { appKey: string; }) => void
+```
+
+| Param         | Type                             |
+| ------------- | -------------------------------- |
+| **`options`** | <code>{ appKey: string; }</code> |
 
 --------------------
 

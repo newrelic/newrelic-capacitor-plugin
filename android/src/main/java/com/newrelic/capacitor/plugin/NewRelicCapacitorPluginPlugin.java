@@ -12,10 +12,8 @@ import com.newrelic.agent.android.ApplicationFramework;
 import com.newrelic.agent.android.NewRelic;
 import com.newrelic.com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @CapacitorPlugin(name = "NewRelicCapacitorPlugin",
@@ -27,16 +25,23 @@ import java.util.Map;
                 @Permission(strings = {Manifest.permission.INTERNET}, alias = "internet")})
 public class NewRelicCapacitorPluginPlugin extends Plugin {
 
-    private NewRelicCapacitorPlugin implementation = new NewRelicCapacitorPlugin();
+    private final NewRelicCapacitorPlugin implementation = new NewRelicCapacitorPlugin();
 
 
     @Override
     public void load() {
         super.load();
-        NewRelic.withApplicationToken("AA0bdcf0840aa947658bfb3c276ca6760e00dba650-NRMA")
+    }
+
+    @PluginMethod
+    public void start(PluginCall call) {
+        String appKey = call.getString("appKey");
+
+        NewRelic.withApplicationToken(appKey)
                 .withApplicationFramework(ApplicationFramework.Cordova, "0.0.1")
                 .withLoggingEnabled(true)
                 .start(this.getActivity().getApplication());
+        call.resolve();
     }
 
     @PluginMethod
@@ -61,7 +66,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String name = call.getString("name");
         String value = call.getString("value");
 
-        NewRelic.setAttribute(name,value);
+        NewRelic.setAttribute(name, value);
         call.resolve();
     }
 
@@ -81,7 +86,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         Map yourHashMap = new Gson().fromJson(String.valueOf(eventAttributes), Map.class);
 
 
-        NewRelic.recordBreadcrumb(name,yourHashMap);
+        NewRelic.recordBreadcrumb(name, yourHashMap);
         call.resolve();
     }
 
@@ -93,7 +98,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
 
         Map yourHashMap = new Gson().fromJson(String.valueOf(attributes), Map.class);
 
-        NewRelic.recordCustomEvent(eventType,name,yourHashMap);
+        NewRelic.recordCustomEvent(eventType, name, yourHashMap);
         call.resolve();
     }
 

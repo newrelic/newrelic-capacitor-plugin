@@ -6,6 +6,9 @@ export class NewRelicCapacitorPluginWeb
   extends WebPlugin
   implements NewRelicCapacitorPluginPlugin
 {
+  start(options: { appKey: string; }): void {
+    return;
+  }
   async startInteraction(options: { value: string }): Promise<{ value: string; }> {
     return options;
   }
