@@ -95,11 +95,11 @@ export class NewRelicCapacitorPluginWeb
     return;
   }
 
-  setMaxEventBufferTime(options: { maxBufferTimeInSeconds: any }): void {
+  setMaxEventBufferTime(options: { maxBufferTimeInSeconds: number; }): void {
     return;
   }
 
-  setMaxEventPoolSize(options: { maxPoolSize: any }): void {
+  setMaxEventPoolSize(options: { maxPoolSize: number; }): void {
     return;
   }
 
@@ -111,4 +111,21 @@ export class NewRelicCapacitorPluginWeb
   }): void {
     return;
   }
+
+  analyticsEventEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
+  networkRequestEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
+  networkErrorRequestEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
+  httpRequestBodyCaptureEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
 }

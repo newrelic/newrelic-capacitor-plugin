@@ -275,20 +275,88 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
-    
     @objc func recordError(_ call: CAPPluginCall) {
-        // Default max event pool size is 1000 events
-        let errorName = call.getString("name")
-        let errorMessage = call.getString("message")
-        let errorStack = call.getString("stack")
+        let name = call.getString("name")
+        let message = call.getString("message")
+        let stack = call.getString("stack")
         let isFatal = call.getBool("isFatal")
-
-        let crashEvents:[String:Any] = ["Name":errorName ?? "", "Message":errorMessage ?? "" as Any, "isFatal":isFatal ?? false,"errorStack":errorStack]
         
-        NewRelic.recordBreadcrumb("JS Error",attributes:crashEvents)
-        NewRelic.recordCustomEvent(
-            "JS Errors", name: "JS Error",attributes: crashEvents)
-
+        if(name == nil || message == nil || isFatal == nil) {
+            call.reject("Bad parameters given to recordError")
+            return
+        }
+        
+        var errStack = stack
+        
+        // Sometimes error stack does not get reported if past a certain length
+        if(stack != nil) {
+            if(stack!.count > 3994) {
+                let endIndex = stack!.index(stack!.startIndex, offsetBy: 3994)
+                let substring = stack![..<endIndex]
+                errStack = String(substring)
+            }
+        } else {
+            errStack = ""
+        }
+        
+        let attributes: [String: Any] = ["Name" : name!, "Message" : message!, "isFatal" : isFatal!, "errorStack" : errStack!]
+        
+        NewRelic.recordBreadcrumb("JS Errors", attributes: attributes)
+        NewRelic.recordCustomEvent("JS Errors", attributes: attributes)
+        call.resolve()
+    }
+    
+    @objc func analyticsEventEnabled(_ call: CAPPluginCall) {
+        // Currently only an android method call, do nothing here
+        call.resolve()
+        return
+    }
+    
+    @objc func networkRequestEnabled(_ call: CAPPluginCall) {
+        let toEnable = call.getBool("enabled");
+        
+        if(toEnable == nil) {
+            call.reject("Bad value in networkRequestEnabled")
+            return
+        }
+        
+        if(toEnable!) {
+            NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
+        } else {
+            NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
+        }
+        call.resolve()
+    }
+    
+    @objc func networkErrorRequestEnabled(_ call: CAPPluginCall) {
+        let toEnable = call.getBool("enabled");
+        
+        if(toEnable == nil) {
+            call.reject("Bad value in networkErrorRequestEnabled")
+            return
+        }
+        
+        if(toEnable!) {
+            NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
+        } else {
+            NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
+        }
+        call.resolve()
+    }
+    
+    @objc func httpRequestBodyCaptureEnabled(_ call: CAPPluginCall) {
+        let toEnable = call.getBool("enabled");
+        
+        if(toEnable == nil) {
+            call.reject("Bad value in networkErrorRequestEnabled")
+            return
+        }
+        
+        if(toEnable!) {
+            NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
+        } else {
+            NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
+        }
         call.resolve()
     }
     
