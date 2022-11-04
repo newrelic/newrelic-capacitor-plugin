@@ -22,6 +22,15 @@ npx cap sync
 * [`recordCustomEvent(...)`](#recordcustomevent)
 * [`startInteraction(...)`](#startinteraction)
 * [`endInteraction(...)`](#endinteraction)
+* [`crashNow(...)`](#crashnow)
+* [`currentSessionId(...)`](#currentsessionid)
+* [`incrementAttribute(...)`](#incrementattribute)
+* [`noticeHttpTransaction(...)`](#noticehttptransaction)
+* [`noticeNetworkFailure(...)`](#noticenetworkfailure)
+* [`recordMetric(...)`](#recordmetric)
+* [`removeAllAttributes(...)`](#removeallattributes)
+* [`setMaxEventBufferTime(...)`](#setmaxeventbuffertime)
+* [`setMaxEventPoolSize(...)`](#setmaxeventpoolsize)
 
 </docgen-index>
 
@@ -72,12 +81,12 @@ setUserId(options: { userId: string; }) => void
 ### setAttribute(...)
 
 ```typescript
-setAttribute(optins: { name: any; value: any; }) => void
+setAttribute(options: { name: any; value: any; }) => void
 ```
 
-| Param        | Type                                    |
-| ------------ | --------------------------------------- |
-| **`optins`** | <code>{ name: any; value: any; }</code> |
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ name: any; value: any; }</code> |
 
 --------------------
 
@@ -145,6 +154,125 @@ endInteraction(options: { interactionId: string; }) => void
 | Param         | Type                                    |
 | ------------- | --------------------------------------- |
 | **`options`** | <code>{ interactionId: string; }</code> |
+
+--------------------
+
+
+### crashNow(...)
+
+```typescript
+crashNow(options?: { message: string; } | undefined) => void
+```
+
+| Param         | Type                              |
+| ------------- | --------------------------------- |
+| **`options`** | <code>{ message: string; }</code> |
+
+--------------------
+
+
+### currentSessionId(...)
+
+```typescript
+currentSessionId(options?: {} | undefined) => Promise<{ sessionId: string; }>
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+**Returns:** <code>Promise&lt;{ sessionId: string; }&gt;</code>
+
+--------------------
+
+
+### incrementAttribute(...)
+
+```typescript
+incrementAttribute(options: { name: any; value?: any; }) => void
+```
+
+| Param         | Type                                     |
+| ------------- | ---------------------------------------- |
+| **`options`** | <code>{ name: any; value?: any; }</code> |
+
+--------------------
+
+
+### noticeHttpTransaction(...)
+
+```typescript
+noticeHttpTransaction(options: { url: string; method: string; status: any; startTime: any; endTime: any; bytesSent: any; bytesReceived: any; body: string; }) => void
+```
+
+| Param         | Type                                                                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ url: string; method: string; status: any; startTime: any; endTime: any; bytesSent: any; bytesReceived: any; body: string; }</code> |
+
+--------------------
+
+
+### noticeNetworkFailure(...)
+
+```typescript
+noticeNetworkFailure(options: { url: string; method: string; status: any; startTime: any; endTime: any; failure: string; }) => void
+```
+
+| Param         | Type                                                                                                      |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ url: string; method: string; status: any; startTime: any; endTime: any; failure: string; }</code> |
+
+--------------------
+
+
+### recordMetric(...)
+
+```typescript
+recordMetric(options: { name: string; category: string; value?: any; countUnit?: string; valueUnit?: string; }) => void
+```
+
+| Param         | Type                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ name: string; category: string; value?: any; countUnit?: string; valueUnit?: string; }</code> |
+
+--------------------
+
+
+### removeAllAttributes(...)
+
+```typescript
+removeAllAttributes(options?: {} | undefined) => void
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+--------------------
+
+
+### setMaxEventBufferTime(...)
+
+```typescript
+setMaxEventBufferTime(options: { maxBufferTimeInSeconds: any; }) => void
+```
+
+| Param         | Type                                          |
+| ------------- | --------------------------------------------- |
+| **`options`** | <code>{ maxBufferTimeInSeconds: any; }</code> |
+
+--------------------
+
+
+### setMaxEventPoolSize(...)
+
+```typescript
+setMaxEventPoolSize(options: { maxPoolSize: any; }) => void
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ maxPoolSize: any; }</code> |
 
 --------------------
 

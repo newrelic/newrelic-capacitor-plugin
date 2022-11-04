@@ -14,30 +14,65 @@ export class NewRelicCapacitorPluginWeb
   }
  
   endInteraction(options: { interactionId: string }): void {
-    return
+    return;
   }
   
-  
-  setAttribute(optins: { name: any; value: any }): void {
-    return
+  setAttribute(options: { name: any; value: any }): void {
+    return;
   }
   removeAttribute(options: { name: any }): void {
-    return
+    return;
   }
   setUserId(options: { userId: string }): void {
-    return ;
+    return;
   }
 
   recordBreadcrumb(options:{name: any, eventAttributes: object}): void {
-    throw new Error('Method not implemented.');
+    return;
   }
   recordCustomEvent(options:{eventType: any, eventName: any, attributes: object}): void {
-    throw new Error('Method not implemented.');
+    return;
   }
 
   async echo(options: { value: string }): Promise<{ value: string }> {
     console.log('ECHO', options);
     return options;
+  }
+
+  crashNow(options: { message: string; }): void {
+    return;
+  }
+
+  async currentSessionId(options: {}): Promise<{sessionId: string}> {
+    return Promise.resolve({sessionId: "fake sessionId"});
+  }
+
+  incrementAttribute(options: { name: any; value: any; }): void {
+    return;
+  }
+
+  noticeHttpTransaction(options: { url: string; method: string; status: any; startTime: any; endTime: any; bytesSent: any; bytesReceived: any; body: string; }): void {
+    return;
+  }
+
+  noticeNetworkFailure(options: { url: string; method: string; status: any; startTime: any; endTime: any; failure: string; }): void {
+    return;
+  }
+
+  recordMetric(options: { name: string; category: string; value: any; countUnit: string; valueUnit: string; }): void {
+    return;
+  }
+
+  removeAllAttributes(options: {}): void {
+    return;
+  }
+
+  setMaxEventBufferTime(options: { maxBufferTimeInSeconds: any; }): void {
+    return;
+  }
+
+  setMaxEventPoolSize(options: { maxPoolSize: any; }): void {
+    return;
   }
 }
 

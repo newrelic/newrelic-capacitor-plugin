@@ -10,10 +10,13 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.newrelic.agent.android.ApplicationFramework;
 import com.newrelic.agent.android.NewRelic;
+import com.newrelic.agent.android.metric.MetricUnit;
+import com.newrelic.agent.android.util.NetworkFailure;
 import com.newrelic.com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @CapacitorPlugin(name = "NewRelicCapacitorPlugin",
@@ -116,6 +119,177 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String interactionId = call.getString("interactionId");
 
         NewRelic.endInteraction(interactionId);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void crashNow(PluginCall call) {
+        String message = call.getString("message");
+        if(message == null) {
+            NewRelic.crashNow();
+        } else {
+            NewRelic.crashNow(message);
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void currentSessionId(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("sessionId", NewRelic.currentSessionId());
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void incrementAttribute(PluginCall call) {
+        String name = call.getString("name");
+        Double value = call.getDouble("value");
+
+        if(name == null) {
+            call.reject("Bad name in incrementAttribute");
+            return;
+        }
+
+        if(value == null) {
+            NewRelic.incrementAttribute(name);
+        } else {
+            NewRelic.incrementAttribute(name, value);
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void noticeHttpTransaction(PluginCall call) {
+        String url = call.getString("url");
+        String method = call.getString("method");
+        Integer status = call.getInt("status");
+        Long startTime = call.getLong("startTime");
+        Long endTime = call.getLong("endTime");
+        Long bytesSent = call.getLong("bytesSent");
+        Long bytesReceived = call.getLong("bytesReceived");
+        String body = call.getString("body");
+
+        if(url == null ||
+                method == null ||
+                status == null ||
+                startTime == null ||
+                endTime == null ||
+                bytesSent == null ||
+                bytesReceived == null) {
+            call.reject("Bad parameters given to noticeHttpTransaction");
+            return;
+        }
+
+        NewRelic.noticeHttpTransaction(url, method, status, startTime, endTime, bytesSent, bytesReceived, body);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void noticeNetworkFailure(PluginCall call) {
+        String url = call.getString("url");
+        String method = call.getString("method");
+        Integer status = call.getInt("status");
+        Long startTime = call.getLong("startTime");
+        Long endTime = call.getLong("endTime");
+        String failure = call.getString("failure");
+
+        if(url == null ||
+                method == null ||
+                status == null ||
+                startTime == null ||
+                endTime == null ||
+                failure == null) {
+            call.reject("Bad parameters given to noticeNetworkFailure");
+            return;
+        }
+
+        Map<String, NetworkFailure> strToNetworkFailure = new HashMap<>();
+        strToNetworkFailure.put("Unknown", NetworkFailure.Unknown);
+        strToNetworkFailure.put("BadURL", NetworkFailure.BadURL);
+        strToNetworkFailure.put("TimedOut", NetworkFailure.TimedOut);
+        strToNetworkFailure.put("CannotConnectToHost", NetworkFailure.CannotConnectToHost);
+        strToNetworkFailure.put("BadServerResponse", NetworkFailure.BadServerResponse);
+        strToNetworkFailure.put("SecureConnectionFailed", NetworkFailure.SecureConnectionFailed);
+
+        if(strToNetworkFailure.containsKey(failure)) {
+            NewRelic.noticeNetworkFailure(url, method, status, startTime, strToNetworkFailure.get(failure));
+            call.resolve();
+        } else {
+            call.reject("Bad failure name in noticeNetworkFailure. Must be one of: Unknown, BadURL, TimedOut, CannotConnectToHost, BadServerResponse, SecureConnectionFailed");
+        }
+    }
+
+    @PluginMethod
+    public void recordMetric(PluginCall call) {
+        String name = call.getString("name");
+        String category = call.getString("category");
+        Double value = call.getDouble("value");
+        String countUnit = call.getString("countUnit");
+        String valueUnit = call.getString("valueUnit");
+
+        if(name == null || category == null) {
+            call.reject("Bad name or category in recordMetric");
+            return;
+        }
+
+        if(value == null) {
+            NewRelic.recordMetric(name, category);
+            call.resolve();
+        } else {
+            if(countUnit == null && valueUnit == null) {
+                NewRelic.recordMetric(name, category, value);
+                call.resolve();
+            } else {
+                if(countUnit == null || valueUnit == null) {
+                    call.reject("Both countUnit and valueUnit must be set in recordMetric");
+                } else {
+                    Map<String, MetricUnit> strToMetricUnit = new HashMap<>();
+                    strToMetricUnit.put("PERCENT", MetricUnit.PERCENT);
+                    strToMetricUnit.put("BYTES", MetricUnit.BYTES);
+                    strToMetricUnit.put("SECONDS", MetricUnit.SECONDS);
+                    strToMetricUnit.put("BYTES_PER_SECOND", MetricUnit.BYTES_PER_SECOND);
+                    strToMetricUnit.put("OPERATIONS", MetricUnit.OPERATIONS);
+
+                    if(strToMetricUnit.containsKey(countUnit) && strToMetricUnit.containsKey(valueUnit)) {
+                        NewRelic.recordMetric(name, category, 1, value, value, strToMetricUnit.get(countUnit), strToMetricUnit.get(valueUnit));
+                        call.resolve();
+                    } else {
+                        call.reject("Bad countUnit or valueUnit in recordMetric. Must be one of: PERCENT, BYTES, SECONDS, BYTES_PER_SECOND, OPERATIONS");
+                    }
+                }
+            }
+        }
+    }
+
+    @PluginMethod
+    public void removeAllAttributes(PluginCall call) {
+        NewRelic.removeAllAttributes();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setMaxEventBufferTime(PluginCall call) {
+        Integer maxEventBufferTimeInSeconds = call.getInt("maxBufferTimeInSeconds");
+
+        if(maxEventBufferTimeInSeconds == null) {
+            call.reject("Bad maxBufferTimeInSeconds in setMaxEventBufferTime");
+            return;
+        }
+
+        NewRelic.setMaxEventBufferTime(maxEventBufferTimeInSeconds);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setMaxEventPoolSize(PluginCall call) {
+        Integer maxPoolSize = call.getInt("maxPoolSize");
+
+        if(maxPoolSize == null) {
+            call.reject("Bad maxPoolSize in setMaxEventPoolSize");
+            return;
+        }
+
+        NewRelic.setMaxEventPoolSize(maxPoolSize);
         call.resolve();
     }
 }
