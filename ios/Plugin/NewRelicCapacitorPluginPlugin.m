@@ -22,4 +22,6 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(removeAllAttributes, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(setMaxEventBufferTime, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(setMaxEventPoolSize, CAPPluginReturnNone);
+           CAP_PLUGIN_METHOD(recordError, CAPPluginReturnNone);
+
 )

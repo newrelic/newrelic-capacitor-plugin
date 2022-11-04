@@ -1,6 +1,7 @@
 package com.newrelic.capacitor.plugin;
 
 import android.Manifest;
+import android.util.Log;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -11,6 +12,7 @@ import com.getcapacitor.annotation.Permission;
 import com.newrelic.agent.android.ApplicationFramework;
 import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.metric.MetricUnit;
+import com.newrelic.agent.android.stats.StatsEngine;
 import com.newrelic.agent.android.util.NetworkFailure;
 import com.newrelic.com.google.gson.Gson;
 
@@ -19,17 +21,12 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-@CapacitorPlugin(name = "NewRelicCapacitorPlugin",
-        permissions = {
-                @Permission(
-                        strings = {Manifest.permission.ACCESS_NETWORK_STATE},
-                        alias = "network"
-                ),
-                @Permission(strings = {Manifest.permission.INTERNET}, alias = "internet")})
+@CapacitorPlugin(name = "NewRelicCapacitorPlugin", permissions = {
+        @Permission(strings = { Manifest.permission.ACCESS_NETWORK_STATE }, alias = "network"),
+        @Permission(strings = { Manifest.permission.INTERNET }, alias = "internet") })
 public class NewRelicCapacitorPluginPlugin extends Plugin {
 
     private final NewRelicCapacitorPlugin implementation = new NewRelicCapacitorPlugin();
-
 
     @Override
     public void load() {
@@ -88,7 +85,6 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
 
         Map yourHashMap = new Gson().fromJson(String.valueOf(eventAttributes), Map.class);
 
-
         NewRelic.recordBreadcrumb(name, yourHashMap);
         call.resolve();
     }
@@ -125,7 +121,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     @PluginMethod
     public void crashNow(PluginCall call) {
         String message = call.getString("message");
-        if(message == null) {
+        if (message == null) {
             NewRelic.crashNow();
         } else {
             NewRelic.crashNow(message);
@@ -145,12 +141,12 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String name = call.getString("name");
         Double value = call.getDouble("value");
 
-        if(name == null) {
+        if (name == null) {
             call.reject("Bad name in incrementAttribute");
             return;
         }
 
-        if(value == null) {
+        if (value == null) {
             NewRelic.incrementAttribute(name);
         } else {
             NewRelic.incrementAttribute(name, value);
@@ -169,7 +165,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         Long bytesReceived = call.getLong("bytesReceived");
         String body = call.getString("body");
 
-        if(url == null ||
+        if (url == null ||
                 method == null ||
                 status == null ||
                 startTime == null ||
@@ -193,7 +189,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         Long endTime = call.getLong("endTime");
         String failure = call.getString("failure");
 
-        if(url == null ||
+        if (url == null ||
                 method == null ||
                 status == null ||
                 startTime == null ||
@@ -211,11 +207,12 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         strToNetworkFailure.put("BadServerResponse", NetworkFailure.BadServerResponse);
         strToNetworkFailure.put("SecureConnectionFailed", NetworkFailure.SecureConnectionFailed);
 
-        if(strToNetworkFailure.containsKey(failure)) {
+        if (strToNetworkFailure.containsKey(failure)) {
             NewRelic.noticeNetworkFailure(url, method, status, startTime, strToNetworkFailure.get(failure));
             call.resolve();
         } else {
-            call.reject("Bad failure name in noticeNetworkFailure. Must be one of: Unknown, BadURL, TimedOut, CannotConnectToHost, BadServerResponse, SecureConnectionFailed");
+            call.reject(
+                    "Bad failure name in noticeNetworkFailure. Must be one of: Unknown, BadURL, TimedOut, CannotConnectToHost, BadServerResponse, SecureConnectionFailed");
         }
     }
 
@@ -227,20 +224,20 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String countUnit = call.getString("countUnit");
         String valueUnit = call.getString("valueUnit");
 
-        if(name == null || category == null) {
+        if (name == null || category == null) {
             call.reject("Bad name or category in recordMetric");
             return;
         }
 
-        if(value == null) {
+        if (value == null) {
             NewRelic.recordMetric(name, category);
             call.resolve();
         } else {
-            if(countUnit == null && valueUnit == null) {
+            if (countUnit == null && valueUnit == null) {
                 NewRelic.recordMetric(name, category, value);
                 call.resolve();
             } else {
-                if(countUnit == null || valueUnit == null) {
+                if (countUnit == null || valueUnit == null) {
                     call.reject("Both countUnit and valueUnit must be set in recordMetric");
                 } else {
                     Map<String, MetricUnit> strToMetricUnit = new HashMap<>();
@@ -250,11 +247,13 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                     strToMetricUnit.put("BYTES_PER_SECOND", MetricUnit.BYTES_PER_SECOND);
                     strToMetricUnit.put("OPERATIONS", MetricUnit.OPERATIONS);
 
-                    if(strToMetricUnit.containsKey(countUnit) && strToMetricUnit.containsKey(valueUnit)) {
-                        NewRelic.recordMetric(name, category, 1, value, value, strToMetricUnit.get(countUnit), strToMetricUnit.get(valueUnit));
+                    if (strToMetricUnit.containsKey(countUnit) && strToMetricUnit.containsKey(valueUnit)) {
+                        NewRelic.recordMetric(name, category, 1, value, value, strToMetricUnit.get(countUnit),
+                                strToMetricUnit.get(valueUnit));
                         call.resolve();
                     } else {
-                        call.reject("Bad countUnit or valueUnit in recordMetric. Must be one of: PERCENT, BYTES, SECONDS, BYTES_PER_SECOND, OPERATIONS");
+                        call.reject(
+                                "Bad countUnit or valueUnit in recordMetric. Must be one of: PERCENT, BYTES, SECONDS, BYTES_PER_SECOND, OPERATIONS");
                     }
                 }
             }
@@ -271,7 +270,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     public void setMaxEventBufferTime(PluginCall call) {
         Integer maxEventBufferTimeInSeconds = call.getInt("maxBufferTimeInSeconds");
 
-        if(maxEventBufferTimeInSeconds == null) {
+        if (maxEventBufferTimeInSeconds == null) {
             call.reject("Bad maxBufferTimeInSeconds in setMaxEventBufferTime");
             return;
         }
@@ -284,12 +283,47 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     public void setMaxEventPoolSize(PluginCall call) {
         Integer maxPoolSize = call.getInt("maxPoolSize");
 
-        if(maxPoolSize == null) {
+        if (maxPoolSize == null) {
             call.reject("Bad maxPoolSize in setMaxEventPoolSize");
             return;
         }
 
         NewRelic.setMaxEventPoolSize(maxPoolSize);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void recordError(PluginCall call) {
+        String name = call.getString("name");
+        String message = call.getString("message");
+        String stack = call.getString("stack");
+        Boolean isFatal = call.getBoolean("isFatal");
+
+        if (name == null || stack == null) {
+            call.reject("name should not be empty");
+            return;
+        }
+
+        try {
+
+            Map<String, Object> crashEvents = new HashMap<>();
+            crashEvents.put("Name", name);
+            crashEvents.put("Message", message);
+            crashEvents.put("isFatal", isFatal);
+            if (stack != null) {
+                // attribute limit is 4096
+                crashEvents.put("errorStack",
+                        stack.length() > 4095 ? stack.substring(0, 4094) : stack);
+            }
+
+            NewRelic.recordBreadcrumb("JS Errors", crashEvents);
+            NewRelic.recordCustomEvent("JS Errors", "JS Errors", crashEvents);
+
+            StatsEngine.get().inc("Supportability/Mobile/Capacitor/JSError");
+
+        } catch (IllegalArgumentException e) {
+            Log.w("NRMA", e.getMessage());
+        }
         call.resolve();
     }
 }

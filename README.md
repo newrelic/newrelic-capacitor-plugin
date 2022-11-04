@@ -31,6 +31,7 @@ npx cap sync
 * [`removeAllAttributes(...)`](#removeallattributes)
 * [`setMaxEventBufferTime(...)`](#setmaxeventbuffertime)
 * [`setMaxEventPoolSize(...)`](#setmaxeventpoolsize)
+* [`recordError(...)`](#recorderror)
 
 </docgen-index>
 
@@ -273,6 +274,19 @@ setMaxEventPoolSize(options: { maxPoolSize: any; }) => void
 | Param         | Type                               |
 | ------------- | ---------------------------------- |
 | **`options`** | <code>{ maxPoolSize: any; }</code> |
+
+--------------------
+
+
+### recordError(...)
+
+```typescript
+recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }) => void
+```
+
+| Param         | Type                                                                             |
+| ------------- | -------------------------------------------------------------------------------- |
+| **`options`** | <code>{ name: string; message: string; stack: string; isFatal: boolean; }</code> |
 
 --------------------
 
