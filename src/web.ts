@@ -47,19 +47,19 @@ export class NewRelicCapacitorPluginWeb
     return Promise.resolve({sessionId: "fake sessionId"});
   }
 
-  incrementAttribute(options: { name: any; value: any; }): void {
+  incrementAttribute(options: { name: string; value: number; }): void {
     return;
   }
 
-  noticeHttpTransaction(options: { url: string; method: string; status: any; startTime: any; endTime: any; bytesSent: any; bytesReceived: any; body: string; }): void {
+  noticeHttpTransaction(options: { url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: any; body: string; }): void {
     return;
   }
 
-  noticeNetworkFailure(options: { url: string; method: string; status: any; startTime: any; endTime: any; failure: string; }): void {
+  noticeNetworkFailure(options: { url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }): void {
     return;
   }
 
-  recordMetric(options: { name: string; category: string; value: any; countUnit: string; valueUnit: string; }): void {
+  recordMetric(options: { name: string; category: string; value: number; countUnit: string; valueUnit: string; }): void {
     return;
   }
 
@@ -67,13 +67,34 @@ export class NewRelicCapacitorPluginWeb
     return;
   }
 
-  setMaxEventBufferTime(options: { maxBufferTimeInSeconds: any; }): void {
+  setMaxEventBufferTime(options: { maxBufferTimeInSeconds: number; }): void {
     return;
   }
 
-  setMaxEventPoolSize(options: { maxPoolSize: any; }): void {
+  setMaxEventPoolSize(options: { maxPoolSize: number; }): void {
     return;
   }
+
+  recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }): void {
+    return;
+  }
+
+  analyticsEventEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
+  networkRequestEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
+  networkErrorRequestEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
+  httpRequestBodyCaptureEnabled(options: { enabled: boolean; }): void {
+    return;
+  }
+
 }
 
 const defaultLog = window.console.log;

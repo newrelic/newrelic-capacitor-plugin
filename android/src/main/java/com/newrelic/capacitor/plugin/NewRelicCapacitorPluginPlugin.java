@@ -9,6 +9,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.newrelic.agent.android.ApplicationFramework;
+import com.newrelic.agent.android.FeatureFlag;
 import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.util.NetworkFailure;
@@ -292,4 +293,106 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         NewRelic.setMaxEventPoolSize(maxPoolSize);
         call.resolve();
     }
+
+    @PluginMethod
+    public void recordError(PluginCall call) {
+        String name = call.getString("name");
+        String message = call.getString("message");
+        String stack = call.getString("stack");
+        Boolean isFatal = call.getBoolean("isFatal");
+
+        if(name == null || message == null || isFatal == null) {
+            call.reject("Bad parameters given to recordError");
+            return;
+        }
+
+        Map<String, Object> crashEvents = new HashMap<>();
+        crashEvents.put("Name", name);
+        crashEvents.put("Message", message);
+        crashEvents.put("isFatal", isFatal);
+
+        if(stack != null) {
+            crashEvents.put("errorStack", stack.length() > 4095 ? stack.substring(0, 4094) : stack);
+        } else {
+            crashEvents.put("errorStack", "");
+        }
+
+        NewRelic.recordBreadcrumb("JS Errors", crashEvents);
+        NewRelic.recordCustomEvent("JS Errors", "", crashEvents);
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void analyticsEventEnabled(PluginCall call) {
+        Boolean toEnable = call.getBoolean("enabled");
+
+        if(toEnable == null) {
+            call.reject("Bad parameter given to analyticsEventEnabled");
+            return;
+        }
+
+        if(toEnable) {
+            NewRelic.enableFeature(FeatureFlag.AnalyticsEvents);
+        } else {
+            NewRelic.disableFeature(FeatureFlag.AnalyticsEvents);
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void networkRequestEnabled(PluginCall call) {
+        Boolean toEnable = call.getBoolean("enabled");
+
+        if(toEnable == null) {
+            call.reject("Bad parameter given to networkRequestEnabled");
+            return;
+        }
+
+        if(toEnable) {
+            NewRelic.enableFeature(FeatureFlag.NetworkRequests);
+        } else {
+            NewRelic.disableFeature(FeatureFlag.NetworkRequests);
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void networkErrorRequestEnabled(PluginCall call) {
+        Boolean toEnable = call.getBoolean("enabled");
+
+        if(toEnable == null) {
+            call.reject("Bad parameter given to networkErrorRequestEnabled");
+            return;
+        }
+
+        if(toEnable) {
+            NewRelic.enableFeature(FeatureFlag.NetworkErrorRequests);
+        } else {
+            NewRelic.disableFeature(FeatureFlag.NetworkErrorRequests);
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void httpRequestBodyCaptureEnabled(PluginCall call) {
+        Boolean toEnable = call.getBoolean("enabled");
+
+        if(toEnable == null) {
+            call.reject("Bad parameter given to httpRequestBodyCaptureEnabled");
+            return;
+        }
+
+        if(toEnable) {
+            NewRelic.enableFeature(FeatureFlag.HttpResponseBodyCapture);
+        } else {
+            NewRelic.disableFeature(FeatureFlag.HttpResponseBodyCapture);
+        }
+
+        call.resolve();
+    }
+
 }

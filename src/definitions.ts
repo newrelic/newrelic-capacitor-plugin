@@ -10,33 +10,38 @@ export interface NewRelicCapacitorPluginPlugin {
   endInteraction(options:{interactionId: string}): void;
   crashNow(options?: {message: string}): void;
   currentSessionId(options?: {}): Promise<{sessionId: string}>;
-  incrementAttribute(options: {name: any, value?: any}): void;
+  incrementAttribute(options: {name: string, value?: number}): void;
   noticeHttpTransaction(options: {
     url: string, 
     method: string, 
-    status: any, 
-    startTime: any, 
-    endTime: any, 
-    bytesSent: any, 
-    bytesReceived: any, 
+    status: number, 
+    startTime: number, 
+    endTime: number, 
+    bytesSent: number, 
+    bytesReceived: number, 
     body: string
   }): void;
   noticeNetworkFailure(options: {
     url: string,
     method: string,
-    status: any,
-    startTime: any,
-    endTime: any,
+    status: number,
+    startTime: number,
+    endTime: number,
     failure: string
   }): void;
   recordMetric(options: {
     name: string,
     category: string,
-    value?: any, 
+    value?: number, 
     countUnit?: string,
     valueUnit?: string,
   }): void;
   removeAllAttributes(options?: {}): void;
-  setMaxEventBufferTime(options: {maxBufferTimeInSeconds: any}): void;
-  setMaxEventPoolSize(options: {maxPoolSize: any}): void;
+  setMaxEventBufferTime(options: {maxBufferTimeInSeconds: number}): void;
+  setMaxEventPoolSize(options: {maxPoolSize: number}): void;
+  recordError(options: {name: string, message: string, stack: string, isFatal: boolean}): void;
+  analyticsEventEnabled(options: {enabled: boolean}): void;
+  networkRequestEnabled(options: {enabled: boolean}): void;
+  networkErrorRequestEnabled(options: {enabled: boolean}): void;
+  httpRequestBodyCaptureEnabled(options: {enabled: boolean}): void;
 }

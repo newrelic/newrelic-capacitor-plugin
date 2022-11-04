@@ -31,6 +31,11 @@ npx cap sync
 * [`removeAllAttributes(...)`](#removeallattributes)
 * [`setMaxEventBufferTime(...)`](#setmaxeventbuffertime)
 * [`setMaxEventPoolSize(...)`](#setmaxeventpoolsize)
+* [`recordError(...)`](#recorderror)
+* [`analyticsEventEnabled(...)`](#analyticseventenabled)
+* [`networkRequestEnabled(...)`](#networkrequestenabled)
+* [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
+* [`httpRequestBodyCaptureEnabled(...)`](#httprequestbodycaptureenabled)
 
 </docgen-index>
 
@@ -189,12 +194,12 @@ currentSessionId(options?: {} | undefined) => Promise<{ sessionId: string; }>
 ### incrementAttribute(...)
 
 ```typescript
-incrementAttribute(options: { name: any; value?: any; }) => void
+incrementAttribute(options: { name: string; value?: number; }) => void
 ```
 
-| Param         | Type                                     |
-| ------------- | ---------------------------------------- |
-| **`options`** | <code>{ name: any; value?: any; }</code> |
+| Param         | Type                                           |
+| ------------- | ---------------------------------------------- |
+| **`options`** | <code>{ name: string; value?: number; }</code> |
 
 --------------------
 
@@ -202,12 +207,12 @@ incrementAttribute(options: { name: any; value?: any; }) => void
 ### noticeHttpTransaction(...)
 
 ```typescript
-noticeHttpTransaction(options: { url: string; method: string; status: any; startTime: any; endTime: any; bytesSent: any; bytesReceived: any; body: string; }) => void
+noticeHttpTransaction(options: { url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; }) => void
 ```
 
-| Param         | Type                                                                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ url: string; method: string; status: any; startTime: any; endTime: any; bytesSent: any; bytesReceived: any; body: string; }</code> |
+| Param         | Type                                                                                                                                                      |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; }</code> |
 
 --------------------
 
@@ -215,12 +220,12 @@ noticeHttpTransaction(options: { url: string; method: string; status: any; start
 ### noticeNetworkFailure(...)
 
 ```typescript
-noticeNetworkFailure(options: { url: string; method: string; status: any; startTime: any; endTime: any; failure: string; }) => void
+noticeNetworkFailure(options: { url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }) => void
 ```
 
-| Param         | Type                                                                                                      |
-| ------------- | --------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ url: string; method: string; status: any; startTime: any; endTime: any; failure: string; }</code> |
+| Param         | Type                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }</code> |
 
 --------------------
 
@@ -228,12 +233,12 @@ noticeNetworkFailure(options: { url: string; method: string; status: any; startT
 ### recordMetric(...)
 
 ```typescript
-recordMetric(options: { name: string; category: string; value?: any; countUnit?: string; valueUnit?: string; }) => void
+recordMetric(options: { name: string; category: string; value?: number; countUnit?: string; valueUnit?: string; }) => void
 ```
 
-| Param         | Type                                                                                                  |
-| ------------- | ----------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ name: string; category: string; value?: any; countUnit?: string; valueUnit?: string; }</code> |
+| Param         | Type                                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ name: string; category: string; value?: number; countUnit?: string; valueUnit?: string; }</code> |
 
 --------------------
 
@@ -254,12 +259,12 @@ removeAllAttributes(options?: {} | undefined) => void
 ### setMaxEventBufferTime(...)
 
 ```typescript
-setMaxEventBufferTime(options: { maxBufferTimeInSeconds: any; }) => void
+setMaxEventBufferTime(options: { maxBufferTimeInSeconds: number; }) => void
 ```
 
-| Param         | Type                                          |
-| ------------- | --------------------------------------------- |
-| **`options`** | <code>{ maxBufferTimeInSeconds: any; }</code> |
+| Param         | Type                                             |
+| ------------- | ------------------------------------------------ |
+| **`options`** | <code>{ maxBufferTimeInSeconds: number; }</code> |
 
 --------------------
 
@@ -267,12 +272,77 @@ setMaxEventBufferTime(options: { maxBufferTimeInSeconds: any; }) => void
 ### setMaxEventPoolSize(...)
 
 ```typescript
-setMaxEventPoolSize(options: { maxPoolSize: any; }) => void
+setMaxEventPoolSize(options: { maxPoolSize: number; }) => void
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ maxPoolSize: number; }</code> |
+
+--------------------
+
+
+### recordError(...)
+
+```typescript
+recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }) => void
+```
+
+| Param         | Type                                                                             |
+| ------------- | -------------------------------------------------------------------------------- |
+| **`options`** | <code>{ name: string; message: string; stack: string; isFatal: boolean; }</code> |
+
+--------------------
+
+
+### analyticsEventEnabled(...)
+
+```typescript
+analyticsEventEnabled(options: { enabled: boolean; }) => void
 ```
 
 | Param         | Type                               |
 | ------------- | ---------------------------------- |
-| **`options`** | <code>{ maxPoolSize: any; }</code> |
+| **`options`** | <code>{ enabled: boolean; }</code> |
+
+--------------------
+
+
+### networkRequestEnabled(...)
+
+```typescript
+networkRequestEnabled(options: { enabled: boolean; }) => void
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ enabled: boolean; }</code> |
+
+--------------------
+
+
+### networkErrorRequestEnabled(...)
+
+```typescript
+networkErrorRequestEnabled(options: { enabled: boolean; }) => void
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ enabled: boolean; }</code> |
+
+--------------------
+
+
+### httpRequestBodyCaptureEnabled(...)
+
+```typescript
+httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ enabled: boolean; }</code> |
 
 --------------------
 
