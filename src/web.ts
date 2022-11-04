@@ -6,17 +6,19 @@ export class NewRelicCapacitorPluginWeb
   extends WebPlugin
   implements NewRelicCapacitorPluginPlugin
 {
-  start(options: { appKey: string; }): void {
+  start(options: { appKey: string }): void {
     return;
   }
-  async startInteraction(options: { value: string }): Promise<{ value: string; }> {
+  async startInteraction(options: {
+    value: string;
+  }): Promise<{ value: string }> {
     return options;
   }
- 
+
   endInteraction(options: { interactionId: string }): void {
     return;
   }
-  
+
   setAttribute(options: { name: any; value: any }): void {
     return;
   }
@@ -27,10 +29,14 @@ export class NewRelicCapacitorPluginWeb
     return;
   }
 
-  recordBreadcrumb(options:{name: any, eventAttributes: object}): void {
+  recordBreadcrumb(options: { name: any; eventAttributes: object }): void {
     return;
   }
-  recordCustomEvent(options:{eventType: any, eventName: any, attributes: object}): void {
+  recordCustomEvent(options: {
+    eventType: any;
+    eventName: any;
+    attributes: object;
+  }): void {
     return;
   }
 
@@ -39,27 +45,49 @@ export class NewRelicCapacitorPluginWeb
     return options;
   }
 
-  crashNow(options: { message: string; }): void {
+  crashNow(options: { message: string }): void {
     return;
   }
 
-  async currentSessionId(options: {}): Promise<{sessionId: string}> {
-    return Promise.resolve({sessionId: "fake sessionId"});
+  async currentSessionId(options: {}): Promise<{ sessionId: string }> {
+    return Promise.resolve({ sessionId: 'fake sessionId' });
   }
 
-  incrementAttribute(options: { name: string; value: number; }): void {
+  incrementAttribute(options: { name: any; value: any }): void {
     return;
   }
 
-  noticeHttpTransaction(options: { url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: any; body: string; }): void {
+  noticeHttpTransaction(options: {
+    url: string;
+    method: string;
+    status: any;
+    startTime: any;
+    endTime: any;
+    bytesSent: any;
+    bytesReceived: any;
+    body: string;
+  }): void {
     return;
   }
 
-  noticeNetworkFailure(options: { url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }): void {
+  noticeNetworkFailure(options: {
+    url: string;
+    method: string;
+    status: any;
+    startTime: any;
+    endTime: any;
+    failure: string;
+  }): void {
     return;
   }
 
-  recordMetric(options: { name: string; category: string; value: number; countUnit: string; valueUnit: string; }): void {
+  recordMetric(options: {
+    name: string;
+    category: string;
+    value: any;
+    countUnit: string;
+    valueUnit: string;
+  }): void {
     return;
   }
 
@@ -75,7 +103,12 @@ export class NewRelicCapacitorPluginWeb
     return;
   }
 
-  recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }): void {
+  recordError(options: {
+    name: string;
+    message: string;
+    stack: string;
+    isFatal: boolean;
+  }): void {
     return;
   }
 
@@ -96,17 +129,3 @@ export class NewRelicCapacitorPluginWeb
   }
 
 }
-
-const defaultLog = window.console.log;
-const defaultWarn = window.console.warn;
-const defaultError = window.console.error;
-
-console.log = function() {
-  defaultLog.apply(console, );
-};
-console.warn = function() {
-  defaultWarn.apply(console);
-};
-console.error = function() {
-  defaultError.apply(console);
-};

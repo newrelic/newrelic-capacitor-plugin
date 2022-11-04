@@ -346,4 +346,3 @@ httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
 
 --------------------
 
-</docgen-api>

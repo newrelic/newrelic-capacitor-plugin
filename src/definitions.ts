@@ -39,7 +39,12 @@ export interface NewRelicCapacitorPluginPlugin {
   removeAllAttributes(options?: {}): void;
   setMaxEventBufferTime(options: {maxBufferTimeInSeconds: number}): void;
   setMaxEventPoolSize(options: {maxPoolSize: number}): void;
-  recordError(options: {name: string, message: string, stack: string, isFatal: boolean}): void;
+  recordError(options: {
+    name: string;
+    message: string;
+    stack: string;
+    isFatal: boolean;
+  }): void;
   analyticsEventEnabled(options: {enabled: boolean}): void;
   networkRequestEnabled(options: {enabled: boolean}): void;
   networkErrorRequestEnabled(options: {enabled: boolean}): void;

@@ -360,4 +360,20 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
+    @objc func recordError(_ call: CAPPluginCall) {
+        // Default max event pool size is 1000 events
+        let errorName = call.getString("name")
+        let errorMessage = call.getString("message")
+        let errorStack = call.getString("stack")
+        let isFatal = call.getBool("isFatal")
+
+        let crashEvents:[String:Any] = ["Name":errorName ?? "", "Message":errorMessage ?? "" as Any, "isFatal":isFatal ?? false,"errorStack":errorStack]
+        
+        NewRelic.recordBreadcrumb("JS Error",attributes:crashEvents)
+        NewRelic.recordCustomEvent(
+            "JS Errors", name: "JS Error",attributes: crashEvents)
+
+        call.resolve()
+    }
+    
 }
