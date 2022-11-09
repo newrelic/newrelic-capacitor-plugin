@@ -38,25 +38,27 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     public void start(PluginCall call) {
         String appKey = call.getString("appKey");
 
+        if(appKey == null) {
+            call.reject("Null appKey given to New Relic agent start");
+            return;
+        }
+
         NewRelic.withApplicationToken(appKey)
                 .withApplicationFramework(ApplicationFramework.Cordova, "0.0.1")
                 .withLoggingEnabled(true)
                 .start(this.getActivity().getApplication());
         call.resolve();
     }
-
-    @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
-
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
-    }
+    
 
     @PluginMethod
     public void setUserId(PluginCall call) {
         String value = call.getString("userId");
+
+        if(value == null) {
+            call.reject("Null userId given to setUserId");
+            return;
+        }
 
         NewRelic.setUserId(value);
         call.resolve();
@@ -67,6 +69,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String name = call.getString("name");
         String value = call.getString("value");
 
+        if(name == null || value == null) {
+            call.reject("Null name or value given to setAttribute");
+            return;
+        }
+
         NewRelic.setAttribute(name, value);
         call.resolve();
     }
@@ -74,6 +81,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     @PluginMethod
     public void removeAttribute(PluginCall call) {
         String name = call.getString("name");
+
+        if(name == null) {
+            call.reject("Null name given to removeAttribute");
+            return;
+        }
 
         NewRelic.removeAttribute(name);
         call.resolve();
@@ -83,6 +95,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     public void recordBreadcrumb(PluginCall call) {
         String name = call.getString("name");
         JSONObject eventAttributes = call.getObject("eventAttributes");
+
+        if(name == null) {
+            call.reject("Null name given to recordBreadcrumb");
+            return;
+        }
 
         Map yourHashMap = new Gson().fromJson(String.valueOf(eventAttributes), Map.class);
 
@@ -96,6 +113,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String eventType = call.getString("eventType");
         JSONObject attributes = call.getObject("attributes");
 
+        if(eventType == null) {
+            call.reject("Null eventType given to recordCustomEvent");
+            return;
+        }
+
         Map yourHashMap = new Gson().fromJson(String.valueOf(attributes), Map.class);
 
         NewRelic.recordCustomEvent(eventType, name, yourHashMap);
@@ -106,6 +128,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     public void startInteraction(PluginCall call) {
         String actionName = call.getString("value");
 
+        if(actionName == null) {
+            call.reject("Null value given to startInteraction");
+            return;
+        }
+
         JSObject ret = new JSObject();
         ret.put("value", NewRelic.startInteraction(actionName));
         call.resolve(ret);
@@ -114,6 +141,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     @PluginMethod
     public void endInteraction(PluginCall call) {
         String interactionId = call.getString("interactionId");
+
+        if(interactionId == null) {
+            call.reject("Null interactionId given to endInteraction");
+            return;
+        }
 
         NewRelic.endInteraction(interactionId);
         call.resolve();

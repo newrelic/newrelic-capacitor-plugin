@@ -40,11 +40,6 @@ export class NewRelicCapacitorPluginWeb
     return;
   }
 
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
-
   crashNow(options: { message: string }): void {
     return;
   }

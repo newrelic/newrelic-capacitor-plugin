@@ -14,59 +14,90 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
   }
 
     @objc func start(_ call: CAPPluginCall) {
-        let appKey = call.getString("appKey") ?? ""
+        let appKey = call.getString("appKey")
+        
+        if(appKey == nil) {
+            call.reject("Nil API key given to New Relic Agent start")
+            return
+        }
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova);
-        NewRelic.start(withApplicationToken: appKey)
+        NewRelic.start(withApplicationToken: appKey!)
         
         call.resolve()
     }
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
-    }
     
     @objc func setUserId(_ call: CAPPluginCall) {
-        let userId = call.getString("userId") ?? ""
-        NewRelic.setUserId(userId)
+        let userId = call.getString("userId")
+        
+        if(userId == nil) {
+            call.reject("Nil userId given to setUserId")
+            return
+        }
+        
+        NewRelic.setUserId(userId!)
         call.resolve()
     }
     
     @objc func setAttribute(_ call: CAPPluginCall) {
-        let name = call.getString("name") ?? ""
-        let value = call.getString("value") ?? ""
+        let name = call.getString("name")
+        let value = call.getString("value")
 
-        NewRelic.setAttribute(name, value:value)
+        if(name == nil || value == nil) {
+            call.reject("Nil name or value given to setAttribute")
+            return
+        }
+        
+        NewRelic.setAttribute(name!, value:value!)
         call.resolve()
     }
     
     @objc func removeAttribute(_ call: CAPPluginCall) {
-        let name = call.getString("name") ?? ""
-        NewRelic.removeAttribute(name)
+        let name = call.getString("name")
+        
+        if(name == nil) {
+            call.reject("Nil name given to removeAttribute")
+            return
+        }
+        
+        NewRelic.removeAttribute(name!)
         call.resolve()
     }
     
     @objc func recordBreadcrumb(_ call: CAPPluginCall) {
-        let name = call.getString("name") ?? ""
+        let name = call.getString("name")
         let eventAttributes = call.getObject("eventAttributes")
         
-        NewRelic.recordBreadcrumb(name,attributes: eventAttributes);
+        if(name == nil) {
+            call.reject("Nil name given to recordBreadcrumb")
+            return
+        }
+        
+        NewRelic.recordBreadcrumb(name!, attributes: eventAttributes);
         call.resolve()
     }
     
     @objc func recordCustomEvent(_ call: CAPPluginCall) {
         let name = call.getString("eventName") ?? ""
-        let eventType = call.getString("eventType") ?? ""
+        let eventType = call.getString("eventType")
         let attributes = call.getObject("attributes")
         
-        NewRelic.recordCustomEvent(eventType, name: name,attributes: attributes)
+        if(eventType == nil) {
+            call.reject("Nil eventType given to recordCustomEvent")
+            return
+        }
+        
+        NewRelic.recordCustomEvent(eventType!, name: name, attributes: attributes)
         call.resolve()
     }
     
     @objc func startInteraction(_ call: CAPPluginCall) {
-        let actionName = call.getString("value") ?? ""
+        let actionName = call.getString("value")
+        
+        if(actionName == nil) {
+            call.reject("Nil value given to startInteraction")
+            return
+        }
         
         let interactionId = NewRelic.startInteraction(withName: actionName)
         call.resolve([
@@ -75,8 +106,12 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func endInteraction(_ call: CAPPluginCall) {
-        let interactionId = call.getString("interactionId") ?? ""
+        let interactionId = call.getString("interactionId")
      
+        if(interactionId == nil) {
+            call.reject("Nil interactionId given to endInteraction")
+            return
+        }
         
         NewRelic.stopCurrentInteraction(interactionId)
         call.resolve()
@@ -109,7 +144,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         // Nil checks for our unwrapping in the call below
         if(name == nil) {
-            call.reject("Missing name in incrementAttribute")
+            call.reject("Nil name in incrementAttribute")
             return
         }
         
@@ -203,7 +238,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func recordMetric(_ call: CAPPluginCall) {
         let name = call.getString("name")
         let category = call.getString("category")
-        let value = call.getDouble("value")
+        // Use getInt here since getDouble will return null if not actually a double
+        let value = call.getInt("value")
         let countUnit = call.getString("countUnit")
         let valueUnit = call.getString("valueUnit")
         
@@ -348,7 +384,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         let toEnable = call.getBool("enabled");
         
         if(toEnable == nil) {
-            call.reject("Bad value in networkErrorRequestEnabled")
+            call.reject("Bad value in httpRequestBodyCaptureEnabled")
             return
         }
         

@@ -57,4 +57,6 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation 'com.newrelic.agent.android:android-agent:6.9.0'
+    testImplementation "org.mockito:mockito-core:3.+"
+    testImplementation 'org.json:json:20220924'
 }
