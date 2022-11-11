@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 
 
 ---
-name: "release"
+name: "release npm publish"
 
 # Controls when the action will run.
 # Workflow runs when manually triggered using the UI
@@ -55,8 +55,6 @@ jobs:
           else
           npm i
           fi
-      - name: Run all test cases
-        run: npm run test
 
       - name: Publish as NPM package on new relic account(we need npm secret from new relic account)
         env:
