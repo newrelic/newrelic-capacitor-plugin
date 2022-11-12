@@ -73,7 +73,7 @@ window.addEventListener('unhandledrejection', e => {
   NewRelicCapacitorPlugin.recordError({
     name: err.name,
     message: err.message,
-    stack: 'no statck',
+    stack: 'no stack',
     isFatal: false,
   });
 });
