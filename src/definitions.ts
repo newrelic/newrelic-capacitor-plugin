@@ -1,10 +1,10 @@
 export interface NewRelicCapacitorPluginPlugin {
   start(options: { appKey: string }): void;
   setUserId(options: { userId: string }): void;
-  setAttribute(options:{name: any, value: any}): void;
-  removeAttribute(options:{name: any}): void;
-  recordBreadcrumb(options:{name: any, eventAttributes: object}): void;
-  recordCustomEvent(options:{eventType: any, eventName: any, attributes: object}): void;
+  setAttribute(options:{name: string, value: string}): void;
+  removeAttribute(options:{name: string}): void;
+  recordBreadcrumb(options:{name: string, eventAttributes: object}): void;
+  recordCustomEvent(options:{eventType: string, eventName: string, attributes: object}): void;
   startInteraction(options:{value: string}): Promise<{ value: string }>;
   endInteraction(options:{interactionId: string}): void;
   crashNow(options?: {message: string}): void;
