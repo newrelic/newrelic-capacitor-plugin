@@ -43,7 +43,9 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
     "commit": "cz",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:android": "cd android && ./gradlew :testDebugUnitTest --tests 'com.getcapacitor.NewRelicCapacitorPluginUnitTest'",
+    "test:ios": "cd ios && xcodebuild test -workspace Plugin.xcworkspace -scheme PluginTests -destination $destination"
   },
   "devDependencies": {
     "@capacitor/android": "^4.0.0",
