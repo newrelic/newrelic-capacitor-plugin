@@ -2,7 +2,7 @@
 
 # newrelic-capacitor-plugin
 
-NewRelic Plugin for ionic Capacitor.This plugin uses native New Relic Android and iOS agents to instrument the Ionic Capacitor environment. The New Relic SDKs collect crashes, network traffic, and other information for hybrid apps using native components.
+NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android and iOS agents to instrument the Ionic Capacitor environment. The New Relic SDKs collect crashes, network traffic, and other information for hybrid apps using native components.
 
 
 ## Features
