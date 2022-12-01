@@ -676,6 +676,18 @@ Vue.config.errorHandler = (err, vm, info) => {
 }
 ```
 
+### How to see JSErrors(Fatal/Non Fatal) in NewRelic One?
+
+There is no section for JavaScript errors, but you can see JavaScript errors in custom events and also query them in NRQL explorer.
+
+<img width="1753" alt="Screen Shot 2022-02-10 at 12 41 11 PM" src="https://user-images.githubusercontent.com/89222514/153474861-87213e70-c3fb-4e14-aee7-a6a3fb482f73.png">
+
+You can also build dashboard for errors using this query:
+
+  ```sql
+  SELECT jsAppVersion,name,Message,errorStack,isFatal FROM `JS Errors` SINCE 24 hours ago
+  ```
+
 ## Contribute
 
 We encourage your contributions to improve `newrelic-capacitor-plugin`! Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project.
