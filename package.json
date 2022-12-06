@@ -1,5 +1,5 @@
 {
-  "name": "@nwerelic/newrelic-capacitor-plugin",
+  "name": "@newrelic/newrelic-capacitor-plugin",
   "version": "0.0.1",
   "description": "NewRelic Plugin for ionic Capacitor",
   "main": "dist/plugin.cjs.js",
