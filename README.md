@@ -2,7 +2,7 @@
 
 # newrelic-capacitor-plugin
 
-NewRelic Plugin for ionic Capacitor.This plugin uses native New Relic Android and iOS agents to instrument the Ionic Capacitor environment. The New Relic SDKs collect crashes, network traffic, and other information for hybrid apps using native components.
+NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android and iOS agents to instrument the Ionic Capacitor environment. The New Relic SDKs collect crashes, network traffic, and other information for hybrid apps using native components.
 
 
 ## Features
@@ -61,7 +61,7 @@ AppToken is platform-specific. You need to generate the seprate token for Androi
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.8.0"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.9.1"
       }
     }
   ```
@@ -454,34 +454,6 @@ setMaxEventPoolSize(options: { maxPoolSize: number; }) => void
 --------------------
 
 
-### recordError(...)
-> Records JavaScript/TypeScript errors for Ionic Capacitor.
-
-```typescript
-recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }) => void
-```
-
-| Param         | Type                                                                             |
-| ------------- | -------------------------------------------------------------------------------- |
-| **`options`** | <code>{ name: string; message: string; stack: string; isFatal: boolean; }</code> |
-
-#### Usage:
-```ts
-    try {
-      throw new Error('Example error message');
-    } catch (e: any) {
-      NewRelicCapacitorPlugin.recordError({
-        name: e.name,
-        message: e.message,
-        stack: e.stack,
-        isFatal: false,
-      });
-    }
-```
-
---------------------
-
-
 ### [analyticsEventEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-analytics-events)
 > FOR ANDROID ONLY. Enable or disable the collecton of event data. This is set to true by default.
 
@@ -554,3 +526,183 @@ httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
 ```
 
 --------------------
+
+
+## Error Reporting
+### recordError(...)
+> Records JavaScript/TypeScript errors for Ionic Capacitor. You should add this method to your framework's global error handler.
+
+```typescript
+recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }) => void
+```
+
+| Param         | Type                                                                             |
+| ------------- | -------------------------------------------------------------------------------- |
+| **`options`** | <code>{ name: string; message: string; stack: string; isFatal: boolean; }</code> |
+
+#### Usage:
+```ts
+    try {
+      throw new Error('Example error message');
+    } catch (e: any) {
+      NewRelicCapacitorPlugin.recordError({
+        name: e.name,
+        message: e.message,
+        stack: e.stack,
+        isFatal: false,
+      });
+    }
+```
+
+### Angular
+Angular 2+ exposes an [ErrorHandler](https://angular.io/api/core/ErrorHandler) class to handle errors. You can implement New Relic by extending this class as follows:
+
+```ts
+import { ErrorHandler, Injectable } from '@angular/core';
+import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+
+@Injectable()
+export class GlobalErrorHandler extends ErrorHandler {
+  constructor() {
+    super();
+  }
+  handleError(error: any): void {
+    NewRelicCapacitorPlugin.recordError({
+      name: error.name,
+      message: error.message,
+      stack: error.stack ? error.stack : "",
+      isFatal: false,
+    });
+    super.handleError(error);
+  }
+}
+```
+Then, you'll need to let Angular 2 know about this new error handler by listing overrides for the provider in `app.module.ts`:
+```ts
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,HttpClientModule],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },{provide: ErrorHandler, useClass: GlobalErrorHandler}],
+  bootstrap: [AppComponent],
+})
+```
+
+### React
+React 16+ has added error boundary components that catch errors that bubble up from child components. These are very useful for tracking and reporting errors to New Relic.
+
+```ts
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+
+interface Props {
+  children?: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false,
+  };
+
+  public static getDerivedStateFromError(_: Error): State {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Uncaught error:", error, errorInfo);
+    NewRelicCapacitorPlugin.recordError({
+      name: error.name,
+      message: error.message,
+      stack: error.stack ? error.stack : "",
+      isFatal: false,
+    });
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      // Render error messages or other components here.
+      return;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
+```
+
+### Vue
+Vue has a global error handler that reports native JavaScript errors and passes in the Vue instance. This handler will be useful for reporting errors to New Relic.
+
+```js
+import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+
+Vue.config.errorHandler = (err, vm, info) => {
+
+    // Record properties passed to the component if there are any
+    if(vm.$options.propsData) {
+        NewRelicCapacitorPlugin.recordBreadcrumb({
+          name: "Props passed to component in error handler",
+          eventAttributes: vm.$options.propsData
+        });
+    }
+
+    // Get the lifecycle hook, if present
+    let lifecycleHookInfo = 'none';
+    if (info){
+        lifecycleHookInfo = info;
+    }
+
+    // Record a breadcrumb with more details such as component name and lifecycle hook
+    NewRelicCapacitorPlugin.recordBreadcrumb({
+      name: "Vue Error",
+      eventAttributes: {
+        componentName: vm.$options.name,
+        lifeCycleHook: lifecycleHookInfo
+      }
+    });
+
+    // Record the JS error to New Relic
+    NewRelicCapacitorPlugin.recordError({
+      name: err.name,
+      message: err.message,
+      stack: err.stack ? err.stack : "",
+      isFatal: false,
+    });
+}
+```
+
+### How to see JSErrors(Fatal/Non Fatal) in NewRelic One?
+
+There is no section for JavaScript errors, but you can see JavaScript errors in custom events and also query them in NRQL explorer.
+
+<img width="1753" alt="Screen Shot 2022-02-10 at 12 41 11 PM" src="https://user-images.githubusercontent.com/89222514/153474861-87213e70-c3fb-4e14-aee7-a6a3fb482f73.png">
+
+You can also build dashboard for errors using this query:
+
+  ```sql
+  SELECT jsAppVersion,name,Message,errorStack,isFatal FROM `JS Errors` SINCE 24 hours ago
+  ```
+
+## Contribute
+
+We encourage your contributions to improve `newrelic-capacitor-plugin`! Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project.
+
+If you have any questions, or to execute our corporate CLA (which is required if your contribution is on behalf of a company), drop us an email at opensource@newrelic.com.
+
+**A note about vulnerabilities**
+
+As noted in our [security policy](../../security/policy), New Relic is committed to the privacy and security of our customers and their data. We believe that providing coordinated disclosure by security researchers and engaging with the security community are important means to achieve our security goals.
+
+If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic).
+
+If you would like to contribute to this project, review [these guidelines](./CONTRIBUTING.md).
+
+## License
+
+This project is distributed under the [Apache 2 license](LICENSE).
+>newrelic-capacitor-plugin also uses source code from third-party libraries. You can find full details on which libraries are used and the terms under which they are licensed in the third-party notices document.

@@ -199,8 +199,8 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         Integer status = call.getInt("status");
         Long startTime = call.getLong("startTime");
         Long endTime = call.getLong("endTime");
-        Long bytesSent = call.getLong("bytesSent");
-        Long bytesReceived = call.getLong("bytesReceived");
+        Integer bytesSent = call.getInt("bytesSent");
+        Integer bytesReceived = call.getInt("bytesReceived");
         String body = call.getString("body");
 
         if (url == null ||

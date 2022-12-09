@@ -1,5 +1,5 @@
 {
-  "name": "newrelic-capacitor-plugin",
+  "name": "@newrelic/newrelic-capacitor-plugin",
   "version": "0.0.1",
   "description": "NewRelic Plugin for ionic Capacitor",
   "main": "dist/plugin.cjs.js",
@@ -11,16 +11,16 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "NewrelicCapacitorPlugin.podspec"
+    "NewrelicNewrelicCapacitorPlugin.podspec"
   ],
   "author": "Newrelic",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ndesai-newrelic/newrelic-capacitor-plugin.git.git"
+    "url": "https://github.com/newrelic/newrelic-capacitor-plugin"
   },
   "bugs": {
-    "url": "https://github.com/ndesai-newrelic/newrelic-capacitor-plugin.git/issues"
+    "url": "https://github.com/newrelic/newrelic-capacitor-plugin/issues"
   },
   "keywords": [
     "capacitor",
@@ -43,7 +43,9 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
     "commit": "cz",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:android": "cd android && ./gradlew :testDebugUnitTest --tests 'com.getcapacitor.NewRelicCapacitorPluginUnitTest'",
+    "test:ios": "cd ios && xcodebuild test -workspace Plugin.xcworkspace -scheme PluginTests -destination $destination"
   },
   "devDependencies": {
     "@capacitor/android": "^4.0.0",
