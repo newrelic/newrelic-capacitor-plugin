@@ -1,5 +1,9 @@
 [![Community Plus header](https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png)](https://opensource.newrelic.com/oss-category/#community-plus)
 
+[![Android Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml)
+
+[![iOS Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml)
+
 # newrelic-capacitor-plugin
 
 NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android and iOS agents to instrument the Ionic Capacitor environment. The New Relic SDKs collect crashes, network traffic, and other information for hybrid apps using native components.
