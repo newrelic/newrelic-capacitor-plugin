@@ -247,9 +247,9 @@ endInteraction(options: { interactionId: string; }) => void
      .then((response) => response.json())
      .then((responseJson) => {
        console.log(responseJson);
-       NewRelicCapacitorPlugin.endInteraction({ interactionId: id });
+       NewRelicCapacitorPlugin.endInteraction({ interactionId: id.value });
      }) .catch((error) => {
-       NewRelicCapacitorPlugin.endInteraction({ interactionId: id });
+       NewRelicCapacitorPlugin.endInteraction({ interactionId: id.value });
        console.error(error);
      });
  };
