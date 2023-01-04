@@ -111,7 +111,7 @@ ionic capacitor run ios
 * [`analyticsEventEnabled(...)`](#analyticseventenabled)
 * [`networkRequestEnabled(...)`](#networkrequestenabled)
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
-* [`httpRequestBodyCaptureEnabled(...)`](#httprequestbodycaptureenabled)
+* [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
 
 
 
@@ -485,11 +485,11 @@ networkErrorRequestEnabled(options: { enabled: boolean; }) => void
 --------------------
 
 
-### [httpRequestBodyCaptureEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-withHttpResponseBodyCaptureEnabled)
+### [httpResponseBodyCaptureEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-withHttpResponseBodyCaptureEnabled)
 > Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
 
 ```typescript
-httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
+httpResponseBodyCaptureEnabled(options: { enabled: boolean; }) => void
 ```
 
 | Param         | Type                               |
@@ -497,7 +497,7 @@ httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
 | **`options`** | <code>{ enabled: boolean; }</code> |
 #### Usage:
 ```ts
-    NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled({ enabled: true })
+    NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled({ enabled: true })
 ```
 
 --------------------
