@@ -53,7 +53,7 @@ const Tab2: React.FC = () => {
 
   // Should be caught by ErrorBoundary component where we record error
   const errorHandler = () => {
-    throw new Error();
+    throw new Error("example error message");
   }
 
   const consoleHandler = () => {
