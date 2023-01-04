@@ -345,11 +345,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
-    @objc func httpRequestBodyCaptureEnabled(_ call: CAPPluginCall) {
+    @objc func httpResponseBodyCaptureEnabled(_ call: CAPPluginCall) {
         let toEnable = call.getBool("enabled");
         
         if(toEnable == nil) {
-            call.reject("Bad value in httpRequestBodyCaptureEnabled")
+            call.reject("Bad value in httpResponseBodyCaptureEnabled")
             return
         }
         

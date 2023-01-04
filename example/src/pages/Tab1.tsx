@@ -153,7 +153,7 @@ const Tab1: React.FC = () => {
     setNetworkErrorFlag(!networkErrorFlag);
   };
   const httpBodyFlagHandler = () => {
-    NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled({ enabled: !httpBodyFlag });
+    NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled({ enabled: !httpBodyFlag });
     setHttpBodyFlag(!httpBodyFlag);
   };
 

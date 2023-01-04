@@ -44,5 +44,5 @@ export interface NewRelicCapacitorPluginPlugin {
   analyticsEventEnabled(options: {enabled: boolean}): void;
   networkRequestEnabled(options: {enabled: boolean}): void;
   networkErrorRequestEnabled(options: {enabled: boolean}): void;
-  httpRequestBodyCaptureEnabled(options: {enabled: boolean}): void;
+  httpResponseBodyCaptureEnabled(options: {enabled: boolean}): void;
 }

@@ -539,8 +539,8 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.networkErrorRequestEnabled(callWithNoParams!)
     }
     
-    func testHttpRequestBodyCaptureEnabled() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "httpRequestBodyCaptureEnabled",
+    func testHttpResponseBodyCaptureEnabled() {
+        let callWithGoodParams = CAPPluginCall(callbackId: "httpResponseBodyCaptureEnabled",
                                                options: ["enabled": false],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
@@ -549,17 +549,17 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             XCTFail("Error shouldn't have been called")
         })
         
-        let callWithNoParams = CAPPluginCall(callbackId: "httpRequestBodyCaptureEnabled",
+        let callWithNoParams = CAPPluginCall(callbackId: "httpResponseBodyCaptureEnabled",
                                              options: [:],
                                              success: { (result, call) in
-            XCTFail("httpRequestBodyCapture should fail with no parameters")
+            XCTFail("httpResponseBodyCapture should fail with no parameters")
         },
                                              error:{ (err) in
-            XCTAssertEqual(err!.message, "Bad value in httpRequestBodyCaptureEnabled")
+            XCTAssertEqual(err!.message, "Bad value in httpResponseBodyCaptureEnabled")
         })
         
-        NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled(callWithGoodParams!)
-        NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled(callWithNoParams!)
+        NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithGoodParams!)
+        NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithNoParams!)
     }
     
 }

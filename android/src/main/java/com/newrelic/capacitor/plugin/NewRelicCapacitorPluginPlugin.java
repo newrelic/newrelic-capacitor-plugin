@@ -384,11 +384,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void httpRequestBodyCaptureEnabled(PluginCall call) {
+    public void httpResponseBodyCaptureEnabled(PluginCall call) {
         Boolean toEnable = call.getBoolean("enabled");
 
         if(toEnable == null) {
-            call.reject("Bad parameter given to httpRequestBodyCaptureEnabled");
+            call.reject("Bad parameter given to httpResponseBodyCaptureEnabled");
             return;
         }
 

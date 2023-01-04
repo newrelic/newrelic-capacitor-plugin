@@ -441,15 +441,15 @@ public class NewRelicCapacitorPluginUnitTest {
     }
 
     @Test
-    public void testHttpRequestBodyCaptureEnabled() {
+    public void testHttpResponseBodyCaptureEnabled() {
         PluginCall callWithGoodParams = mock(PluginCall.class);
         when(callWithGoodParams.getBoolean("enabled")).thenReturn(false);
 
         PluginCall callWithNoParams = mock(PluginCall.class);
         when(callWithNoParams.getBoolean("enabled")).thenReturn(null);
 
-        plugin.httpRequestBodyCaptureEnabled(callWithGoodParams);
-        plugin.httpRequestBodyCaptureEnabled(callWithNoParams);
+        plugin.httpResponseBodyCaptureEnabled(callWithGoodParams);
+        plugin.httpResponseBodyCaptureEnabled(callWithNoParams);
 
         verify(callWithGoodParams, times(1)).resolve();
         verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
