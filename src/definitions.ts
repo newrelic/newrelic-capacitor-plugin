@@ -25,14 +25,6 @@ export interface NewRelicCapacitorPluginPlugin {
     bytesReceived: number, 
     body: string
   }): void;
-  noticeNetworkFailure(options: {
-    url: string,
-    method: string,
-    status: number,
-    startTime: number,
-    endTime: number,
-    failure: string
-  }): void;
   recordMetric(options: {
     name: string,
     category: string,

@@ -103,7 +103,6 @@ ionic capacitor run ios
 * [`currentSessionId(...)`](#currentsessionid)
 * [`incrementAttribute(...)`](#incrementattribute)
 * [`noticeHttpTransaction(...)`](#noticehttptransaction)
-* [`noticeNetworkFailure(...)`](#noticenetworkfailure)
 * [`recordMetric(...)`](#recordmetric)
 * [`removeAllAttributes(...)`](#removeallattributes)
 * [`setMaxEventBufferTime(...)`](#setmaxeventbuffertime)
@@ -338,33 +337,6 @@ noticeHttpTransaction(options: { url: string; method: string; status: number; st
       body: "fake http response body 200",
     });
 ```
---------------------
-
-
-### [noticeNetworkFailure(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/notice-network-failure)
-> Records network failures. If a network request fails, use this method to record details about the failures. In most cases, place this call inside exception handlers, such as catch blocks. Supported failures are: `Unknown`, `BadURL`, `TimedOut`, `CannotConnectToHost`, `DNSLookupFailed`, `BadServerResponse`, `SecureConnectionFailed`
-
-
-```typescript
-noticeNetworkFailure(options: { url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }) => void
-```
-
-| Param         | Type                                                                                                               |
-| ------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }</code> |
-
-#### Usage:
-```ts
-    NewRelicCapacitorPlugin.noticeNetworkFailure({
-        url: "https://networkfailurewebsite.com",
-        method: "GET",
-        status: 404,
-        startTime: Date.now(),
-        endTime: Date.now(),
-        failure: "Unknown",
-    });
-```
-
 --------------------
 
 

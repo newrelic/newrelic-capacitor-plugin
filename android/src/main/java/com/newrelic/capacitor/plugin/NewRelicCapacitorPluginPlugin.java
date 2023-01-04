@@ -219,42 +219,6 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void noticeNetworkFailure(PluginCall call) {
-        String url = call.getString("url");
-        String method = call.getString("method");
-        Integer status = call.getInt("status");
-        Long startTime = call.getLong("startTime");
-        Long endTime = call.getLong("endTime");
-        String failure = call.getString("failure");
-
-        if (url == null ||
-                method == null ||
-                status == null ||
-                startTime == null ||
-                endTime == null ||
-                failure == null) {
-            call.reject("Bad parameters given to noticeNetworkFailure");
-            return;
-        }
-
-        Map<String, NetworkFailure> strToNetworkFailure = new HashMap<>();
-        strToNetworkFailure.put("Unknown", NetworkFailure.Unknown);
-        strToNetworkFailure.put("BadURL", NetworkFailure.BadURL);
-        strToNetworkFailure.put("TimedOut", NetworkFailure.TimedOut);
-        strToNetworkFailure.put("CannotConnectToHost", NetworkFailure.CannotConnectToHost);
-        strToNetworkFailure.put("BadServerResponse", NetworkFailure.BadServerResponse);
-        strToNetworkFailure.put("SecureConnectionFailed", NetworkFailure.SecureConnectionFailed);
-
-        if (strToNetworkFailure.containsKey(failure)) {
-            NewRelic.noticeNetworkFailure(url, method, status, startTime, strToNetworkFailure.get(failure));
-            call.resolve();
-        } else {
-            call.reject(
-                    "Bad failure name in noticeNetworkFailure. Must be one of: Unknown, BadURL, TimedOut, CannotConnectToHost, BadServerResponse, SecureConnectionFailed");
-        }
-    }
-
-    @PluginMethod
     public void recordMetric(PluginCall call) {
         String name = call.getString("name");
         String category = call.getString("category");

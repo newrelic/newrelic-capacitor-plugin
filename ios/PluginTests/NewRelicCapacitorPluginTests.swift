@@ -330,49 +330,6 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams!)
     }
     
-    func testNoticeNetworkFailure() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "noticeNetworkFailure",
-                                               options: ["url": "https://fakewebsite.com",
-                                                         "method": "GET",
-                                                         "status": 404,
-                                                         "startTime": Date().timeIntervalSince1970,
-                                                         "endTime": Date().timeIntervalSince1970,
-                                                         "failure": "DNSLookupFailed"],
-                                               success: { (result, call) in
-            XCTAssertNotNil(result)
-        },
-                                               error:{ (err) in
-            XCTFail("Error shouldn't have been called")
-        })
-        
-        let callWithBadFailureName = CAPPluginCall(callbackId: "noticeNetworkFailure",
-                                                   options: ["url": "https://fakewebsite.com",
-                                                             "method": "GET",
-                                                             "status": 404,
-                                                             "startTime": Date().timeIntervalSince1970,
-                                                             "endTime": Date().timeIntervalSince1970,
-                                                             "failure": "FakeFailure"],
-                                                   success: { (result, call) in
-            XCTFail("noticeNetworkFailure should fail with bad failure name")
-        },
-                                               error:{ (err) in
-            XCTAssertEqual(err!.message, "Bad failure name given to noticeNetworkFailure. Use one of: Unknown, BadURL, TimedOut, CannotConnectToHost, DNSLookupFailed, BadServerResponse, or SecureConnectionFailed")
-        })
-        
-        let callWithNoParams = CAPPluginCall(callbackId: "noticeNetworkFailure",
-                                             options: [:],
-                                             success: { (result, call) in
-            XCTFail("noticeHttpTransaction should not work with nil params")
-        },
-                                             error:{ (err) in
-            XCTAssertEqual(err!.message, "Bad parameters given to noticeNetworkFailure")
-        })
-        
-        NewRelicCapacitorPlugin.noticeNetworkFailure(callWithGoodParams!)
-        NewRelicCapacitorPlugin.noticeNetworkFailure(callWithBadFailureName!)
-        NewRelicCapacitorPlugin.noticeNetworkFailure(callWithNoParams!)
-    }
-    
     func testRecordMetric() {
         let callWithGoodParams = CAPPluginCall(callbackId: "recordMetric",
                                                options: ["name": "metricName",

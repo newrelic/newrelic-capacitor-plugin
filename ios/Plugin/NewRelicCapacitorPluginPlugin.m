@@ -21,7 +21,6 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(currentSessionId, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(incrementAttribute, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(noticeHttpTransaction, CAPPluginReturnNone);
-           CAP_PLUGIN_METHOD(noticeNetworkFailure, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(recordMetric, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(removeAllAttributes, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(setMaxEventBufferTime, CAPPluginReturnNone);
