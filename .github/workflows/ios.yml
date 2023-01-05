@@ -1,9 +1,14 @@
 on:
   push:
-    branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.eslint*'
   pull_request:
-    branches: [main, develop]
-  workflow_dispatch:
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.eslint*'
 name: iOS Unit Tests
 jobs:
   ios:

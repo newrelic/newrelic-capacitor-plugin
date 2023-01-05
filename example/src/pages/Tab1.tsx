@@ -46,13 +46,15 @@ const Tab1: React.FC = () => {
     });
   }
   const networkFailureHandler = () => {
-    NewRelicCapacitorPlugin.noticeNetworkFailure({
-      url: "https://networkfailurewebsite.com",
+    NewRelicCapacitorPlugin.noticeHttpTransaction({
+      url: "https://fakewebsite400.com",
       method: "GET",
-      status: 404,
+      status: 400,
       startTime: Date.now(),
       endTime: Date.now(),
-      failure: "Unknown",
+      bytesSent: 10000,
+      bytesReceived: 20000,
+      body: "fake http response body 400",
     });
   };
 
@@ -151,7 +153,7 @@ const Tab1: React.FC = () => {
     setNetworkErrorFlag(!networkErrorFlag);
   };
   const httpBodyFlagHandler = () => {
-    NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled({ enabled: !httpBodyFlag });
+    NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled({ enabled: !httpBodyFlag });
     setHttpBodyFlag(!httpBodyFlag);
   };
 

@@ -103,7 +103,6 @@ ionic capacitor run ios
 * [`currentSessionId(...)`](#currentsessionid)
 * [`incrementAttribute(...)`](#incrementattribute)
 * [`noticeHttpTransaction(...)`](#noticehttptransaction)
-* [`noticeNetworkFailure(...)`](#noticenetworkfailure)
 * [`recordMetric(...)`](#recordmetric)
 * [`removeAllAttributes(...)`](#removeallattributes)
 * [`setMaxEventBufferTime(...)`](#setmaxeventbuffertime)
@@ -112,7 +111,7 @@ ionic capacitor run ios
 * [`analyticsEventEnabled(...)`](#analyticseventenabled)
 * [`networkRequestEnabled(...)`](#networkrequestenabled)
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
-* [`httpRequestBodyCaptureEnabled(...)`](#httprequestbodycaptureenabled)
+* [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
 
 
 
@@ -341,33 +340,6 @@ noticeHttpTransaction(options: { url: string; method: string; status: number; st
 --------------------
 
 
-### [noticeNetworkFailure(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/notice-network-failure)
-> Records network failures. If a network request fails, use this method to record details about the failures. In most cases, place this call inside exception handlers, such as catch blocks. Supported failures are: `Unknown`, `BadURL`, `TimedOut`, `CannotConnectToHost`, `DNSLookupFailed`, `BadServerResponse`, `SecureConnectionFailed`
-
-
-```typescript
-noticeNetworkFailure(options: { url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }) => void
-```
-
-| Param         | Type                                                                                                               |
-| ------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }</code> |
-
-#### Usage:
-```ts
-    NewRelicCapacitorPlugin.noticeNetworkFailure({
-        url: "https://networkfailurewebsite.com",
-        method: "GET",
-        status: 404,
-        startTime: Date.now(),
-        endTime: Date.now(),
-        failure: "Unknown",
-    });
-```
-
---------------------
-
-
 ### [recordMetric(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/recordmetric-android-sdk-api))
 > Records custom metrics (arbitrary numerical data), where countUnit is the measurement unit of the metric count and valueUnit is the measurement unit for the metric value. If using countUnit or valueUnit, then all of value, countUnit, and valueUnit must all be set. Supported measurements for countUnit and valueUnit are: `PERCENT`, `BYTES`, `SECONDS`, `BYTES_PER_SECOND`, `OPERATIONS`
 
@@ -513,11 +485,11 @@ networkErrorRequestEnabled(options: { enabled: boolean; }) => void
 --------------------
 
 
-### [httpRequestBodyCaptureEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-withHttpResponseBodyCaptureEnabled)
+### [httpResponseBodyCaptureEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-withHttpResponseBodyCaptureEnabled)
 > Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
 
 ```typescript
-httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
+httpResponseBodyCaptureEnabled(options: { enabled: boolean; }) => void
 ```
 
 | Param         | Type                               |
@@ -525,7 +497,7 @@ httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
 | **`options`** | <code>{ enabled: boolean; }</code> |
 #### Usage:
 ```ts
-    NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled({ enabled: true })
+    NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled({ enabled: true })
 ```
 
 --------------------

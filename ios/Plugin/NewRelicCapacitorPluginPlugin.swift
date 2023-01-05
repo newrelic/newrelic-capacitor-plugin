@@ -199,48 +199,6 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
-    @objc func noticeNetworkFailure(_ call: CAPPluginCall) {
-        let url = call.getString("url")
-        let method = call.getString("method")
-        let status = call.getInt("status")
-        let startTime = call.getDouble("startTime")
-        let endTime = call.getDouble("endTime")
-        let failure = call.getString("failure")
-        
-        // Nil checks for our unwrapping in the call below
-        if(url == nil || method == nil || status == nil || startTime == nil || endTime == nil || failure == nil) {
-            call.reject("Bad parameters given to noticeNetworkFailure")
-            return
-        }
-        
-        let nsurl = URL(string: url!)
-        
-        let strToFailureCode = [
-            "Unknown": Int(NRURLErrorUnknown.rawValue),
-            "BadURL": Int(NRURLErrorBadURL.rawValue),
-            "TimedOut": Int(NRURLErrorTimedOut.rawValue),
-            "CannotConnectToHost": Int(NRURLErrorCannotConnectToHost.rawValue),
-            "DNSLookupFailed": Int(NRURLErrorDNSLookupFailed.rawValue),
-            "BadServerResponse": Int(NRURLErrorBadServerResponse.rawValue),
-            "SecureConnectionFailed": Int(NRURLErrorSecureConnectionFailed.rawValue)
-        ]
-        
-        let iOSFailureCode = strToFailureCode[failure!]
-        if(iOSFailureCode == nil) {
-            call.reject("Bad failure name given to noticeNetworkFailure. Use one of: Unknown, BadURL, TimedOut, CannotConnectToHost, DNSLookupFailed, BadServerResponse, or SecureConnectionFailed")
-            return
-        }
-        
-        NewRelic.noticeNetworkFailure(
-            for: nsurl,
-            httpMethod: method,
-            startTime: startTime!,
-            endTime: endTime!,
-            andFailureCode: iOSFailureCode!
-        )
-        
-        call.resolve()
-    }
     
     @objc func recordMetric(_ call: CAPPluginCall) {
         let name = call.getString("name")
@@ -387,11 +345,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
-    @objc func httpRequestBodyCaptureEnabled(_ call: CAPPluginCall) {
+    @objc func httpResponseBodyCaptureEnabled(_ call: CAPPluginCall) {
         let toEnable = call.getBool("enabled");
         
         if(toEnable == nil) {
-            call.reject("Bad value in httpRequestBodyCaptureEnabled")
+            call.reject("Bad value in httpResponseBodyCaptureEnabled")
             return
         }
         
