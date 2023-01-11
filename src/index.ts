@@ -56,7 +56,7 @@ function sendConsole(consoleType:string,_arguments:any) {
 
   const argsStr = JSON.stringify(_arguments);
     NewRelicCapacitorPlugin.recordCustomEvent({
-      eventType: 'console events',
+      eventType: 'consoleEvents',
       eventName: 'JSConsole',
       attributes: { consoleType: consoleType, args: argsStr },
     });

@@ -28,7 +28,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova);
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"0.0.1")
+        NewRelic.perform(selector, with:"1.0.0")
         NewRelic.start(withApplicationToken: appKey!)
         
         call.resolve()

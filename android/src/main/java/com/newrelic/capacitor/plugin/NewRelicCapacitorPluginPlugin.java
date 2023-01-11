@@ -49,7 +49,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         }
 
         NewRelic.withApplicationToken(appKey)
-                .withApplicationFramework(ApplicationFramework.Cordova, "0.0.1")
+                .withApplicationFramework(ApplicationFramework.Cordova, "1.0.0")
                 .withLoggingEnabled(true)
                 .start(this.getActivity().getApplication());
         call.resolve();
