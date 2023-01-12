@@ -1,0 +1,37 @@
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.eslint*'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.eslint*'
+name: iOS Unit Tests
+jobs:
+  ios:
+    name: iOS Unit Tests
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        destination:
+          - "platform=iOS Simulator,OS=16.0,name=iPhone 14"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "12"
+      - name: Install NPM Dependencies
+        run: npm i
+      - name: Build NPM Module
+        run: npm run build
+      - name: Install Cocoapods
+        run: cd ios && pod install
+      - name: Run iOS Tests
+        run: cd ios && xcodebuild test -workspace Plugin.xcworkspace -scheme PluginTests -destination "${destination}"
+        env:
+          destination: ${{ matrix.destination }}

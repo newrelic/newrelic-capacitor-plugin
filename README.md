@@ -1,5 +1,8 @@
 [![Community Plus header](https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png)](https://opensource.newrelic.com/oss-category/#community-plus)
 
+[![Android Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml)
+[![iOS Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml)
+
 # newrelic-capacitor-plugin
 
 NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android and iOS agents to instrument the Ionic Capacitor environment. The New Relic SDKs collect crashes, network traffic, and other information for hybrid apps using native components.
@@ -61,7 +64,7 @@ AppToken is platform-specific. You need to generate the seprate token for Androi
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.9.1"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.9.2"
       }
     }
   ```
@@ -100,7 +103,6 @@ ionic capacitor run ios
 * [`currentSessionId(...)`](#currentsessionid)
 * [`incrementAttribute(...)`](#incrementattribute)
 * [`noticeHttpTransaction(...)`](#noticehttptransaction)
-* [`noticeNetworkFailure(...)`](#noticenetworkfailure)
 * [`recordMetric(...)`](#recordmetric)
 * [`removeAllAttributes(...)`](#removeallattributes)
 * [`setMaxEventBufferTime(...)`](#setmaxeventbuffertime)
@@ -109,7 +111,7 @@ ionic capacitor run ios
 * [`analyticsEventEnabled(...)`](#analyticseventenabled)
 * [`networkRequestEnabled(...)`](#networkrequestenabled)
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
-* [`httpRequestBodyCaptureEnabled(...)`](#httprequestbodycaptureenabled)
+* [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
 
 
 
@@ -244,9 +246,9 @@ endInteraction(options: { interactionId: string; }) => void
      .then((response) => response.json())
      .then((responseJson) => {
        console.log(responseJson);
-       NewRelicCapacitorPlugin.endInteraction({ interactionId: id });
+       NewRelicCapacitorPlugin.endInteraction({ interactionId: id.value });
      }) .catch((error) => {
-       NewRelicCapacitorPlugin.endInteraction({ interactionId: id });
+       NewRelicCapacitorPlugin.endInteraction({ interactionId: id.value });
        console.error(error);
      });
  };
@@ -335,33 +337,6 @@ noticeHttpTransaction(options: { url: string; method: string; status: number; st
       body: "fake http response body 200",
     });
 ```
---------------------
-
-
-### [noticeNetworkFailure(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/notice-network-failure)
-> Records network failures. If a network request fails, use this method to record details about the failures. In most cases, place this call inside exception handlers, such as catch blocks. Supported failures are: `Unknown`, `BadURL`, `TimedOut`, `CannotConnectToHost`, `DNSLookupFailed`, `BadServerResponse`, `SecureConnectionFailed`
-
-
-```typescript
-noticeNetworkFailure(options: { url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }) => void
-```
-
-| Param         | Type                                                                                                               |
-| ------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; failure: string; }</code> |
-
-#### Usage:
-```ts
-    NewRelicCapacitorPlugin.noticeNetworkFailure({
-        url: "https://networkfailurewebsite.com",
-        method: "GET",
-        status: 404,
-        startTime: Date.now(),
-        endTime: Date.now(),
-        failure: "Unknown",
-    });
-```
-
 --------------------
 
 
@@ -510,11 +485,11 @@ networkErrorRequestEnabled(options: { enabled: boolean; }) => void
 --------------------
 
 
-### [httpRequestBodyCaptureEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-withHttpResponseBodyCaptureEnabled)
+### [httpResponseBodyCaptureEnabled(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/android-agent-configuration-feature-flags/#ff-withHttpResponseBodyCaptureEnabled)
 > Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
 
 ```typescript
-httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
+httpResponseBodyCaptureEnabled(options: { enabled: boolean; }) => void
 ```
 
 | Param         | Type                               |
@@ -522,7 +497,7 @@ httpRequestBodyCaptureEnabled(options: { enabled: boolean; }) => void
 | **`options`** | <code>{ enabled: boolean; }</code> |
 #### Usage:
 ```ts
-    NewRelicCapacitorPlugin.httpRequestBodyCaptureEnabled({ enabled: true })
+    NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled({ enabled: true })
 ```
 
 --------------------

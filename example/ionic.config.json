@@ -1,0 +1,7 @@
+{
+  "name": "newrelic-example-capacitor-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
