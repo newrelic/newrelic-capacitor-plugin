@@ -50,7 +50,7 @@ NewRelicCapacitorPlugin.start({appKey:appToken})
 
 
 ```
-AppToken is platform-specific. You need to generate the seprate token for Android and iOS apps.
+AppToken is platform-specific. You need to generate separate tokens for Android and iOS apps.
 
 ### Android Setup
 1. Install the New Relic native Android agent ([instructions here](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/install-configure/install-android-apps-gradle-android-studio)).
