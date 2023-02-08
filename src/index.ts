@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2022-present New Relic Corporation. All rights reserved.
- * SPDX-License-Identifier: Apache-2.0 
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { registerPlugin } from '@capacitor/core';
 
 import type { NewRelicCapacitorPluginPlugin } from './definitions';
+import decycle from './cycle';
 
 const NewRelicCapacitorPlugin = registerPlugin<NewRelicCapacitorPluginPlugin>(
   'NewRelicCapacitorPlugin',
-  {
-  },
+  {},
 );
 
 export * from './definitions';
@@ -26,7 +26,7 @@ console.log = function () {
   while (arguments.length) {
     var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
-    sendConsole('log',copyArguments);
+    sendConsole('log', copyArguments);
   }
   defaultLog.apply(console, msgs);
 };
@@ -36,8 +36,7 @@ console.warn = function () {
   while (arguments.length) {
     var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
-    sendConsole('warn',copyArguments);
-
+    sendConsole('warn', copyArguments);
   }
   defaultWarn.apply(console, msgs);
 };
@@ -47,22 +46,19 @@ console.error = function () {
   while (arguments.length) {
     var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
-    sendConsole('error',copyArguments);
+    sendConsole('error', copyArguments);
   }
   defaultError.apply(console, msgs);
 };
 
-function sendConsole(consoleType:string,_arguments:any) {
-
-  const argsStr = JSON.stringify(_arguments);
-    NewRelicCapacitorPlugin.recordCustomEvent({
-      eventType: 'consoleEvents',
-      eventName: 'JSConsole',
-      attributes: { consoleType: consoleType, args: argsStr },
-    });
-
+function sendConsole(consoleType: string, _arguments: any) {
+  const argsStr = JSON.stringify(decycle(_arguments));
+  NewRelicCapacitorPlugin.recordCustomEvent({
+    eventType: 'consoleEvents',
+    eventName: 'JSConsole',
+    attributes: { consoleType: consoleType, args: argsStr },
+  });
 }
-
 
 window.addEventListener('error', event => {
   NewRelicCapacitorPlugin.recordError({
@@ -81,4 +77,5 @@ window.addEventListener('unhandledrejection', e => {
     stack: 'no stack',
     isFatal: false,
   });
+
 });
