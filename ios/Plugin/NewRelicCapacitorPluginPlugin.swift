@@ -19,17 +19,86 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
   }
 
     @objc func start(_ call: CAPPluginCall) {
-        let appKey = call.getString("appKey")
         
-        if(appKey == nil) {
+        guard let appKey = call.getString("appKey") else {
             call.reject("Nil API key given to New Relic Agent start")
             return
         }
         
-        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova);
+        var logLevel = NRLogLevelWarning.rawValue
+        var collectorAddress: String? = nil
+        var crashCollectorAddress: String? = nil
+        
+        if let agentConfiguration = call.getObject("agentConfiguration") {
+            
+            if agentConfiguration["crashReportingEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_CrashReporting)
+            }
+            
+            if agentConfiguration["interactionTracingEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_InteractionTracing)
+            }
+            
+            if agentConfiguration["networkRequestEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
+            }
+            
+            if agentConfiguration["networkErrorRequestEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
+            }
+            
+            if agentConfiguration["httpResponseBodyCaptureEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
+            }
+            
+            if agentConfiguration["webViewInstrumentation"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
+            }
+            
+            if agentConfiguration["logLevel"] != nil {
+                
+                let strToLogLevel = [
+                    "ERROR": NRLogLevelError.rawValue,
+                    "WARNING": NRLogLevelWarning.rawValue,
+                    "INFO": NRLogLevelInfo.rawValue,
+                    "VERBOSE": NRLogLevelVerbose.rawValue,
+                    "AUDIT": NRLogLevelAudit.rawValue
+                ]
+                
+                if let configLogLevel = agentConfiguration["logLevel"] as? String, strToLogLevel[configLogLevel] != nil {
+                    logLevel = strToLogLevel[configLogLevel] ?? logLevel
+                }
+            }
+            
+            if agentConfiguration["loggingEnabled"] != nil {
+                logLevel = NRLogLevelNone.rawValue
+            }
+            
+            if agentConfiguration["collectorAddress"] != nil {
+                if let configCollectorAddress = agentConfiguration["collectorAdddress"] as? String, !configCollectorAddress.isEmpty {
+                    collectorAddress = configCollectorAddress
+                }
+            }
+            
+            if agentConfiguration["crashCollectorAddress"] != nil {
+                if let configCrashCollectorAddress = agentConfiguration["crashCollectorAddress"] as? String, !configCrashCollectorAddress.isEmpty {
+                    crashCollectorAddress = configCrashCollectorAddress
+                }
+            }
+        }
+        
+        NRLogger.setLogLevels(logLevel)
+        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova)
         let selector = NSSelectorFromString("setPlatformVersion:")
         NewRelic.perform(selector, with:"1.0.0")
-        NewRelic.start(withApplicationToken: appKey!)
+        
+        if (collectorAddress == nil && crashCollectorAddress == nil) {
+            NewRelic.start(withApplicationToken: appKey)
+        } else {
+            NewRelic.start(withApplicationToken: appKey,
+                           andCollectorAddress: collectorAddress ?? "mobile-collector.newrelic.com",
+                           andCrashCollectorAddress: crashCollectorAddress ?? "mobile-crash.newrelic.com")
+        }
         
         call.resolve()
     }

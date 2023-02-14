@@ -20,6 +20,7 @@ import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.stats.StatsEngine;
 import com.newrelic.agent.android.util.NetworkFailure;
+import com.newrelic.agent.android.logging.AgentLog;
 import com.newrelic.com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -42,16 +43,106 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     @PluginMethod
     public void start(PluginCall call) {
         String appKey = call.getString("appKey");
+        JSObject agentConfiguration = call.getObject("agentConfiguration");
 
         if(appKey == null) {
             call.reject("Null appKey given to New Relic agent start");
             return;
         }
 
-        NewRelic.withApplicationToken(appKey)
-                .withApplicationFramework(ApplicationFramework.Cordova, "1.0.0")
-                .withLoggingEnabled(true)
-                .start(this.getActivity().getApplication());
+        boolean loggingEnabled = true;
+        int logLevel = AgentLog.INFO;
+        String collectorAddress = null;
+        String crashCollectorAddress = null;
+
+        if(agentConfiguration != null) {
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("analyticsEventEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.AnalyticsEvents);
+            } else {
+                NewRelic.enableFeature(FeatureFlag.AnalyticsEvents);
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("crashReportingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.CrashReporting);
+            } else {
+                NewRelic.enableFeature(FeatureFlag.CrashReporting);
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("interactionTracingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.InteractionTracing);
+            } else {
+                NewRelic.enableFeature(FeatureFlag.InteractionTracing);
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("networkRequestEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.NetworkRequests);
+            } else {
+                NewRelic.enableFeature(FeatureFlag.NetworkRequests);
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("networkErrorRequestEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.NetworkErrorRequests);
+            } else {
+                NewRelic.enableFeature(FeatureFlag.NetworkErrorRequests);
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("httpResponseBodyCaptureEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.HttpResponseBodyCapture);
+            } else {
+                NewRelic.enableFeature(FeatureFlag.HttpResponseBodyCapture);
+            }
+
+            if(agentConfiguration.getBool("loggingEnabled") != null) {
+                loggingEnabled = Boolean.TRUE.equals(agentConfiguration.getBool("loggingEnabled"));
+            }
+
+            if(agentConfiguration.getString("logLevel") != null) {
+                Map<String, Integer> strToLogLevel = new HashMap<>();
+                strToLogLevel.put("ERROR", AgentLog.ERROR);
+                strToLogLevel.put("WARNING", AgentLog.WARNING);
+                strToLogLevel.put("INFO", AgentLog.INFO);
+                strToLogLevel.put("VERBOSE", AgentLog.VERBOSE);
+                strToLogLevel.put("AUDIT", AgentLog.AUDIT);
+
+                Integer configLogLevel = strToLogLevel.get(agentConfiguration.getString("logLevel"));
+                logLevel = (configLogLevel == null) ? logLevel : configLogLevel;
+            }
+
+            String newCollectorAddress = agentConfiguration.getString("collectorAddress");
+            if(newCollectorAddress != null && !newCollectorAddress.isEmpty()) {
+                collectorAddress = newCollectorAddress;
+            }
+
+            String newCrashCollectorAddress = agentConfiguration.getString("crashCollectorAddress");
+            if(newCrashCollectorAddress != null && !newCrashCollectorAddress.isEmpty()) {
+                crashCollectorAddress = newCrashCollectorAddress;
+            }
+        }
+
+        // Use default collector addresses if not set
+        if(collectorAddress == null && crashCollectorAddress == null) {
+            NewRelic.withApplicationToken(appKey)
+                    .withApplicationFramework(ApplicationFramework.Cordova, "1.0.0")
+                    .withLoggingEnabled(loggingEnabled)
+                    .withLogLevel(logLevel)
+                    .start(this.getActivity().getApplication());
+        } else {
+            if(collectorAddress == null) {
+                collectorAddress = "mobile-collector.newrelic.com";
+            }
+            if(crashCollectorAddress == null) {
+                crashCollectorAddress = "mobile-crash.newrelic.com";
+            }
+            NewRelic.withApplicationToken(appKey)
+                    .withApplicationFramework(ApplicationFramework.Cordova, "1.0.0")
+                    .withLoggingEnabled(loggingEnabled)
+                    .withLogLevel(logLevel)
+                    .usingCollectorAddress(collectorAddress)
+                    .usingCrashCollectorAddress(crashCollectorAddress)
+                    .start(this.getActivity().getApplication());
+        }
+
         call.resolve();
     }
     

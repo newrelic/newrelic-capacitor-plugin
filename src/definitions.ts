@@ -4,7 +4,7 @@
  */
 
 export interface NewRelicCapacitorPluginPlugin {
-  start(options: { appKey: string }): void;
+  start(options: { appKey: string, agentConfiguration?: object}): void;
   setUserId(options: { userId: string }): void;
   setAttribute(options:{name: string, value: string}): void;
   removeAttribute(options:{name: string}): void;
@@ -45,4 +45,30 @@ export interface NewRelicCapacitorPluginPlugin {
   networkRequestEnabled(options: {enabled: boolean}): void;
   networkErrorRequestEnabled(options: {enabled: boolean}): void;
   httpResponseBodyCaptureEnabled(options: {enabled: boolean}): void;
+}
+
+export namespace NREnums {
+  export enum LogLevel {
+      ERROR = "ERROR",
+      WARNING = "WARNING",
+      INFO = "INFO",
+      VERBOSE = "VERBOSE",
+      AUDIT = "AUDIT",
+  }
+  export enum NetworkFailure {
+      Unknown = 'Unknown',
+      BadURL = 'BadURL',
+      TimedOut = 'TimedOut',
+      CannotConnectToHost = 'CannotConnectToHost',
+      DNSLookupFailed = 'DNSLookupFailed',
+      BadServerResponse = 'BadServerResponse',
+      SecureConnectionFailed = 'SecureConnectionFailed',
+  }
+  export enum MetricUnit  {
+      PERCENT = 'PERCENT',
+      BYTES = 'BYTES',
+      SECONDS = 'SECONDS',
+      BYTES_PER_SECOND = 'BYTES_PER_SECOND',
+      OPERATIONS = 'OPERATIONS',
+  }
 }
