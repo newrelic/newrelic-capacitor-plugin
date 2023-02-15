@@ -583,7 +583,7 @@ export class GlobalErrorHandler extends ErrorHandler {
     NewRelicCapacitorPlugin.recordError({
       name: error.name,
       message: error.message,
-      stack: error.stack ? error.stack : "",
+      stack: error.stack ? error.stack : "No stack available",
       isFatal: false,
     });
     super.handleError(error);
@@ -630,7 +630,7 @@ class ErrorBoundary extends Component<Props, State> {
     NewRelicCapacitorPlugin.recordError({
       name: error.name,
       message: error.message,
-      stack: error.stack ? error.stack : "",
+      stack: error.stack ? error.stack : "No stack available",
       isFatal: false,
     });
   }
@@ -683,7 +683,7 @@ Vue.config.errorHandler = (err, vm, info) => {
     NewRelicCapacitorPlugin.recordError({
       name: err.name,
       message: err.message,
-      stack: err.stack ? err.stack : "",
+      stack: err.stack ? err.stack : "No stack available",
       isFatal: false,
     });
 }
