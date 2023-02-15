@@ -92,7 +92,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         let selector = NSSelectorFromString("setPlatformVersion:")
         NewRelic.perform(selector, with:"1.0.0")
         
-        if (collectorAddress == nil && crashCollectorAddress == nil) {
+        if collectorAddress == nil && crashCollectorAddress == nil {
             NewRelic.start(withApplicationToken: appKey)
         } else {
             NewRelic.start(withApplicationToken: appKey,
@@ -104,73 +104,62 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func setUserId(_ call: CAPPluginCall) {
-        let userId = call.getString("userId")
-        
-        if(userId == nil) {
+        guard let userId = call.getString("userId") else {
             call.reject("Nil userId given to setUserId")
             return
         }
         
-        NewRelic.setUserId(userId!)
+        NewRelic.setUserId(userId)
         call.resolve()
     }
     
     @objc func setAttribute(_ call: CAPPluginCall) {
-        let name = call.getString("name")
-        let value = call.getString("value")
-
-        if(name == nil || value == nil) {
+        guard let name = call.getString("name"),
+              let value = call.getString("value") else {
             call.reject("Nil name or value given to setAttribute")
             return
         }
         
-        NewRelic.setAttribute(name!, value:value!)
+        NewRelic.setAttribute(name, value:value)
         call.resolve()
     }
     
     @objc func removeAttribute(_ call: CAPPluginCall) {
-        let name = call.getString("name")
-        
-        if(name == nil) {
+        guard let name = call.getString("name") else {
             call.reject("Nil name given to removeAttribute")
             return
         }
         
-        NewRelic.removeAttribute(name!)
+        NewRelic.removeAttribute(name)
         call.resolve()
     }
     
     @objc func recordBreadcrumb(_ call: CAPPluginCall) {
-        let name = call.getString("name")
-        let eventAttributes = call.getObject("eventAttributes")
-        
-        if(name == nil) {
+        guard let name = call.getString("name") else {
             call.reject("Nil name given to recordBreadcrumb")
             return
         }
+        let eventAttributes = call.getObject("eventAttributes")
         
-        NewRelic.recordBreadcrumb(name!, attributes: eventAttributes);
+        NewRelic.recordBreadcrumb(name, attributes: eventAttributes);
         call.resolve()
     }
     
     @objc func recordCustomEvent(_ call: CAPPluginCall) {
-        let name = call.getString("eventName") ?? ""
-        let eventType = call.getString("eventType")
-        let attributes = call.getObject("attributes")
-        
-        if(eventType == nil) {
+        guard let eventType = call.getString("eventType") else {
             call.reject("Nil eventType given to recordCustomEvent")
             return
         }
+        let name = call.getString("eventName")
+
+        let attributes = call.getObject("attributes")
         
-        NewRelic.recordCustomEvent(eventType!, name: name, attributes: attributes)
+        NewRelic.recordCustomEvent(eventType, name: name, attributes: attributes)
         call.resolve()
     }
     
     @objc func startInteraction(_ call: CAPPluginCall) {
-        let actionName = call.getString("value")
-        
-        if(actionName == nil) {
+        guard let actionName = call.getString("value") else {
             call.reject("Nil value given to startInteraction")
             return
         }
@@ -182,9 +171,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func endInteraction(_ call: CAPPluginCall) {
-        let interactionId = call.getString("interactionId")
-     
-        if(interactionId == nil) {
+        guard let interactionId = call.getString("interactionId") else {
             call.reject("Nil interactionId given to endInteraction")
             return
         }
@@ -194,14 +181,13 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func crashNow(_ call: CAPPluginCall) {
-        let message = call.getString("message")
-        
-        if(message == nil) {
-            NewRelic.crashNow()
+        if let message = call.getString("message") {
+            NewRelic.crashNow(message)
             call.resolve()
             return
+
         } else {
-            NewRelic.crashNow(message)
+            NewRelic.crashNow()
             call.resolve()
             return
         }
@@ -215,50 +201,45 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func incrementAttribute(_ call: CAPPluginCall) {
-        let name = call.getString("name")
-        let value = call.getDouble("value") ?? 1
-        
-        // Nil checks for our unwrapping in the call below
-        if(name == nil) {
+        guard let name = call.getString("name") else {
             call.reject("Nil name in incrementAttribute")
             return
         }
+        let value = call.getDouble("value") ?? 1
         
         let NSNumber_value = NSNumber(value: value)
         
-        NewRelic.incrementAttribute(name!, value:NSNumber_value)
+        NewRelic.incrementAttribute(name, value:NSNumber_value)
         call.resolve()
     }
     
     
     @objc func noticeHttpTransaction(_ call: CAPPluginCall) {
-        let url = call.getString("url")
-        let method = call.getString("method")
-        let status = call.getInt("status")
-        let startTime = call.getDouble("startTime")
-        let endTime = call.getDouble("endTime")
-        let bytesSent = call.getInt("bytesSent")
-        let bytesReceived = call.getInt("bytesReceived")
-        let body = call.getString("body")
-        
-        // Nil checks for our unwrapping in the call below
-        if(url == nil || method == nil || status == nil || startTime == nil || endTime == nil || bytesSent == nil || bytesReceived == nil || body == nil) {
+        guard let url = call.getString("url"),
+              let method = call.getString("method"),
+              let status = call.getInt("status"),
+              let startTime = call.getDouble("startTime"),
+              let endTime = call.getDouble("endTime"),
+              let bytesSent = call.getInt("bytesSent"),
+              let bytesReceived = call.getInt("bytesReceived"),
+              let body = call.getString("body") else {
+            
             call.reject("Bad parameters given to noticeHttpTransaction")
             return
         }
         
-        let nsurl = URL(string: url!)
-        let uint_bytesSent = UInt(bytesSent!)
-        let uint_bytesReceived = UInt(bytesReceived!)
-        let data = Data(body!.utf8)
+        let nsurl = URL(string: url)
+        let uint_bytesSent = UInt(bytesSent)
+        let uint_bytesReceived = UInt(bytesReceived)
+        let data = Data(body.utf8)
         
         NewRelic.noticeNetworkRequest(
             for: nsurl,
             httpMethod: method,
-            startTime: startTime!,
-            endTime: endTime!,
+            startTime: startTime,
+            endTime: endTime,
             responseHeaders: nil,
-            statusCode: status!,
+            statusCode: status,
             bytesSent: uint_bytesSent,
             bytesReceived: uint_bytesReceived,
             responseData: data,
@@ -270,54 +251,47 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     
     
     @objc func recordMetric(_ call: CAPPluginCall) {
-        let name = call.getString("name")
-        let category = call.getString("category")
-        // Use getInt here since getDouble will return null if not actually a double
-        let value = call.getInt("value")
-        let countUnit = call.getString("countUnit")
-        let valueUnit = call.getString("valueUnit")
-        
-        // Nil checks for our unwrapping in the call below
-        if(name == nil || category == nil) {
+        guard let name = call.getString("name"),
+              let category = call.getString("category") else {
             call.reject("Bad name or category given to recordMetric")
             return
         }
         
-        if(value == nil) {
-            NewRelic.recordMetric(withName: name!, category: category!)
+        // Use getInt here since getDouble will return null if not actually a double
+        guard let value = call.getInt("value") else {
+            NewRelic.recordMetric(withName: name, category: category)
             call.resolve()
             return
-        } else {
-            let NSNumber_value = NSNumber(value: value!)
-            
-            if(countUnit == nil && valueUnit == nil) {
-                NewRelic.recordMetric(withName: name!, category: category!, value: NSNumber_value)
-                call.resolve()
-                return
-            } else {
-                if(countUnit == nil || valueUnit == nil) {
-                    call.reject("countUnit and valueUnit must both be set together in recordMetric")
-                    return
-                } else {
-                    let strToMetricUnit = [
-                        "PERCENT": "%",
-                        "BYTES": "bytes",
-                        "SECONDS": "seconds",
-                        "BYTES_PER_SECOND": "bytes/second",
-                        "OPERATIONS": "op"
-                    ]
-                    
-                    let valueMetricUnit = strToMetricUnit[valueUnit!]
-                    let countMetricUnit = strToMetricUnit[countUnit!]
-                    if(valueMetricUnit == nil || countMetricUnit == nil) {
-                        call.reject("Bad countUnit or valueUnit in recordMetric. Must be one of: PERCENT, BYTES, SECONDS, BYTES_PER_SECOND, OPERATIONS")
-                    } else {
-                        NewRelic.recordMetric(withName: name!, category: category!, value: NSNumber_value, valueUnits: valueMetricUnit, countUnits: countMetricUnit)
-                        call.resolve()
-                    }
-                }
-            }
         }
+        
+        let NSNumber_value = NSNumber(value: value)
+        
+        guard let countUnit = call.getString("countUnit"),
+              let valueUnit = call.getString("valueUnit") else {
+            NewRelic.recordMetric(withName: name, category: category, value: NSNumber_value)
+            call.resolve()
+            return
+        }
+        
+        let strToMetricUnit = [
+            "PERCENT": "%",
+            "BYTES": "bytes",
+            "SECONDS": "seconds",
+            "BYTES_PER_SECOND": "bytes/second",
+            "OPERATIONS": "op"
+        ]
+        
+        if let valueMetricUnit = strToMetricUnit[valueUnit],
+           let countMetricUnit = strToMetricUnit[countUnit] {
+            NewRelic.recordMetric(withName: name, category: category, value: NSNumber_value, valueUnits: valueMetricUnit, countUnits: countMetricUnit)
+            call.resolve()
+            return
+            
+        } else {
+            call.reject("Bad countUnit or valueUnit in recordMetric. Must be one of: PERCENT, BYTES, SECONDS, BYTES_PER_SECOND, OPERATIONS")
+            return
+        }
+        
     }
     
     @objc func removeAllAttributes(_ call: CAPPluginCall) {
@@ -346,30 +320,27 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func recordError(_ call: CAPPluginCall) {
-        let name = call.getString("name")
-        let message = call.getString("message")
-        let stack = call.getString("stack")
-        let isFatal = call.getBool("isFatal")
-        
-        if(name == nil || message == nil || isFatal == nil) {
+        guard let name = call.getString("name"),
+              let message = call.getString("message"),
+              let isFatal = call.getBool("isFatal") else {
             call.reject("Bad parameters given to recordError")
             return
         }
         
-        var errStack = stack
+        var errStack = "No stack available"
         
         // Sometimes error stack does not get reported if past a certain length
-        if(stack != nil) {
-            if(stack!.count > 3994) {
-                let endIndex = stack!.index(stack!.startIndex, offsetBy: 3994)
-                let substring = stack![..<endIndex]
+        if let stack = call.getString("stack") {
+            if stack.count > 3994 {
+                let endIndex = stack.index(stack.startIndex, offsetBy: 3994)
+                let substring = stack[..<endIndex]
                 errStack = String(substring)
+            } else {
+                errStack = stack
             }
-        } else {
-            errStack = ""
         }
         
-        let attributes: [String: Any] = ["Name" : name!, "Message" : message!, "isFatal" : isFatal!, "errorStack" : errStack!]
+        let attributes: [String: Any] = ["Name" : name, "Message" : message, "isFatal" : isFatal, "errorStack" : errStack]
         
         NewRelic.recordBreadcrumb("JS Errors", attributes: attributes)
         NewRelic.recordCustomEvent("JS Errors", attributes: attributes)
@@ -383,14 +354,12 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func networkRequestEnabled(_ call: CAPPluginCall) {
-        let toEnable = call.getBool("enabled");
-        
-        if(toEnable == nil) {
+        guard let toEnable = call.getBool("enabled") else {
             call.reject("Bad value in networkRequestEnabled")
             return
         }
         
-        if(toEnable!) {
+        if toEnable {
             NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
         } else {
             NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
@@ -399,14 +368,12 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func networkErrorRequestEnabled(_ call: CAPPluginCall) {
-        let toEnable = call.getBool("enabled");
-        
-        if(toEnable == nil) {
+        guard let toEnable = call.getBool("enabled") else {
             call.reject("Bad value in networkErrorRequestEnabled")
             return
         }
         
-        if(toEnable!) {
+        if toEnable {
             NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
         } else {
             NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
@@ -415,14 +382,12 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func httpResponseBodyCaptureEnabled(_ call: CAPPluginCall) {
-        let toEnable = call.getBool("enabled");
-        
-        if(toEnable == nil) {
+        guard let toEnable = call.getBool("enabled") else {
             call.reject("Bad value in httpResponseBodyCaptureEnabled")
             return
         }
         
-        if(toEnable!) {
+        if toEnable {
             NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
         } else {
             NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
