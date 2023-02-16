@@ -6,7 +6,7 @@
 import { registerPlugin } from '@capacitor/core';
 
 import type { NewRelicCapacitorPluginPlugin } from './definitions';
-import decycle from './cycle';
+import getCircularReplacer from './circular-replacer';
 
 const NewRelicCapacitorPlugin = registerPlugin<NewRelicCapacitorPluginPlugin>(
   'NewRelicCapacitorPlugin',
@@ -52,7 +52,7 @@ console.error = function () {
 };
 
 function sendConsole(consoleType: string, _arguments: any) {
-  const argsStr = JSON.stringify(decycle(_arguments));
+  const argsStr = JSON.stringify(_arguments, getCircularReplacer());
   NewRelicCapacitorPlugin.recordCustomEvent({
     eventType: 'consoleEvents',
     eventName: 'JSConsole',
