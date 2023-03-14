@@ -35,7 +35,7 @@ npx cap sync
 You can start the New Relic agent in the initialization of your app in `main.ts` (Angular or Vue) or `index.tsx` (React). Add the following code to launch NewRelic (don't forget to put proper application tokens):
 
 ``` tsx
-import { NewRelicCapacitorPlugin, NREnum, AgentConfiguration } from 'newrelic-capacitor-plugin';
+import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from 'newrelic-capacitor-plugin';
 import { Capacitor } from '@capacitor/core';
 
 var appToken;

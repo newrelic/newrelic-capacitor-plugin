@@ -487,7 +487,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         } else {
             NewRelic.disableFeature(FeatureFlag.AnalyticsEvents);
         }
-        agentConfig.analyticsEventEnabled = toEnable;
+
+        if(agentConfig != null) {
+            agentConfig.analyticsEventEnabled = toEnable;
+        }
+        
         call.resolve();
     }
 
@@ -505,7 +509,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         } else {
             NewRelic.disableFeature(FeatureFlag.NetworkRequests);
         }
-        agentConfig.networkRequestEnabled = toEnable;
+
+        if(agentConfig != null) {
+            agentConfig.networkRequestEnabled = toEnable;
+        }
+
         call.resolve();
     }
 
@@ -523,7 +531,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         } else {
             NewRelic.disableFeature(FeatureFlag.NetworkErrorRequests);
         }
-        agentConfig.networkErrorRequestEnabled = toEnable;
+
+        if(agentConfig != null) {
+            agentConfig.networkErrorRequestEnabled = toEnable;
+        }
+
         call.resolve();
     }
 
@@ -541,23 +553,30 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         } else {
             NewRelic.disableFeature(FeatureFlag.HttpResponseBodyCapture);
         }
-        agentConfig.httpResponseBodyCaptureEnabled = toEnable;
+
+        if(agentConfig != null) {
+            agentConfig.httpResponseBodyCaptureEnabled = toEnable;
+        }
+
         call.resolve();
     }
 
     @PluginMethod
     public void getAgentConfiguration(PluginCall call) {
         JSObject ret = new JSObject();
-        ret.put("analyticsEventEnabled", agentConfig.analyticsEventEnabled);
-        ret.put("crashReportingEnabled", agentConfig.crashReportingEnabled);
-        ret.put("interactionTracingEnabled", agentConfig.interactionTracingEnabled);
-        ret.put("networkRequestEnabled", agentConfig.networkRequestEnabled);
-        ret.put("networkErrorRequestEnabled", agentConfig.networkErrorRequestEnabled);
-        ret.put("httpResponseBodyCaptureEnabled", agentConfig.httpResponseBodyCaptureEnabled);
-        ret.put("logLevel", agentConfig.logLevel);
-        ret.put("collectorAddress", agentConfig.collectorAddress);
-        ret.put("crashCollectorAddress", agentConfig.crashCollectorAddress);
-        ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
+        // Returns empty object if plugin not loaded
+        if (agentConfig != null) {
+            ret.put("analyticsEventEnabled", agentConfig.analyticsEventEnabled);
+            ret.put("crashReportingEnabled", agentConfig.crashReportingEnabled);
+            ret.put("interactionTracingEnabled", agentConfig.interactionTracingEnabled);
+            ret.put("networkRequestEnabled", agentConfig.networkRequestEnabled);
+            ret.put("networkErrorRequestEnabled", agentConfig.networkErrorRequestEnabled);
+            ret.put("httpResponseBodyCaptureEnabled", agentConfig.httpResponseBodyCaptureEnabled);
+            ret.put("logLevel", agentConfig.logLevel);
+            ret.put("collectorAddress", agentConfig.collectorAddress);
+            ret.put("crashCollectorAddress", agentConfig.crashCollectorAddress);
+            ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
+        }
         call.resolve(ret);
     }
 
