@@ -25,7 +25,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 ## Install
 
 ```bash
-npm install newrelic-capacitor-plugin
+npm install @newrelic/newrelic-capacitor-plugin
 npx cap sync
 ```
 
