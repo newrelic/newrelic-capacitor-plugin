@@ -52,11 +52,15 @@ console.error = function () {
 };
 
 function sendConsole(consoleType: string, _arguments: any) {
-  const argsStr = JSON.stringify(_arguments, getCircularReplacer());
-  NewRelicCapacitorPlugin.recordCustomEvent({
-    eventType: 'consoleEvents',
-    eventName: 'JSConsole',
-    attributes: { consoleType: consoleType, args: argsStr },
+  NewRelicCapacitorPlugin.getAgentConfiguration().then((agentConfig) => {
+    if (agentConfig.sendConsoleEvents) {
+      const argsStr = JSON.stringify(_arguments, getCircularReplacer());
+      NewRelicCapacitorPlugin.recordCustomEvent({
+        eventType: 'consoleEvents',
+        eventName: 'JSConsole',
+        attributes: { consoleType: consoleType, args: argsStr },
+      });
+    }
   });
 }
 

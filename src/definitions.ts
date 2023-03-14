@@ -4,7 +4,7 @@
  */
 
 export interface NewRelicCapacitorPluginPlugin {
-  start(options: { appKey: string, agentConfiguration?: object}): void;
+  start(options: { appKey: string, agentConfiguration?: AgentConfiguration}): void;
   setUserId(options: { userId: string }): void;
   setAttribute(options:{name: string, value: string}): void;
   removeAttribute(options:{name: string}): void;
@@ -45,6 +45,22 @@ export interface NewRelicCapacitorPluginPlugin {
   networkRequestEnabled(options: {enabled: boolean}): void;
   networkErrorRequestEnabled(options: {enabled: boolean}): void;
   httpResponseBodyCaptureEnabled(options: {enabled: boolean}): void;
+  getAgentConfiguration(options?: {}) : Promise<AgentConfiguration>;
+}
+
+export interface AgentConfiguration {
+  analyticsEventEnabled?: boolean
+  crashReportingEnabled?: boolean
+  interactionTracingEnabled?: boolean
+  networkRequestEnabled?: boolean
+  networkErrorRequestEnabled?: boolean
+  httpResponseBodyCaptureEnabled?: boolean
+  webViewInstrumentation?: boolean
+  loggingEnabled?: boolean
+  logLevel?: string
+  collectorAddress?: string
+  crashCollectorAddress?: string
+  sendConsoleEvents?: boolean
 }
 
 export namespace NREnums {
