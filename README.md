@@ -25,7 +25,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 ## Install
 
 ```bash
-npm install newrelic-capacitor-plugin
+npm install @newrelic/newrelic-capacitor-plugin
 npx cap sync
 ```
 
@@ -35,7 +35,7 @@ npx cap sync
 You can start the New Relic agent in the initialization of your app in `main.ts` (Angular or Vue) or `index.tsx` (React). Add the following code to launch NewRelic (don't forget to put proper application tokens):
 
 ``` tsx
-import { NewRelicCapacitorPlugin, NREnums } from 'newrelic-capacitor-plugin';
+import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from 'newrelic-capacitor-plugin';
 import { Capacitor } from '@capacitor/core';
 
 var appToken;
@@ -46,7 +46,7 @@ if(Capacitor.getPlatform() === 'ios') {
     appToken = '<ANDROID-APP-TOKEN>';
 }
 
-let agentConfig = {
+let agentConfig : AgentConfiguration = {
   //Android Specific
   // Optional:Enable or disable collection of event data.
   analyticsEventEnabled: true,
@@ -82,6 +82,9 @@ let agentConfig = {
 
   // Optional:Set a specific crash collector address for sending crashes. Omit this field for default address.
   crashCollectorAddress: ""
+
+  // Optional:Enable or disable sending JS console logs to New Relic
+  sendConsoleEvents: true
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
@@ -150,6 +153,7 @@ ionic capacitor run ios
 * [`networkRequestEnabled(...)`](#networkrequestenabled)
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
 * [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
+* [`getAgentConfiguration(...)`](#getagentconfiguration)
 
 
 
@@ -538,6 +542,28 @@ httpResponseBodyCaptureEnabled(options: { enabled: boolean; }) => void
     NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled({ enabled: true })
 ```
 
+--------------------
+
+
+### getAgentConfiguration(...)
+> Returns the current agent configuration settings. This method allows you to see the current state of the agent configuration.
+```typescript
+getAgentConfiguration(options?: {} | undefined) => Promise<AgentConfiguration>
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+**Returns:** <code>Promise&lt;AgentConfiguration&gt;</code>
+
+#### Usage:
+```ts
+    import { NewRelicCapacitorPlugin, AgentConfiguration} from '@newrelic/newrelic-capacitor-agent';
+
+    let agentConfig : AgentConfiguration = await NewRelicCapacitorPlugin.getAgentConfiguration();
+    let sendConsoleEvents = agentConfig.sendConsoleEvents;
+```
 --------------------
 
 

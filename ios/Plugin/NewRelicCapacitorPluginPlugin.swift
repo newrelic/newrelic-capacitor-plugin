@@ -13,10 +13,24 @@ import NewRelic
 @objc(NewRelicCapacitorPluginPlugin)
 public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     private let implementation = NewRelicCapacitorPlugin()
+    private var agentConfig = AgentConfiguration()
+    
+    struct AgentConfiguration {
+        var crashReportingEnabled: Bool = true;
+        var interactionTracingEnabled: Bool = true;
+        var networkRequestEnabled: Bool = true;
+        var networkErrorRequestEnabled: Bool = true;
+        var httpResponseBodyCaptureEnabled: Bool = true;
+        var webViewInstrumentation : Bool = true;
+        var loggingEnabled: Bool = true;
+        var logLevel: String = "WARNING"
+        var collectorAddress: String = "mobile-collector.newrelic.com"
+        var crashCollectorAddress: String = "mobile-crash.newrelic.com"
+        var sendConsoleEvents: Bool = true;
+    }
     
     public override func load() {
-                
-  }
+    }
 
     @objc func start(_ call: CAPPluginCall) {
         
@@ -33,26 +47,32 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             
             if agentConfiguration["crashReportingEnabled"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_CrashReporting)
+                agentConfig.crashReportingEnabled = false
             }
             
             if agentConfiguration["interactionTracingEnabled"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_InteractionTracing)
+                agentConfig.interactionTracingEnabled = false
             }
             
             if agentConfiguration["networkRequestEnabled"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
+                agentConfig.networkRequestEnabled = false
             }
             
             if agentConfiguration["networkErrorRequestEnabled"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
+                agentConfig.networkErrorRequestEnabled = false
             }
             
             if agentConfiguration["httpResponseBodyCaptureEnabled"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
+                agentConfig.httpResponseBodyCaptureEnabled = false
             }
             
             if agentConfiguration["webViewInstrumentation"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
+                agentConfig.webViewInstrumentation = false;
             }
             
             if agentConfiguration["logLevel"] != nil {
@@ -67,22 +87,45 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                 
                 if let configLogLevel = agentConfiguration["logLevel"] as? String, strToLogLevel[configLogLevel] != nil {
                     logLevel = strToLogLevel[configLogLevel] ?? logLevel
+                    if (strToLogLevel[configLogLevel] != nil) {
+                        agentConfig.logLevel = configLogLevel
+                    }
+                        
                 }
             }
             
             if agentConfiguration["loggingEnabled"] != nil {
-                logLevel = NRLogLevelNone.rawValue
+                if agentConfiguration["loggingEnabled"] as? Bool == false {
+                    logLevel = NRLogLevelNone.rawValue
+                    agentConfig.loggingEnabled = false
+                }
+                
             }
             
             if agentConfiguration["collectorAddress"] != nil {
                 if let configCollectorAddress = agentConfiguration["collectorAdddress"] as? String, !configCollectorAddress.isEmpty {
                     collectorAddress = configCollectorAddress
+                    agentConfig.collectorAddress = configCollectorAddress
                 }
             }
             
             if agentConfiguration["crashCollectorAddress"] != nil {
                 if let configCrashCollectorAddress = agentConfiguration["crashCollectorAddress"] as? String, !configCrashCollectorAddress.isEmpty {
                     crashCollectorAddress = configCrashCollectorAddress
+                    agentConfig.crashCollectorAddress = configCrashCollectorAddress
+                }
+            }
+
+            if agentConfiguration["crashCollectorAddress"] != nil {
+                if let configCrashCollectorAddress = agentConfiguration["crashCollectorAddress"] as? String, !configCrashCollectorAddress.isEmpty {
+                    crashCollectorAddress = configCrashCollectorAddress
+                    agentConfig.crashCollectorAddress = configCrashCollectorAddress
+                }
+            }
+
+            if agentConfiguration["sendConsoleEvents"] != nil {
+                if let configSendConsoleEvents = agentConfiguration["sendConsoleEvents"] as? Bool {
+                    agentConfig.sendConsoleEvents = configSendConsoleEvents
                 }
             }
         }
@@ -393,6 +436,22 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
         }
         call.resolve()
+    }
+    
+    @objc func getAgentConfiguration(_ call: CAPPluginCall) {
+        call.resolve([
+            "crashReportingEnabled": agentConfig.crashReportingEnabled,
+            "interactionTracingEnabled": agentConfig.interactionTracingEnabled,
+            "networkRequestEnabled": agentConfig.networkRequestEnabled,
+            "networkErrorRequestEnabled": agentConfig.networkErrorRequestEnabled,
+            "httpResponseBodyCaptureEnabled" : agentConfig.httpResponseBodyCaptureEnabled,
+            "webViewInstrumentation": agentConfig.webViewInstrumentation,
+            "loggingEnabled": agentConfig.loggingEnabled,
+            "logLevel": agentConfig.logLevel,
+            "collectorAddress": agentConfig.collectorAddress,
+            "crashCollectorAddress": agentConfig.crashCollectorAddress,
+            "sendConsoleEvents": agentConfig.sendConsoleEvents
+        ])
     }
     
 }
