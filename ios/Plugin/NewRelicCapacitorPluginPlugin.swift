@@ -131,9 +131,9 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         }
         
         NRLogger.setLogLevels(logLevel)
-        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Cordova)
+        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.0.0")
+        NewRelic.perform(selector, with:"1.1.0")
         
         if collectorAddress == nil && crashCollectorAddress == nil {
             NewRelic.start(withApplicationToken: appKey)
