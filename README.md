@@ -35,7 +35,7 @@ npx cap sync
 You can start the New Relic agent in the initialization of your app in `main.ts` (Angular or Vue) or `index.tsx` (React). Add the following code to launch NewRelic (don't forget to put proper application tokens):
 
 ``` tsx
-import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from 'newrelic-capacitor-plugin';
+import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from '@newrelic/newrelic-capacitor-plugin';
 import { Capacitor } from '@capacitor/core';
 
 var appToken;
@@ -83,7 +83,7 @@ let agentConfig : AgentConfiguration = {
   // Optional:Set a specific crash collector address for sending crashes. Omit this field for default address.
   crashCollectorAddress: ""
 
-  // Optional:Enable or disable sending JS console logs to New Relic
+  // Optional:Enable or disable sending JS console logs to New Relic.
   sendConsoleEvents: true
 }
 
@@ -598,7 +598,7 @@ Angular 2+ exposes an [ErrorHandler](https://angular.io/api/core/ErrorHandler) c
 
 ```ts
 import { ErrorHandler, Injectable } from '@angular/core';
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
@@ -631,7 +631,7 @@ React 16+ has added error boundary components that catch errors that bubble up f
 
 ```ts
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 interface Props {
   children?: ReactNode;
@@ -678,7 +678,7 @@ export default ErrorBoundary;
 Vue has a global error handler that reports native JavaScript errors and passes in the Vue instance. This handler will be useful for reporting errors to New Relic.
 
 ```js
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 Vue.config.errorHandler = (err, vm, info) => {
 
