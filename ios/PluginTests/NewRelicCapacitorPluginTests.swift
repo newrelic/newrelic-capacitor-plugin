@@ -25,49 +25,65 @@ class NewRelicCapacitorPluginTests: XCTestCase {
     
     
     func testStartAgent() {
-        let callWithKey = CAPPluginCall(callbackId: "start",
+        guard let callWithKey = CAPPluginCall(callbackId: "start",
                                         options: ["appKey": "fake-key"],
                                         success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                         error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoKey = CAPPluginCall(callbackId: "start",
+        }) else {
+            XCTFail("Bad call in testStartAgent")
+            return
+        }
+        
+        guard let callWithNoKey = CAPPluginCall(callbackId: "start",
                                           options: [:],
                                           success: { (result, call) in
             XCTFail("Agent start should not work with nil key")
         },
                                           error:{ (err) in
             XCTAssertEqual(err!.message,"Nil API key given to New Relic Agent start")
-        })
-        NewRelicCapacitorPlugin.start(callWithKey!)
-        NewRelicCapacitorPlugin.start(callWithNoKey!)
+        }) else {
+            XCTFail("Bad call in testStartAgent")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.start(callWithKey)
+        NewRelicCapacitorPlugin.start(callWithNoKey)
     }
     
     func testSetUserId() {
-        let callWithKey = CAPPluginCall(callbackId: "setUserId",
+        guard let callWithKey = CAPPluginCall(callbackId: "setUserId",
                                         options: ["userId": "fakeId"],
                                         success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                         error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoKey = CAPPluginCall(callbackId: "setUserId",
+        }) else {
+            XCTFail("Bad call in testSetUserId")
+            return
+        }
+        
+        guard let callWithNoKey = CAPPluginCall(callbackId: "setUserId",
                                           options: [:],
                                           success: { (result, call) in
             XCTFail("setUserId should not be successful with no userId")
         },
                                           error:{ (err) in
             XCTAssertEqual(err!.message, "Nil userId given to setUserId")
-        })
-        NewRelicCapacitorPlugin.setUserId(callWithKey!)
-        NewRelicCapacitorPlugin.setUserId(callWithNoKey!)
+        }) else {
+            XCTFail("Bad call in testSetUserId")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.setUserId(callWithKey)
+        NewRelicCapacitorPlugin.setUserId(callWithNoKey)
     }
     
     func testSetAttribute() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "setAttribute",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "setAttribute",
                                                options: ["name": "fakeAttributeName",
                                                          "value": "21"],
                                                success: { (result, call) in
@@ -75,57 +91,72 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testSetAttribute")
+            return
+        }
         
-        let callWithBadName = CAPPluginCall(callbackId: "setAttribute",
+        guard let callWithBadName = CAPPluginCall(callbackId: "setAttribute",
                                             options: ["value": "01"],
                                             success: { (result, call) in
             XCTFail("setAttribute should not work with nil name")
         },
                                             error: { (err) in
             XCTAssertTrue(err!.message == "Nil name or value given to setAttribute")
-        })
+        }) else {
+            XCTFail("Bad call in testSetAttribute")
+            return
+        }
         
-        let callWithBadValue = CAPPluginCall(callbackId: "setAttribute",
+        guard let callWithBadValue = CAPPluginCall(callbackId: "setAttribute",
                                              options: ["name": "fakeName"],
                                              success: { (result, call) in
             XCTFail("setAttribute should not work with nil value")
         },
                                              error: { (err) in
             XCTAssertEqual(err!.message, "Nil name or value given to setAttribute")
-        })
+        }) else {
+            XCTFail("Bad call in testSetAttribute")
+            return
+        }
         
-        NewRelicCapacitorPlugin.setAttribute(callWithGoodParams!)
-        NewRelicCapacitorPlugin.setAttribute(callWithBadName!)
-        NewRelicCapacitorPlugin.setAttribute(callWithBadValue!)
+        NewRelicCapacitorPlugin.setAttribute(callWithGoodParams)
+        NewRelicCapacitorPlugin.setAttribute(callWithBadName)
+        NewRelicCapacitorPlugin.setAttribute(callWithBadValue)
     }
     
     func testRemoveAttribute() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "removeAttribute",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "removeAttribute",
                                                options: ["name": "fakeAttributeName"],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testRemoveAttribute")
+            return
+        }
         
-        let callWithBadName = CAPPluginCall(callbackId: "removeAttribute",
+        guard let callWithBadName = CAPPluginCall(callbackId: "removeAttribute",
                                             options: [:],
                                             success: { (result, call) in
             XCTFail("removeAttribute should not work with nil name")
         },
                                             error: { (err) in
             XCTAssertEqual(err!.message, "Nil name given to removeAttribute")
-        })
+        }) else {
+            XCTFail("Bad call in testRemoveAttribute")
+            return
+        }
         
         
-        NewRelicCapacitorPlugin.removeAttribute(callWithGoodParams!)
-        NewRelicCapacitorPlugin.removeAttribute(callWithBadName!)
+        NewRelicCapacitorPlugin.removeAttribute(callWithGoodParams)
+        NewRelicCapacitorPlugin.removeAttribute(callWithBadName)
     }
     
     func testRecordBreadcrumb() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "recordBreadcrumb",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "recordBreadcrumb",
                                                options: ["name": "fakeBreadName",
                                                          "eventAttributes": ["{'fakeAttr': 1}"]
                                                         ],
@@ -134,34 +165,44 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoAttributes = CAPPluginCall(callbackId: "recordBreadcrumb",
+        }) else {
+            XCTFail("Bad call in testRecordBreadcrumb")
+            return
+        }
+        
+        guard let callWithNoAttributes = CAPPluginCall(callbackId: "recordBreadcrumb",
                                                  options: ["name": "fakeBreadName"],
                                                  success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                  error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordBreadcrumb")
+            return
+        }
         
-        let callWithBadName = CAPPluginCall(callbackId: "recordBreadcrumb",
+        guard let callWithBadName = CAPPluginCall(callbackId: "recordBreadcrumb",
                                             options: [:],
                                             success: { (result, call) in
             XCTFail("recordBreadcrumb should not work with nil name")
         },
                                             error: { (err) in
             XCTAssertEqual(err!.message, "Nil name given to recordBreadcrumb")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordBreadcrumb")
+            return
+        }
         
         
-        NewRelicCapacitorPlugin.recordBreadcrumb(callWithGoodParams!)
-        NewRelicCapacitorPlugin.recordBreadcrumb(callWithNoAttributes!)
-        NewRelicCapacitorPlugin.recordBreadcrumb(callWithBadName!)
+        NewRelicCapacitorPlugin.recordBreadcrumb(callWithGoodParams)
+        NewRelicCapacitorPlugin.recordBreadcrumb(callWithNoAttributes)
+        NewRelicCapacitorPlugin.recordBreadcrumb(callWithBadName)
         
     }
     
     func testRecordCustomEvent() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "recordCustomEvent",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "recordCustomEvent",
                                                options: ["name": "fakeEventName",
                                                          "eventType": "fakeEventType",
                                                          "eventAttributes": ["{'fakeAttr': 1}"]
@@ -171,8 +212,12 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoType = CAPPluginCall(callbackId: "recordCustomEvent",
+        }) else {
+            XCTFail("Bad call in testRecordCustomEvent")
+            return
+        }
+        
+        guard let callWithNoType = CAPPluginCall(callbackId: "recordCustomEvent",
                                            options: ["name": "fakeEventName",
                                                      "eventAttributes": ["{'fakeAttr': 1}"]],
                                            success: { (result, call) in
@@ -180,25 +225,31 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                            error:{ (err) in
             XCTAssertEqual(err!.message, "Nil eventType given to recordCustomEvent")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordCustomEvent")
+            return
+        }
         
-        let callWithNoNameOrAttributes = CAPPluginCall(callbackId: "recordCustomEvent",
+        guard let callWithNoNameOrAttributes = CAPPluginCall(callbackId: "recordCustomEvent",
                                                        options: ["eventType": "fakeEventType"],
                                                        success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                        error: { (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordCustomEvent")
+            return
+        }
         
-        NewRelicCapacitorPlugin.recordCustomEvent(callWithGoodParams!)
-        NewRelicCapacitorPlugin.recordCustomEvent(callWithNoType!)
-        NewRelicCapacitorPlugin.recordCustomEvent(callWithNoNameOrAttributes!)
+        NewRelicCapacitorPlugin.recordCustomEvent(callWithGoodParams)
+        NewRelicCapacitorPlugin.recordCustomEvent(callWithNoType)
+        NewRelicCapacitorPlugin.recordCustomEvent(callWithNoNameOrAttributes)
         
     }
     
     func testStartInteraction() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "startInteraction",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "startInteraction",
                                                options: ["value": "interactionName"],
                                                success: { (result, call) in
             let resultValue = result?.data!["value"]
@@ -206,46 +257,60 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoName = CAPPluginCall(callbackId: "startInteraction",
+        }) else {
+            XCTFail("Bad call in testStartInteraction")
+            return
+        }
+        
+        guard let callWithNoName = CAPPluginCall(callbackId: "startInteraction",
                                            options: [:],
                                            success: { (result, call) in
             XCTFail("startInteraction should not be successful without name")
         },
                                            error:{ (err) in
             XCTAssertEqual(err!.message, "Nil value given to startInteraction")
-        })
+        }) else {
+            XCTFail("Bad call in testStartInteraction")
+            return
+        }
         
         
-        NewRelicCapacitorPlugin.startInteraction(callWithGoodParams!)
-        NewRelicCapacitorPlugin.startInteraction(callWithNoName!)
+        NewRelicCapacitorPlugin.startInteraction(callWithGoodParams)
+        NewRelicCapacitorPlugin.startInteraction(callWithNoName)
     }
     
     func testEndInteraction() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "endInteraction",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "endInteraction",
                                                options: ["interactionId": "interactionName"],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoName = CAPPluginCall(callbackId: "endInteraction",
+        }) else {
+            XCTFail("Bad call in testEndInteraction")
+            return
+        }
+        
+        guard let callWithNoName = CAPPluginCall(callbackId: "endInteraction",
                                            options: [:],
                                            success: { (result, call) in
             XCTFail("endInteraction should not be successful without name")
         },
                                            error:{ (err) in
             XCTAssertEqual(err!.message, "Nil interactionId given to endInteraction")
-        })
+        }) else {
+            XCTFail("Bad call in testEndInteraction")
+            return
+        }
         
-        NewRelicCapacitorPlugin.endInteraction(callWithGoodParams!)
-        NewRelicCapacitorPlugin.endInteraction(callWithNoName!)
+        NewRelicCapacitorPlugin.endInteraction(callWithGoodParams)
+        NewRelicCapacitorPlugin.endInteraction(callWithNoName)
     }
     
     func testCurrentSessionId() {
         
-        let call = CAPPluginCall(callbackId: "currentSessionId",
+        guard let call = CAPPluginCall(callbackId: "currentSessionId",
                                  options: [:],
                                  success: { (result, call) in
             let resultValue = result?.data!["sessionId"]
@@ -253,12 +318,16 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                  error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        NewRelicCapacitorPlugin.currentSessionId(call!)
+        }) else {
+            XCTFail("Bad call in testCurrentSessionId")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.currentSessionId(call)
     }
     
     func testIncrementAttribute() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "incrementAttribute",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "incrementAttribute",
                                                options: ["name": "incrAttr",
                                                          "value": 20],
                                                success: { (result, call) in
@@ -266,16 +335,24 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoValue = CAPPluginCall(callbackId: "incrementAttribute",
+        }) else {
+            XCTFail("Bad call in testIncrementAttribute")
+            return
+        }
+        
+        guard let callWithNoValue = CAPPluginCall(callbackId: "incrementAttribute",
                                             options: ["name": "incrAttr"],
                                             success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                             error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithStrValue = CAPPluginCall(callbackId: "incrementAttribute",
+        }) else {
+            XCTFail("Bad call in testIncrementAttribute")
+            return
+        }
+        
+        guard let callWithStrValue = CAPPluginCall(callbackId: "incrementAttribute",
                                             options: ["name": "incrAttr",
                                                       "value": "17"],
                                             success: { (result, call) in
@@ -283,25 +360,32 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                             error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithNoName = CAPPluginCall(callbackId: "incrementAttribute",
+        }) else {
+            XCTFail("Bad call in testIncrementAttribute")
+            return
+        }
+        
+        guard let callWithNoName = CAPPluginCall(callbackId: "incrementAttribute",
                                             options: ["value": 12],
                                             success: { (result, call) in
             XCTFail("incrementAttribute")
         },
                                             error:{ (err) in
             XCTAssertEqual(err!.message, "Nil name in incrementAttribute")
-        })
+        }) else {
+            XCTFail("Bad call in testIncrementAttribute")
+            return
+        }
         
-        NewRelicCapacitorPlugin.incrementAttribute(callWithGoodParams!)
-        NewRelicCapacitorPlugin.incrementAttribute(callWithNoValue!)
-        NewRelicCapacitorPlugin.incrementAttribute(callWithStrValue!)
-        NewRelicCapacitorPlugin.incrementAttribute(callWithNoName!)
+        NewRelicCapacitorPlugin.incrementAttribute(callWithGoodParams)
+        NewRelicCapacitorPlugin.incrementAttribute(callWithNoValue)
+        NewRelicCapacitorPlugin.incrementAttribute(callWithStrValue)
+        NewRelicCapacitorPlugin.incrementAttribute(callWithNoName)
         
     }
     
     func testNoticeHttpTransaction() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
                                                options: ["url": "https://fakewebsite.com",
                                                          "method": "GET",
                                                          "status": 200,
@@ -315,160 +399,205 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransaction")
+            return
+        }
         
-        let callWithNoParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
                                              options: [:],
                                              success: { (result, call) in
             XCTFail("noticeHttpTransaction should not work with nil params")
         },
                                              error:{ (err) in
             XCTAssertEqual(err!.message, "Bad parameters given to noticeHttpTransaction")
-        })
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransaction")
+            return
+        }
         
-        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithGoodParams!)
-        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams!)
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithGoodParams)
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams)
     }
     
     func testRecordMetric() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "recordMetric",
-                                               options: ["name": "metricName",
-                                                         "category": "metricCategory",
-                                                         "value": 27,
-                                                         "countUnit": "PERCENT",
-                                                         "valueUnit": "SECONDS"],
-                                               success: { (result, call) in
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "recordMetric",
+                                                     options: ["name": "metricName",
+                                                               "category": "metricCategory",
+                                                               "value": 27,
+                                                               "countUnit": "PERCENT",
+                                                               "valueUnit": "SECONDS"],
+                                                     success: { (result, call) in
             XCTAssertNotNil(result)
         },
-                                               error:{ (err) in
+                                                     error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
-        let callWithGoodParams2 = CAPPluginCall(callbackId: "recordMetric",
-                                                options: ["name": "metricName",
-                                                         "category": "metricCategory",
-                                                          "value": 27],
-                                                success: { (result, call) in
-            XCTAssertNotNil(result)
-        },
-                                                error:{ (err) in
-            XCTFail("Error shouldn't have been called")
-        })
-        let callWithGoodParams3 = CAPPluginCall(callbackId: "recordMetric",
-                                                options: ["name": "metricName",
-                                                         "category": "metricCategory"],
-                                                success: { (result, call) in
-            XCTAssertNotNil(result)
-        },
-                                                error:{ (err) in
-            XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordMetric")
+            return
+        }
         
-        let callWithBadMetricUnit = CAPPluginCall(callbackId: "recordMetric",
-                                                  options: ["name": "metricName",
-                                                            "category": "metricCategory",
-                                                            "value": 27,
-                                                            "valueUnit": "FAKE",
-                                                            "countUnit": "SECONDS"
-                                                           ],
-                                                  success: { (result, call) in
-              XCTFail("recordMetric should not work with bad metric unit")
-          },
-                                                  error:{ (err) in
+        guard let callWithGoodParams2 = CAPPluginCall(callbackId: "recordMetric",
+                                                      options: ["name": "metricName",
+                                                                "category": "metricCategory",
+                                                                "value": 27],
+                                                      success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                                      error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testRecordMetric")
+            return
+        }
+        
+        guard let callWithGoodParams3 = CAPPluginCall(callbackId: "recordMetric",
+                                                      options: ["name": "metricName",
+                                                                "category": "metricCategory"],
+                                                      success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                                      error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testRecordMetric")
+            return
+        }
+        
+        guard let callWithBadMetricUnit = CAPPluginCall(callbackId: "recordMetric",
+                                                        options: ["name": "metricName",
+                                                                  "category": "metricCategory",
+                                                                  "value": 27,
+                                                                  "valueUnit": "FAKE",
+                                                                  "countUnit": "SECONDS"
+                                                                 ],
+                                                        success: { (result, call) in
+            XCTFail("recordMetric should not work with bad metric unit")
+        },
+                                                        error:{ (err) in
             XCTAssertEqual(err!.message, "Bad countUnit or valueUnit in recordMetric. Must be one of: PERCENT, BYTES, SECONDS, BYTES_PER_SECOND, OPERATIONS")
-          })
-        let callWithBadParams = CAPPluginCall(callbackId: "recordMetric",
+        }) else {
+            XCTFail("Bad call in testRecordMetric")
+            return
+        }
+
+        guard let callWithBadParams = CAPPluginCall(callbackId: "recordMetric",
                                               options: ["name": "metricName",
-                                                            "category": "metricCategory",
+                                                        "category": "metricCategory",
                                                         "value": 27,
-                                                            "valueUnit": "OPERATIONS",
+                                                        "valueUnit": "OPERATIONS",
                                                            ],
                                               success: { (result, call) in
-              XCTFail("recordMetric should not work with bad metric unit")
+            XCTAssertNotNil(result)
           },
                                                   error:{ (err) in
-            XCTAssertEqual(err!.message, "countUnit and valueUnit must both be set together in recordMetric")
-          })
-        let callWithNoParams = CAPPluginCall(callbackId: "recordMetric",
+            XCTFail("recordMetric should send value without metricUnit if only one metricUnit is set")
+        }) else {
+            XCTFail("Bad call in testRecordMetric")
+            return
+        }
+        
+        guard let callWithNoParams = CAPPluginCall(callbackId: "recordMetric",
                                              options: [:],
                                              success: { (result, call) in
               XCTFail("recordMetric should not work with no params")
           },
                                                   error:{ (err) in
             XCTAssertEqual(err!.message, "Bad name or category given to recordMetric")
-          })
+        }) else {
+            XCTFail("Bad call in testRecordMetric")
+            return
+        }
         
-        NewRelicCapacitorPlugin.recordMetric(callWithGoodParams!)
-        NewRelicCapacitorPlugin.recordMetric(callWithGoodParams2!)
-        NewRelicCapacitorPlugin.recordMetric(callWithGoodParams3!)
-        NewRelicCapacitorPlugin.recordMetric(callWithBadMetricUnit!)
-        NewRelicCapacitorPlugin.recordMetric(callWithBadParams!)
-        NewRelicCapacitorPlugin.recordMetric(callWithNoParams!)
+        NewRelicCapacitorPlugin.recordMetric(callWithGoodParams)
+        NewRelicCapacitorPlugin.recordMetric(callWithGoodParams2)
+        NewRelicCapacitorPlugin.recordMetric(callWithGoodParams3)
+        NewRelicCapacitorPlugin.recordMetric(callWithBadMetricUnit)
+        NewRelicCapacitorPlugin.recordMetric(callWithBadParams)
+        NewRelicCapacitorPlugin.recordMetric(callWithNoParams)
     }
     
     func testRemoveAllAttributes() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "removeAllAttributes",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "removeAllAttributes",
                                                options: [:],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testRemoveAllAttributes")
+            return
+        }
         
-        NewRelicCapacitorPlugin.removeAllAttributes(callWithGoodParams!)
+        NewRelicCapacitorPlugin.removeAllAttributes(callWithGoodParams)
     }
     
     func testSetMaxEventBufferTime() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "setMaxEventBufferTime",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "setMaxEventBufferTime",
                                                options: ["maxBufferTimeInSeconds": 60],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testSetMaxEventBufferTime")
+            return
+        }
         
         // Should work since it will go to default value
-        let callWithNoParams = CAPPluginCall(callbackId: "setMaxEventBufferTime",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "setMaxEventBufferTime",
                                              options: [:],
                                              success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                              error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testSetMaxEventBufferTime")
+            return
+        }
         
-        NewRelicCapacitorPlugin.setMaxEventBufferTime(callWithGoodParams!)
-        NewRelicCapacitorPlugin.setMaxEventBufferTime(callWithNoParams!)
+        NewRelicCapacitorPlugin.setMaxEventBufferTime(callWithGoodParams)
+        NewRelicCapacitorPlugin.setMaxEventBufferTime(callWithNoParams)
         
     }
     
     func testSetMaxEventPoolSize() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "setMaxEventPoolSize",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "setMaxEventPoolSize",
                                                options: ["maxPoolSize": 5000],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testSetMaxEventPoolSize")
+            return
+        }
+        
         
         // Should work since it will go to default value
-        let callWithNoParams = CAPPluginCall(callbackId: "setMaxEventPoolSize",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "setMaxEventPoolSize",
                                              options: [:],
                                              success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                              error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testSetMaxEventPoolSize")
+            return
+        }
         
-        NewRelicCapacitorPlugin.setMaxEventPoolSize(callWithGoodParams!)
-        NewRelicCapacitorPlugin.setMaxEventPoolSize(callWithNoParams!)
+        
+        NewRelicCapacitorPlugin.setMaxEventPoolSize(callWithGoodParams)
+        NewRelicCapacitorPlugin.setMaxEventPoolSize(callWithNoParams)
     }
     
     func testRecordError() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "recordError",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "recordError",
                                                options: ["name": "fakeError",
                                                          "message": "fakeMsg",
                                                          "stack": "fakeStack",
@@ -478,88 +607,112 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordError")
+            return
+        }
         
-        let callWithNoParams = CAPPluginCall(callbackId: "recordError",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "recordError",
                                              options: [:],
                                              success: { (result, call) in
             XCTFail("recordError should fail with no parameters")
         },
                                              error:{ (err) in
             XCTAssertEqual(err!.message, "Bad parameters given to recordError")
-        })
+        }) else {
+            XCTFail("Bad call in testRecordError")
+            return
+        }
         
-        NewRelicCapacitorPlugin.recordError(callWithGoodParams!)
-        NewRelicCapacitorPlugin.recordError(callWithNoParams!)
+        NewRelicCapacitorPlugin.recordError(callWithGoodParams)
+        NewRelicCapacitorPlugin.recordError(callWithNoParams)
     }
     
     func testNetworkRequestEnabled() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "networkRequestEnabled",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "networkRequestEnabled",
                                                options: ["enabled": false],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testNetworkRequestEnabled")
+            return
+        }
         
-        let callWithNoParams = CAPPluginCall(callbackId: "networkRequestEnabled",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "networkRequestEnabled",
                                              options: [:],
                                              success: { (result, call) in
             XCTFail("networkRequestEnabled should fail with no parameters")
         },
                                              error:{ (err) in
             XCTAssertEqual(err!.message, "Bad value in networkRequestEnabled")
-        })
+        }) else {
+            XCTFail("Bad call in testNetworkRequestEnabled")
+            return
+        }
         
-        NewRelicCapacitorPlugin.networkRequestEnabled(callWithGoodParams!)
-        NewRelicCapacitorPlugin.networkRequestEnabled(callWithNoParams!)
+        NewRelicCapacitorPlugin.networkRequestEnabled(callWithGoodParams)
+        NewRelicCapacitorPlugin.networkRequestEnabled(callWithNoParams)
     }
     
     func testNetworkErrorRequestEnabled() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "networkErrorRequestEnabled",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "networkErrorRequestEnabled",
                                                options: ["enabled": false],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testNetworkErrorRequestEnabled")
+            return
+        }
         
-        let callWithNoParams = CAPPluginCall(callbackId: "networkRequestEnabled",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "networkRequestEnabled",
                                              options: [:],
                                              success: { (result, call) in
             XCTFail("networkErrorRequestEnabled should fail with no parameters")
         },
                                              error:{ (err) in
             XCTAssertEqual(err!.message, "Bad value in networkErrorRequestEnabled")
-        })
+        }) else {
+            XCTFail("Bad call in testNetworkErrorRequestEnabled")
+            return
+        }
         
-        NewRelicCapacitorPlugin.networkErrorRequestEnabled(callWithGoodParams!)
-        NewRelicCapacitorPlugin.networkErrorRequestEnabled(callWithNoParams!)
+        NewRelicCapacitorPlugin.networkErrorRequestEnabled(callWithGoodParams)
+        NewRelicCapacitorPlugin.networkErrorRequestEnabled(callWithNoParams)
     }
     
     func testHttpResponseBodyCaptureEnabled() {
-        let callWithGoodParams = CAPPluginCall(callbackId: "httpResponseBodyCaptureEnabled",
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "httpResponseBodyCaptureEnabled",
                                                options: ["enabled": false],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
                                                error:{ (err) in
             XCTFail("Error shouldn't have been called")
-        })
+        }) else {
+            XCTFail("Bad call in testHttpResponseBodyCaptureEnabled")
+            return
+        }
         
-        let callWithNoParams = CAPPluginCall(callbackId: "httpResponseBodyCaptureEnabled",
+        guard let callWithNoParams = CAPPluginCall(callbackId: "httpResponseBodyCaptureEnabled",
                                              options: [:],
                                              success: { (result, call) in
             XCTFail("httpResponseBodyCapture should fail with no parameters")
         },
                                              error:{ (err) in
             XCTAssertEqual(err!.message, "Bad value in httpResponseBodyCaptureEnabled")
-        })
+        }) else {
+            XCTFail("Bad call in testHttpResponseBodyCaptureEnabled")
+            return
+        }
         
-        NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithGoodParams!)
-        NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithNoParams!)
+        NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithGoodParams)
+        NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithNoParams)
     }
     
 }

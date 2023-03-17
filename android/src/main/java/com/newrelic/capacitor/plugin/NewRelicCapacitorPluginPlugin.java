@@ -20,6 +20,7 @@ import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.stats.StatsEngine;
 import com.newrelic.agent.android.util.NetworkFailure;
+import com.newrelic.agent.android.logging.AgentLog;
 import com.newrelic.com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -33,25 +34,168 @@ import java.util.Map;
 public class NewRelicCapacitorPluginPlugin extends Plugin {
 
     private final NewRelicCapacitorPlugin implementation = new NewRelicCapacitorPlugin();
+    private AgentConfig agentConfig;
+    private static class AgentConfig {
+        boolean analyticsEventEnabled;
+        boolean crashReportingEnabled;
+        boolean interactionTracingEnabled;
+        boolean networkRequestEnabled;
+        boolean networkErrorRequestEnabled;
+        boolean httpResponseBodyCaptureEnabled;
+        boolean loggingEnabled;
+        String logLevel;
+        String collectorAddress;
+        String crashCollectorAddress;
+        boolean sendConsoleEvents;
+
+        public AgentConfig() {
+            this.analyticsEventEnabled = true;
+            this.crashReportingEnabled = true;
+            this.interactionTracingEnabled = true;
+            this.networkRequestEnabled = true;
+            this.networkErrorRequestEnabled = true;
+            this.httpResponseBodyCaptureEnabled = true;
+            this.loggingEnabled = true;
+            this.logLevel = "INFO";
+            this.collectorAddress = "mobile-collector.newrelic.com";
+            this.crashCollectorAddress = "mobile-crash.newrelic.com";
+            this.sendConsoleEvents = true;
+        }
+    }
 
     @Override
     public void load() {
         super.load();
+        agentConfig = new AgentConfig();
     }
 
     @PluginMethod
     public void start(PluginCall call) {
         String appKey = call.getString("appKey");
+        JSObject agentConfiguration = call.getObject("agentConfiguration");
 
         if(appKey == null) {
             call.reject("Null appKey given to New Relic agent start");
             return;
         }
 
-        NewRelic.withApplicationToken(appKey)
-                .withApplicationFramework(ApplicationFramework.Cordova, "1.0.0")
-                .withLoggingEnabled(true)
-                .start(this.getActivity().getApplication());
+        boolean loggingEnabled = true;
+        int logLevel = AgentLog.INFO;
+        String collectorAddress = null;
+        String crashCollectorAddress = null;
+
+        if(agentConfiguration != null) {
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("analyticsEventEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.AnalyticsEvents);
+                agentConfig.analyticsEventEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.AnalyticsEvents);
+                agentConfig.analyticsEventEnabled = true;
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("crashReportingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.CrashReporting);
+                agentConfig.crashReportingEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.CrashReporting);
+                agentConfig.crashReportingEnabled = true;
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("interactionTracingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.InteractionTracing);
+                agentConfig.interactionTracingEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.InteractionTracing);
+                agentConfig.interactionTracingEnabled = true;
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("networkRequestEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.NetworkRequests);
+                agentConfig.networkRequestEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.NetworkRequests);
+                agentConfig.networkRequestEnabled = true;
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("networkErrorRequestEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.NetworkErrorRequests);
+                agentConfig.networkErrorRequestEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.NetworkErrorRequests);
+                agentConfig.networkErrorRequestEnabled = true;
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("httpResponseBodyCaptureEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.HttpResponseBodyCapture);
+                agentConfig.httpResponseBodyCaptureEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.HttpResponseBodyCapture);
+                agentConfig.httpResponseBodyCaptureEnabled = true;
+            }
+
+            if(agentConfiguration.getBool("loggingEnabled") != null) {
+                loggingEnabled = Boolean.TRUE.equals(agentConfiguration.getBool("loggingEnabled"));
+                agentConfig.loggingEnabled = loggingEnabled;
+            }
+
+            if(agentConfiguration.getString("logLevel") != null) {
+                Map<String, Integer> strToLogLevel = new HashMap<>();
+                strToLogLevel.put("ERROR", AgentLog.ERROR);
+                strToLogLevel.put("WARNING", AgentLog.WARNING);
+                strToLogLevel.put("INFO", AgentLog.INFO);
+                strToLogLevel.put("VERBOSE", AgentLog.VERBOSE);
+                strToLogLevel.put("AUDIT", AgentLog.AUDIT);
+
+                Integer configLogLevel = strToLogLevel.get(agentConfiguration.getString("logLevel"));
+                if(configLogLevel != null) {
+                    logLevel = configLogLevel;
+                    agentConfig.logLevel = agentConfiguration.getString("logLevel");
+                }
+
+            }
+
+            String newCollectorAddress = agentConfiguration.getString("collectorAddress");
+            if(newCollectorAddress != null && !newCollectorAddress.isEmpty()) {
+                collectorAddress = newCollectorAddress;
+                agentConfig.collectorAddress = newCollectorAddress;
+            }
+
+            String newCrashCollectorAddress = agentConfiguration.getString("crashCollectorAddress");
+            if(newCrashCollectorAddress != null && !newCrashCollectorAddress.isEmpty()) {
+                crashCollectorAddress = newCrashCollectorAddress;
+                agentConfig.crashCollectorAddress = newCrashCollectorAddress;
+            }
+
+            if(agentConfiguration.getBool("sendConsoleEvents") != null) {
+                agentConfig.sendConsoleEvents = agentConfiguration.getBool("sendConsoleEvents");
+            } 
+
+        }
+
+        // Use default collector addresses if not set
+        if(collectorAddress == null && crashCollectorAddress == null) {
+            NewRelic.withApplicationToken(appKey)
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.1.0")
+                    .withLoggingEnabled(loggingEnabled)
+                    .withLogLevel(logLevel)
+                    .start(this.getActivity().getApplication());
+        } else {
+            if(collectorAddress == null) {
+                collectorAddress = "mobile-collector.newrelic.com";
+            }
+            if(crashCollectorAddress == null) {
+                crashCollectorAddress = "mobile-crash.newrelic.com";
+            }
+            NewRelic.withApplicationToken(appKey)
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.1.0")
+                    .withLoggingEnabled(loggingEnabled)
+                    .withLogLevel(logLevel)
+                    .usingCollectorAddress(collectorAddress)
+                    .usingCrashCollectorAddress(crashCollectorAddress)
+                    .start(this.getActivity().getApplication());
+        }
+
         call.resolve();
     }
     
@@ -344,6 +488,10 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             NewRelic.disableFeature(FeatureFlag.AnalyticsEvents);
         }
 
+        if(agentConfig != null) {
+            agentConfig.analyticsEventEnabled = toEnable;
+        }
+        
         call.resolve();
     }
 
@@ -360,6 +508,10 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             NewRelic.enableFeature(FeatureFlag.NetworkRequests);
         } else {
             NewRelic.disableFeature(FeatureFlag.NetworkRequests);
+        }
+
+        if(agentConfig != null) {
+            agentConfig.networkRequestEnabled = toEnable;
         }
 
         call.resolve();
@@ -380,6 +532,10 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             NewRelic.disableFeature(FeatureFlag.NetworkErrorRequests);
         }
 
+        if(agentConfig != null) {
+            agentConfig.networkErrorRequestEnabled = toEnable;
+        }
+
         call.resolve();
     }
 
@@ -398,7 +554,30 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             NewRelic.disableFeature(FeatureFlag.HttpResponseBodyCapture);
         }
 
+        if(agentConfig != null) {
+            agentConfig.httpResponseBodyCaptureEnabled = toEnable;
+        }
+
         call.resolve();
+    }
+
+    @PluginMethod
+    public void getAgentConfiguration(PluginCall call) {
+        JSObject ret = new JSObject();
+        // Returns empty object if plugin not loaded
+        if (agentConfig != null) {
+            ret.put("analyticsEventEnabled", agentConfig.analyticsEventEnabled);
+            ret.put("crashReportingEnabled", agentConfig.crashReportingEnabled);
+            ret.put("interactionTracingEnabled", agentConfig.interactionTracingEnabled);
+            ret.put("networkRequestEnabled", agentConfig.networkRequestEnabled);
+            ret.put("networkErrorRequestEnabled", agentConfig.networkErrorRequestEnabled);
+            ret.put("httpResponseBodyCaptureEnabled", agentConfig.httpResponseBodyCaptureEnabled);
+            ret.put("logLevel", agentConfig.logLevel);
+            ret.put("collectorAddress", agentConfig.collectorAddress);
+            ret.put("crashCollectorAddress", agentConfig.crashCollectorAddress);
+            ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
+        }
+        call.resolve(ret);
     }
 
 }

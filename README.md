@@ -25,32 +25,73 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 ## Install
 
 ```bash
-npm install newrelic-capacitor-plugin
+npm install @newrelic/newrelic-capacitor-plugin
 npx cap sync
 ```
 
 
 ## Ionic Capacitor Setup
 
-Now open your `index.tsx` and add the following code to launch NewRelic (don't forget to put proper application tokens):
+You can start the New Relic agent in the initialization of your app in `main.ts` (Angular or Vue) or `index.tsx` (React). Add the following code to launch NewRelic (don't forget to put proper application tokens):
 
 ``` tsx
-import { NewRelicCapacitorPlugin } from 'newrelic-capacitor-plugin';
+import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from '@newrelic/newrelic-capacitor-plugin';
 import { Capacitor } from '@capacitor/core';
 
-    var appToken;
+var appToken;
 
-    if(Capacitor.getPlatform() === 'ios') 
-        appToken = '<IOS-APP-TOKEN>';
-    } else {
-        appToken = '<ANDROID-APP-TOKEN>';
-    }
+if(Capacitor.getPlatform() === 'ios') {
+    appToken = '<IOS-APP-TOKEN>';
+} else {
+    appToken = '<ANDROID-APP-TOKEN>';
+}
 
-NewRelicCapacitorPlugin.start({appKey:appToken})
+let agentConfig : AgentConfiguration = {
+  //Android Specific
+  // Optional:Enable or disable collection of event data.
+  analyticsEventEnabled: true,
+
+  // Optional:Enable or disable crash reporting.
+  crashReportingEnabled: true,
+
+  // Optional:Enable or disable interaction tracing. Trace instrumentation still occurs, but no traces are harvested. This will disable default and custom interactions.
+  interactionTracingEnabled: true,
+
+  // Optional:Enable or disable reporting successful HTTP requests to the MobileRequest event type.
+  networkRequestEnabled: true,
+
+  // Optional:Enable or disable reporting network and HTTP request errors to the MobileRequestError event type.
+  networkErrorRequestEnabled: true,
+
+  // Optional:Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
+  httpResponseBodyCaptureEnabled: true,
+
+  // Optional:Enable or disable agent logging.
+  loggingEnabled: true,
+
+  // Optional:Specifies the log level. Omit this field for the default log level.
+  // Options include: ERROR (least verbose), WARNING, INFO, VERBOSE, AUDIT (most verbose).
+  logLevel: NREnums.LogLevel.INFO,
+
+  // iOS Specific
+  // Optional:Enable/Disable automatic instrumentation of WebViews
+  webViewInstrumentation: true,
+
+  // Optional:Set a specific collector address for sending data. Omit this field for default address.
+  collectorAddress: "",
+
+  // Optional:Set a specific crash collector address for sending crashes. Omit this field for default address.
+  crashCollectorAddress: ""
+
+  // Optional:Enable or disable sending JS console logs to New Relic.
+  sendConsoleEvents: true
+}
+
+NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
 
 
 ```
-AppToken is platform-specific. You need to generate the seprate token for Android and iOS apps.
+AppToken is platform-specific. You need to generate separate tokens for Android and iOS apps.
 
 ### Android Setup
 1. Install the New Relic native Android agent ([instructions here](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/install-configure/install-android-apps-gradle-android-studio)).
@@ -64,7 +105,7 @@ AppToken is platform-specific. You need to generate the seprate token for Androi
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.9.2"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.10.0"
       }
     }
   ```
@@ -112,6 +153,7 @@ ionic capacitor run ios
 * [`networkRequestEnabled(...)`](#networkrequestenabled)
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
 * [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
+* [`getAgentConfiguration(...)`](#getagentconfiguration)
 
 
 
@@ -366,8 +408,8 @@ recordMetric(options: { name: string; category: string; value?: number; countUni
       name: "CapacitorMetricName3",
       category: "CapacitorMetricCategory3",
       value: 30,
-      countUnit: "SECONDS",
-      valueUnit: "OPERATIONS",
+      countUnit: NREnums.MetricUnit.SECONDS,
+      valueUnit: NREnums.MetricUnit.OPERATIONS,
     });
 ```
 
@@ -503,6 +545,28 @@ httpResponseBodyCaptureEnabled(options: { enabled: boolean; }) => void
 --------------------
 
 
+### getAgentConfiguration(...)
+> Returns the current agent configuration settings. This method allows you to see the current state of the agent configuration.
+```typescript
+getAgentConfiguration(options?: {} | undefined) => Promise<AgentConfiguration>
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+**Returns:** <code>Promise&lt;AgentConfiguration&gt;</code>
+
+#### Usage:
+```ts
+    import { NewRelicCapacitorPlugin, AgentConfiguration} from '@newrelic/newrelic-capacitor-agent';
+
+    let agentConfig : AgentConfiguration = await NewRelicCapacitorPlugin.getAgentConfiguration();
+    let sendConsoleEvents = agentConfig.sendConsoleEvents;
+```
+--------------------
+
+
 ## Error Reporting
 ### recordError(...)
 > Records JavaScript/TypeScript errors for Ionic Capacitor. You should add this method to your framework's global error handler.
@@ -534,7 +598,7 @@ Angular 2+ exposes an [ErrorHandler](https://angular.io/api/core/ErrorHandler) c
 
 ```ts
 import { ErrorHandler, Injectable } from '@angular/core';
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
@@ -545,7 +609,7 @@ export class GlobalErrorHandler extends ErrorHandler {
     NewRelicCapacitorPlugin.recordError({
       name: error.name,
       message: error.message,
-      stack: error.stack ? error.stack : "",
+      stack: error.stack ? error.stack : "No stack available",
       isFatal: false,
     });
     super.handleError(error);
@@ -567,7 +631,7 @@ React 16+ has added error boundary components that catch errors that bubble up f
 
 ```ts
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 interface Props {
   children?: ReactNode;
@@ -592,7 +656,7 @@ class ErrorBoundary extends Component<Props, State> {
     NewRelicCapacitorPlugin.recordError({
       name: error.name,
       message: error.message,
-      stack: error.stack ? error.stack : "",
+      stack: error.stack ? error.stack : "No stack available",
       isFatal: false,
     });
   }
@@ -614,7 +678,7 @@ export default ErrorBoundary;
 Vue has a global error handler that reports native JavaScript errors and passes in the Vue instance. This handler will be useful for reporting errors to New Relic.
 
 ```js
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 Vue.config.errorHandler = (err, vm, info) => {
 
@@ -645,7 +709,7 @@ Vue.config.errorHandler = (err, vm, info) => {
     NewRelicCapacitorPlugin.recordError({
       name: err.name,
       message: err.message,
-      stack: err.stack ? err.stack : "",
+      stack: err.stack ? err.stack : "No stack available",
       isFatal: false,
     });
 }
