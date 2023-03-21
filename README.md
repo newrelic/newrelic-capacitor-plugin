@@ -1,4 +1,4 @@
-[![Community Plus header](https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png)](https://opensource.newrelic.com/oss-category/#community-plus)
+<a href="https://opensource.newrelic.com/oss-category/#community-plus"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Community_Plus.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png"><img alt="New Relic Open Source community plus project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png"></picture></a>
 
 [![Android Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml)
 [![iOS Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml)
@@ -740,6 +740,12 @@ As noted in our [security policy](../../security/policy), New Relic is committed
 If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic).
 
 If you would like to contribute to this project, review [these guidelines](./CONTRIBUTING.md).
+
+## Support
+
+New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
+
+>https://discuss.newrelic.com/tags/mobile
 
 ## License
 
