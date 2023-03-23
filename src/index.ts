@@ -10,7 +10,9 @@ import getCircularReplacer from './circular-replacer';
 
 const NewRelicCapacitorPlugin = registerPlugin<NewRelicCapacitorPluginPlugin>(
   'NewRelicCapacitorPlugin',
-  {},
+  {
+    web:()=> import('./web').then(m=>new m.NewRelicCapacitorPluginWeb())
+  },
 );
 
 export * from './definitions';
