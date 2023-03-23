@@ -1,4 +1,4 @@
-[![Community Plus header](https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png)](https://opensource.newrelic.com/oss-category/#community-plus)
+<a href="https://opensource.newrelic.com/oss-category/#community-plus"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Community_Plus.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png"><img alt="New Relic Open Source community plus project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png"></picture></a>
 
 [![Android Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/android.yml)
 [![iOS Test Suite](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml/badge.svg)](https://github.com/newrelic/newrelic-capacitor-plugin/actions/workflows/ios.yml)
@@ -35,7 +35,7 @@ npx cap sync
 You can start the New Relic agent in the initialization of your app in `main.ts` (Angular or Vue) or `index.tsx` (React). Add the following code to launch NewRelic (don't forget to put proper application tokens):
 
 ``` tsx
-import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from 'newrelic-capacitor-plugin';
+import { NewRelicCapacitorPlugin, NREnums, AgentConfiguration } from '@newrelic/newrelic-capacitor-plugin';
 import { Capacitor } from '@capacitor/core';
 
 var appToken;
@@ -83,7 +83,7 @@ let agentConfig : AgentConfiguration = {
   // Optional:Set a specific crash collector address for sending crashes. Omit this field for default address.
   crashCollectorAddress: ""
 
-  // Optional:Enable or disable sending JS console logs to New Relic
+  // Optional:Enable or disable sending JS console logs to New Relic.
   sendConsoleEvents: true
 }
 
@@ -105,7 +105,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.9.2"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.10.0"
       }
     }
   ```
@@ -598,7 +598,7 @@ Angular 2+ exposes an [ErrorHandler](https://angular.io/api/core/ErrorHandler) c
 
 ```ts
 import { ErrorHandler, Injectable } from '@angular/core';
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
@@ -631,7 +631,7 @@ React 16+ has added error boundary components that catch errors that bubble up f
 
 ```ts
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 interface Props {
   children?: ReactNode;
@@ -678,7 +678,7 @@ export default ErrorBoundary;
 Vue has a global error handler that reports native JavaScript errors and passes in the Vue instance. This handler will be useful for reporting errors to New Relic.
 
 ```js
-import { NewRelicCapacitorPlugin } from "newrelic-capacitor-plugin";
+import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 
 Vue.config.errorHandler = (err, vm, info) => {
 
@@ -740,6 +740,12 @@ As noted in our [security policy](../../security/policy), New Relic is committed
 If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic).
 
 If you would like to contribute to this project, review [these guidelines](./CONTRIBUTING.md).
+
+## Support
+
+New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
+
+>https://discuss.newrelic.com/tags/mobile
 
 ## License
 
