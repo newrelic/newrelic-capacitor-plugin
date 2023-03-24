@@ -1,5 +1,9 @@
 # Changelog
 
+# 1.1.1
+### Fixed in this Release
+* Fixed an issue where errors would occur when developing on web.
+
 ## 1.1.0
 ### New in this Release
 * Upgrade to Native Android Agent v6.10.0.
