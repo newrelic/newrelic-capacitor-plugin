@@ -2,7 +2,7 @@
 
 # 1.1.1
 ### Fixed in this Release
-* Fixed an issue where errors would occur when developing on web.
+* Fixed an issue where errors would occur when developing for web-native apps.
 
 ## 1.1.0
 ### New in this Release
