@@ -18,15 +18,16 @@ import com.newrelic.agent.android.ApplicationFramework;
 import com.newrelic.agent.android.FeatureFlag;
 import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.metric.MetricUnit;
-import com.newrelic.agent.android.stats.StatsEngine;
-import com.newrelic.agent.android.util.NetworkFailure;
 import com.newrelic.agent.android.logging.AgentLog;
 import com.newrelic.com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @CapacitorPlugin(name = "NewRelicCapacitorPlugin", permissions = {
         @Permission(strings = { Manifest.permission.ACCESS_NETWORK_STATE }, alias = "network"),
@@ -62,6 +63,13 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.sendConsoleEvents = true;
         }
     }
+
+    private Pattern chromeStackTraceRegex =
+            Pattern.compile("^\\s*at (.*?) ?\\(((?:file|https?|blob|chrome-extension|native|eval|webpack|<anonymous>|\\/|[a-z]:\\\\|\\\\\\\\).*?)(?::(\\d+))?(?::(\\d+))?\\)?\\s*$",
+                    Pattern.CASE_INSENSITIVE);
+    private Pattern nodeStackTraceRegex =
+            Pattern.compile("^\\s*at (?:((?:\\[object object\\])?[^\\\\/]+(?: \\[as \\S+\\])?) )?\\(?(.*?):(\\d+)(?::(\\d+))?\\)?\\s*$",
+                    Pattern.CASE_INSENSITIVE);
 
     @Override
     public void load() {
@@ -438,6 +446,30 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         call.resolve();
     }
 
+    public StackTraceElement[] parseStackTrace(String stack) {
+        String[] lines = stack.split("\n");
+        ArrayList<StackTraceElement> stackTraceList = new ArrayList<>();
+
+        for (String line : lines) {
+            Matcher chromeMatcher = chromeStackTraceRegex.matcher(line);
+            Matcher nodeMatcher = nodeStackTraceRegex.matcher(line);
+            if (chromeMatcher.matches() || nodeMatcher.matches()){
+                Matcher matcher = chromeMatcher.matches() ? chromeMatcher : nodeMatcher;
+                try {
+                    String method = matcher.group(1) == null ? " " : matcher.group(1);
+                    String file = matcher.group(2) == null ? " " : matcher.group(2);
+                    int lineNumber = matcher.group(3) == null ? 1 : Integer.parseInt(matcher.group(3));
+                    stackTraceList.add(new StackTraceElement("", method, file, lineNumber));
+                } catch (Exception e) {
+                    NewRelic.recordHandledException(e);
+                    return new StackTraceElement[0];
+                }
+            }
+        }
+
+        return stackTraceList.toArray(new StackTraceElement[0]);
+    }
+
     @PluginMethod
     public void recordError(PluginCall call) {
         String name = call.getString("name");
@@ -445,31 +477,22 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String stack = call.getString("stack");
         Boolean isFatal = call.getBoolean("isFatal");
 
-        if (name == null || stack == null) {
-            call.reject("name should not be empty");
-            return;
-        }
+        // We do not reject calls in this method since it will cause an infinite loop with the error listener.
+        name = (name == null) ? "null" : name;
+        message = (message == null) ? "null" : message;
 
-        try {
+        HashMap<String, Object> exceptionMap = new HashMap<>();
+        exceptionMap.put("name", name);
+        exceptionMap.put("message", message);
+        exceptionMap.put("isFatal", isFatal);
 
-            Map<String, Object> crashEvents = new HashMap<>();
-            crashEvents.put("Name", name);
-            crashEvents.put("Message", message);
-            crashEvents.put("isFatal", isFatal);
-            if (stack != null) {
-                // attribute limit is 4096
-                crashEvents.put("errorStack",
-                        stack.length() > 4095 ? stack.substring(0, 4094) : stack);
-            }
+        stack = (stack == null) ? "null" : stack;
 
-            NewRelic.recordBreadcrumb("JS Errors", crashEvents);
-            NewRelic.recordCustomEvent("JS Errors", "JS Errors", crashEvents);
+        StackTraceElement[] stackFrames = parseStackTrace(stack);
 
-            StatsEngine.get().inc("Supportability/Mobile/Capacitor/JSError");
+        NewRelicCapacitorException exception = new NewRelicCapacitorException(message, stackFrames);
+        NewRelic.recordHandledException(exception, exceptionMap);
 
-        } catch (IllegalArgumentException e) {
-            Log.w("NRMA", e.getMessage());
-        }
         call.resolve();
     }
 

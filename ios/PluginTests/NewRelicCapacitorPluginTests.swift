@@ -596,12 +596,28 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.setMaxEventPoolSize(callWithNoParams)
     }
     
+    func testParseStackTrace() {
+        let stackFramesArr = NewRelicCapacitorPlugin.parseStackTrace(stackString: "decodeURI@[native code]\nonClick@capacitor://localhost/static/js/main.512e3679.js:2:616972\n@capacitor://localhost/static/js/main.512e3679.js:2:549141\nAe@capacitor://localhost/static/js/main.512e3679.js:2:104370\nWe@capacitor://localhost/static/js/main.512e3679.js:2:104524\n@capacitor://localhost/static/js/main.512e3679.js:2:124424\njr@capacitor://localhost/static/js/main.512e3679.js:2:124513\nzr@capacitor://localhost/static/js/main.512e3679.js:2:124930\n@capacitor://localhost/static/js/main.512e3679.js:2:130372\ncc@capacitor://localhost/static/js/main.512e3679.js:2:194040\nRe@capacitor://localhost/static/js/main.512e3679.js:2:103499\nBr@capacitor://localhost/static/js/main.512e3679.js:2:126224\nUt@capacitor://localhost/static/js/main.512e3679.js:2:110620\nFt@capacitor://localhost/static/js/main.512e3679.js:2:110404\nFt@[native code]")
+        XCTAssertTrue((stackFramesArr as Any) is NSMutableArray)
+        XCTAssertEqual(15, stackFramesArr.count)
+        for stackFrame in stackFramesArr {
+            XCTAssertTrue((stackFrame as Any) is NSMutableDictionary)
+            let stackFrameDict = stackFrame as! NSMutableDictionary
+            XCTAssertNotNil(stackFrameDict["file"])
+            XCTAssertNotNil(stackFrameDict["method"])
+        }
+        
+        let badStackFrame = NewRelicCapacitorPlugin.parseStackTrace(stackString: "fakestacktrace\n poor structure\n testing")
+        XCTAssertTrue((badStackFrame as Any) is NSMutableArray)
+        XCTAssertEqual(0, badStackFrame.count)
+    }
+    
     func testRecordError() {
         guard let callWithGoodParams = CAPPluginCall(callbackId: "recordError",
-                                               options: ["name": "fakeError",
-                                                         "message": "fakeMsg",
-                                                         "stack": "fakeStack",
-                                                         "isFatal": false],
+                                               options: ["name": "URIError",
+                                                         "message": "URI error",
+                                                         "stack": "decodeURI@[native code]\nonClick@capacitor://localhost/static/js/main.512e3679.js:2:616972\n@capacitor://localhost/static/js/main.512e3679.js:2:549141\nAe@capacitor://localhost/static/js/main.512e3679.js:2:104370\nWe@capacitor://localhost/static/js/main.512e3679.js:2:104524\n@capacitor://localhost/static/js/main.512e3679.js:2:124424\njr@capacitor://localhost/static/js/main.512e3679.js:2:124513\nzr@capacitor://localhost/static/js/main.512e3679.js:2:124930\n@capacitor://localhost/static/js/main.512e3679.js:2:130372\ncc@capacitor://localhost/static/js/main.512e3679.js:2:194040\nRe@capacitor://localhost/static/js/main.512e3679.js:2:103499\nBr@capacitor://localhost/static/js/main.512e3679.js:2:126224\nUt@capacitor://localhost/static/js/main.512e3679.js:2:110620\nFt@capacitor://localhost/static/js/main.512e3679.js:2:110404\nFt@[native code]",
+                                                         "isFatal": true],
                                                success: { (result, call) in
             XCTAssertNotNil(result)
         },
