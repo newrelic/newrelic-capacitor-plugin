@@ -603,4 +603,10 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         call.resolve(ret);
     }
 
+    @PluginMethod
+    public void shutdown(PluginCall call) {
+        NewRelic.shutdown();
+        call.resolve();
+    }
+
 }

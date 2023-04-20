@@ -9,11 +9,11 @@ end
 
 target 'Plugin' do
   capacitor_pods
-  pod 'NewRelicAgent', '7.4.3'
+  pod 'NewRelicAgent', :podspec => 'https://raw.githubusercontent.com/newrelic/newrelic-ios-agent/staging/NewRelicAgent.podspec?token=GHSAT0AAAAAABXW5TIG7GZLXWXYNHVZNZRGZB5PL7A'
 end
 
 target 'PluginTests' do
   capacitor_pods
-  pod 'NewRelicAgent', '7.4.3'
+  pod 'NewRelicAgent', :podspec => 'https://raw.githubusercontent.com/newrelic/newrelic-ios-agent/staging/NewRelicAgent.podspec?token=GHSAT0AAAAAABXW5TIG7GZLXWXYNHVZNZRGZB5PL7A'
 end
 
