@@ -628,13 +628,14 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             return
         }
         
+        // Should not reject with null error (avoid infinite loop)
         guard let callWithNoParams = CAPPluginCall(callbackId: "recordError",
                                              options: [:],
                                              success: { (result, call) in
-            XCTFail("recordError should fail with no parameters")
+            XCTAssertNotNil(result);
         },
                                              error:{ (err) in
-            XCTAssertEqual(err!.message, "Bad parameters given to recordError")
+            XCTFail("Error shouldn't have been called since we do not reject null errors")
         }) else {
             XCTFail("Bad call in testRecordError")
             return

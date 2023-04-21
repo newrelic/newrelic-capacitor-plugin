@@ -425,8 +425,9 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithGoodParams, times(1)).resolve();
         verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
 
-        verify(callWithNoParams, times(0)).resolve();
-        verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+        // We don't reject but instead use "null" for null parameters since it will cause an infinite loop
+        verify(callWithNoParams, times(1)).resolve();
+        verify(callWithNoParams, times(0)).reject(Mockito.anyString());
     }
 
     @Test
