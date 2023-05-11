@@ -732,4 +732,19 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.httpResponseBodyCaptureEnabled(callWithNoParams)
     }
     
+    func testShutdown() {
+        guard let call = CAPPluginCall(callbackId: "currentSessionId",
+                                 options: [:],
+                                 success: { (result, call) in
+            XCTAssertNotNil(result);
+        },
+                                 error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testShutdown")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.shutdown(call)
+    }
 }

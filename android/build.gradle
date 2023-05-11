@@ -12,12 +12,10 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.1'
-        classpath 'com.newrelic.agent.android:agent-gradle-plugin:6.10.0'
     }
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'newrelic'
 
 android {
     compileSdkVersion project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 32
@@ -56,7 +54,7 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation 'com.newrelic.agent.android:android-agent:6.10.0'
+    implementation 'com.newrelic.agent.android:android-agent:6.11.0'
     testImplementation "org.mockito:mockito-core:3.+"
     testImplementation 'org.json:json:20220924'
 }

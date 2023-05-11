@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Stack;
 
 
 public class NewRelicCapacitorPluginUnitTest {
@@ -500,6 +499,16 @@ public class NewRelicCapacitorPluginUnitTest {
 
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+    }
+
+    @Test
+    public void testShutdown() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+
+        plugin.shutdown(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
     }
 
 

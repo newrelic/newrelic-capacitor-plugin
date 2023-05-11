@@ -150,7 +150,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             if(agentConfiguration.getString("logLevel") != null) {
                 Map<String, Integer> strToLogLevel = new HashMap<>();
                 strToLogLevel.put("ERROR", AgentLog.ERROR);
-                strToLogLevel.put("WARNING", AgentLog.WARNING);
+                strToLogLevel.put("WARNING", AgentLog.WARN);
                 strToLogLevel.put("INFO", AgentLog.INFO);
                 strToLogLevel.put("VERBOSE", AgentLog.VERBOSE);
                 strToLogLevel.put("AUDIT", AgentLog.AUDIT);
