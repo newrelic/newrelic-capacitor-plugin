@@ -490,5 +490,9 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "sendConsoleEvents": agentConfig.sendConsoleEvents
         ])
     }
+    @objc func shutdown(_ call: CAPPluginCall) {
+        NewRelic.shutdown();
+        call.resolve();
+    }
     
 }
