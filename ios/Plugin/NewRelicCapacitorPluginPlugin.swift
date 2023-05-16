@@ -110,7 +110,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             }
             
             if agentConfiguration["collectorAddress"] != nil {
-                if let configCollectorAddress = agentConfiguration["collectorAdddress"] as? String, !configCollectorAddress.isEmpty {
+                if let configCollectorAddress = agentConfiguration["collectorAddress"] as? String, !configCollectorAddress.isEmpty {
                     collectorAddress = configCollectorAddress
                     agentConfig.collectorAddress = configCollectorAddress
                 }
@@ -140,7 +140,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NRLogger.setLogLevels(logLevel)
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.1.1")
+        NewRelic.perform(selector, with:"1.2.0")
         
         if collectorAddress == nil && crashCollectorAddress == nil {
             NewRelic.start(withApplicationToken: appKey)

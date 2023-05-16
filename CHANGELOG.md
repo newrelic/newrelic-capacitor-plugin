@@ -1,6 +1,14 @@
 # Changelog
 
-# 1.1.1
+## 1.2.0
+
+### New in this release
+* Upgrade native Android Agent to v6.11.1
+* Updgrade native iOS agent to v7.4.4
+* JavaScript Errors will now be reported as handled exceptions, providing more context and stack traces in the New Relic UI.
+* Added shutdown method, providing ability to shut down the agent within the current application lifecycle during runtime.
+
+## 1.1.1
 ### Fixed in this Release
 * Fixed an issue where errors would occur when developing for web-native apps.
 

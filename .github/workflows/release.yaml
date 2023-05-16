@@ -11,11 +11,12 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
+      confirmation:
+        # Description to be shown in the UI
+        description: 'Are you sure you want to release?'
+        type: boolean
         # Default value if no value is explicitly provided
-        default: 'World'
+        default: false
         # Input has to be provided for the workflow to run
         required: true
 
