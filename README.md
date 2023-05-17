@@ -158,6 +158,7 @@ ionic capacitor run ios
 
 
 
+
 ### [setUserId(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/set-user-id)
 > Set a custom user identifier value to associate user sessions with analytics events and attributes.
 ```typescript
@@ -563,6 +564,23 @@ getAgentConfiguration(options?: {} | undefined) => Promise<AgentConfiguration>
 
     let agentConfig : AgentConfiguration = await NewRelicCapacitorPlugin.getAgentConfiguration();
     let sendConsoleEvents = agentConfig.sendConsoleEvents;
+```
+--------------------
+
+### [shutdown(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/shut-down/)
+> Shut down the agent within the current application lifecycle during runtime.
+```typescript
+shutdown(options?: {} | undefined) => void
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+
+#### Usage:
+```ts
+    NewRelicCapacitorPlugin.shutdown();
 ```
 --------------------
 
