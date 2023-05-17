@@ -31,4 +31,5 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(networkErrorRequestEnabled, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(httpResponseBodyCaptureEnabled, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(getAgentConfiguration, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(shutdown, CAPPluginReturnNone);
 )

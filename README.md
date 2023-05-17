@@ -105,7 +105,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.10.0"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.11.1"
       }
     }
   ```
@@ -154,6 +154,7 @@ ionic capacitor run ios
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
 * [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
 * [`getAgentConfiguration(...)`](#getagentconfiguration)
+
 
 
 
@@ -566,6 +567,23 @@ getAgentConfiguration(options?: {} | undefined) => Promise<AgentConfiguration>
 ```
 --------------------
 
+### [shutdown(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/shut-down/)
+> Shut down the agent within the current application lifecycle during runtime.
+```typescript
+shutdown(options?: {} | undefined) => void
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+
+#### Usage:
+```ts
+    NewRelicCapacitorPlugin.shutdown();
+```
+--------------------
+
 
 ## Error Reporting
 ### recordError(...)
@@ -715,17 +733,49 @@ Vue.config.errorHandler = (err, vm, info) => {
 }
 ```
 
-### How to see JSErrors(Fatal/Non Fatal) in NewRelic One?
+## How to see JSErrors(Fatal/Non Fatal) in NewRelic One?
 
-There is no section for JavaScript errors, but you can see JavaScript errors in custom events and also query them in NRQL explorer.
-
-<img width="1753" alt="Screen Shot 2022-02-10 at 12 41 11 PM" src="https://user-images.githubusercontent.com/89222514/153474861-87213e70-c3fb-4e14-aee7-a6a3fb482f73.png">
-
+JavaScript errors can be seen in the `Handled Exceptions` tab or as a `MobileHandledException` event. You can also see these errors in the NRQL explorer using this query:
 You can also build dashboard for errors using this query:
 
   ```sql
-  SELECT jsAppVersion,name,Message,errorStack,isFatal FROM `JS Errors` SINCE 24 hours ago
+  SELECT * FROM `MobileHandledException` SINCE 24 hours ago
   ```
+
+Note: Errors that do not produce a stack trace will not appear in the `Handled Exceptions` tab but will appear as a `MobileHandledException` event.
+
+## Uploading dSYM files
+
+Our iOS agent includes a Swift script intended to be run from a build script in your target's build phases in XCode. The script automatically uploads dSYM files in the background (or converts your dSYM to the New Relic map file format), and then performs a background upload of the files needed for crash symbolication to New Relic.
+
+To invoke this script during an XCode build:
+1. In Xcode, select your project in the navigator, then click on the application target.
+1. Select the Build Phases tab in the settings editor.
+1. Click the + icon above Target Dependencies and choose New Run Script Build Phase. Ensure the new build script is the very last build script.
+1. Add the following lines of code to the new phase and replace `APP_TOKEN` with your iOS application token.
+    1. If there is a checkbox below Run script that says "Run script: Based on Dependency analysis" please make sure it is not checked.
+
+```
+ARTIFACT_DIR="${BUILD_DIR%Build/*}SourcePackages/artifacts"
+
+SCRIPT=`/usr/bin/find "${SRCROOT}" "${ARTIFACT_DIR}" -type f -name run-symbol-tool | head -n 1`
+/bin/sh "${SCRIPT}" "APP_TOKEN"
+```
+
+#### Note: The automatic script requires bitcode to be disabled. You should clean and rebuild your app after adding the script. 
+
+### Missing dSYMs
+The automatic script will create an `upload_dsym_results.log` file in your project's iOS directory, which contains information about any failures that occur during symbol upload.
+
+If dSYM files are missing, you may need to check Xcode build settings to ensure the file is being generated. Frameworks which are built locally have separate build settings and may need to be updated as well.
+
+Build settings:
+```
+Debug Information Format : Dwarf with dSYM File
+Deployment Postprocessing: Yes
+Strip Linked Product: Yes
+Strip Debug Symbols During Copy : Yes
+```
 
 ## Contribute
 

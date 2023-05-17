@@ -29,6 +29,13 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var sendConsoleEvents: Bool = true;
     }
     
+    private let jscRegex = try! NSRegularExpression(pattern: #"^\s*(?:([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$"#,
+                                                    options: .caseInsensitive)
+    private let geckoRegex = try! NSRegularExpression(pattern:#"^\s*(.*?)(?:\((.*?)\))?(?:^|@)((?:file|https?|blob|chrome|webpack|resource|\[native).*?|[^@]*bundle)(?::(\d+))?(?::(\d+))?\s*$"#,
+                                                      options: .caseInsensitive)
+    private let nodeRegex = try! NSRegularExpression(pattern:#"^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$"#,
+                                                     options: .caseInsensitive)
+    
     public override func load() {
     }
 
@@ -103,7 +110,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             }
             
             if agentConfiguration["collectorAddress"] != nil {
-                if let configCollectorAddress = agentConfiguration["collectorAdddress"] as? String, !configCollectorAddress.isEmpty {
+                if let configCollectorAddress = agentConfiguration["collectorAddress"] as? String, !configCollectorAddress.isEmpty {
                     collectorAddress = configCollectorAddress
                     agentConfig.collectorAddress = configCollectorAddress
                 }
@@ -133,7 +140,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NRLogger.setLogLevels(logLevel)
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.1.1")
+        NewRelic.perform(selector, with:"1.2.0")
         
         if collectorAddress == nil && crashCollectorAddress == nil {
             NewRelic.start(withApplicationToken: appKey)
@@ -362,31 +369,61 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
-    @objc func recordError(_ call: CAPPluginCall) {
-        guard let name = call.getString("name"),
-              let message = call.getString("message"),
-              let isFatal = call.getBool("isFatal") else {
-            call.reject("Bad parameters given to recordError")
-            return
+    func parseStackTrace(stackString : String) -> NSMutableArray {
+        let lines = stackString.split(whereSeparator: \.isNewline)
+
+        let linesStr = lines.map { subString -> String in
+            return String(subString)
         }
+        let stackFramesArr : NSMutableArray = []
+        var stringRange : NSRange
         
-        var errStack = "No stack available"
-        
-        // Sometimes error stack does not get reported if past a certain length
-        if let stack = call.getString("stack") {
-            if stack.count > 3994 {
-                let endIndex = stack.index(stack.startIndex, offsetBy: 3994)
-                let substring = stack[..<endIndex]
-                errStack = String(substring)
+        for line in linesStr {
+            var result : [NSTextCheckingResult]
+            stringRange = NSRange(location: 0, length: line.utf16.count)
+            if (jscRegex.matches(in: line, range: stringRange).first != nil) {
+                result = jscRegex.matches(in: line, range: stringRange)
+            } else if (geckoRegex.matches(in: line, range: stringRange).first != nil) {
+                result = geckoRegex.matches(in: line, range: stringRange)
+            } else if (nodeRegex.matches(in: line, range: stringRange).first != nil) {
+                result = nodeRegex.matches(in: line, range: stringRange)
             } else {
-                errStack = stack
+                continue
             }
+            
+            let stackTraceElement : NSMutableDictionary = [:]
+            
+            // iOS agent will automatically add default values if these keys don't exist
+            if let methodSubstrRange = Range(result[0].range(at:1), in: line) {
+                stackTraceElement["method"] = String(line[methodSubstrRange])
+            }
+            if let fileSubstrRange = Range(result[0].range(at:3), in: line) {
+                stackTraceElement["file"] = String(line[fileSubstrRange])
+            }
+            if let lineSubstrRange = Range(result[0].range(at:4), in: line) {
+                stackTraceElement["line"] = Int(String(line[lineSubstrRange]))
+            }
+            stackFramesArr.add(stackTraceElement)
         }
         
-        let attributes: [String: Any] = ["Name" : name, "Message" : message, "isFatal" : isFatal, "errorStack" : errStack]
+        return stackFramesArr
+    }
+    
+    @objc func recordError(_ call: CAPPluginCall) {
+        let name = call.getString("name") ?? "null"
+        let message = call.getString("message") ?? "null"
+        let isFatal = call.getBool("isFatal") ?? false
         
-        NewRelic.recordBreadcrumb("JS Errors", attributes: attributes)
-        NewRelic.recordCustomEvent("JS Errors", attributes: attributes)
+        let stack = call.getString("stack") ?? ""
+        let stackFramesArr = parseStackTrace(stackString: stack)
+        let attributes : [String: Any] = [
+            "name" : name,
+            "reason": message,
+            "fatal": isFatal,
+            "stackTraceElements": stackFramesArr
+        ]
+        NewRelic.recordHandledException(withStackTrace: attributes)
+
         call.resolve()
     }
     
@@ -452,6 +489,10 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "crashCollectorAddress": agentConfig.crashCollectorAddress,
             "sendConsoleEvents": agentConfig.sendConsoleEvents
         ])
+    }
+    @objc func shutdown(_ call: CAPPluginCall) {
+        NewRelic.shutdown();
+        call.resolve();
     }
     
 }

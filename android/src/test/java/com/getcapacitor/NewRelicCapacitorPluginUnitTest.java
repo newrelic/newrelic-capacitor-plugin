@@ -13,9 +13,11 @@ import static org.mockito.Mockito.when;
 import com.newrelic.capacitor.plugin.NewRelicCapacitorPluginPlugin;
 
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import static org.junit.Assert.assertEquals;
+
 
 
 public class NewRelicCapacitorPluginUnitTest {
@@ -363,11 +365,51 @@ public class NewRelicCapacitorPluginUnitTest {
     }
 
     @Test
+    public void testParseStackTrace() {
+        String validStackTrace = "URIError: URI malformed\n" +
+                "    at decodeURI (<anonymous>)\n" +
+                "    at onClick (http://localhost/static/js/main.c5c44c49.js:2:617162)\n" +
+                "    at l.onClick (http://localhost/static/js/main.c5c44c49.js:2:549166)\n" +
+                "    at Object.Ae (http://localhost/static/js/main.c5c44c49.js:2:104391)\n" +
+                "    at We (http://localhost/static/js/main.c5c44c49.js:2:104545)\n" +
+                "    at http://localhost/static/js/main.c5c44c49.js:2:124445\n" +
+                "    at jr (http://localhost/static/js/main.c5c44c49.js:2:124539)\n" +
+                "    at zr (http://localhost/static/js/main.c5c44c49.js:2:124954)\n" +
+                "    at http://localhost/static/js/main.c5c44c49.js:2:130396\n" +
+                "    at cc (http://localhost/static/js/main.c5c44c49.js:2:194065)";
+
+        StackTraceElement[] parsedStackTrace = plugin.parseStackTrace(validStackTrace);
+        // Should be 10 lines (does not include name and message of error)
+        Assert.assertEquals(10, parsedStackTrace.length);
+        for(StackTraceElement ste : parsedStackTrace) {
+            Assert.assertNotNull(ste.getClassName());
+            Assert.assertNotNull(ste.getFileName());
+            Assert.assertNotNull(ste.getMethodName());
+        }
+
+        String invalidStackTrace = "fakeStackHere\n" +
+                "random words\n" +
+                "testing";
+        StackTraceElement[] invalidParse = plugin.parseStackTrace(invalidStackTrace);
+        Assert.assertEquals(0, invalidParse.length);
+    }
+
+    @Test
     public void testRecordError() {
         PluginCall callWithGoodParams = mock(PluginCall.class);
-        when(callWithGoodParams.getString("name")).thenReturn("fakeErrName");
-        when(callWithGoodParams.getString("message")).thenReturn("fakeErrMsg");
-        when(callWithGoodParams.getString("stack")).thenReturn("fakeErrStack");
+        when(callWithGoodParams.getString("name")).thenReturn("URIError");
+        when(callWithGoodParams.getString("message")).thenReturn("URI malformed");
+        when(callWithGoodParams.getString("stack")).thenReturn("URIError: URI malformed\n" +
+                "    at decodeURI (<anonymous>)\n" +
+                "    at onClick (http://localhost/static/js/main.c5c44c49.js:2:617162)\n" +
+                "    at l.onClick (http://localhost/static/js/main.c5c44c49.js:2:549166)\n" +
+                "    at Object.Ae (http://localhost/static/js/main.c5c44c49.js:2:104391)\n" +
+                "    at We (http://localhost/static/js/main.c5c44c49.js:2:104545)\n" +
+                "    at http://localhost/static/js/main.c5c44c49.js:2:124445\n" +
+                "    at jr (http://localhost/static/js/main.c5c44c49.js:2:124539)\n" +
+                "    at zr (http://localhost/static/js/main.c5c44c49.js:2:124954)\n" +
+                "    at http://localhost/static/js/main.c5c44c49.js:2:130396\n" +
+                "    at cc (http://localhost/static/js/main.c5c44c49.js:2:194065)");
         when(callWithGoodParams.getBoolean("isFatal")).thenReturn(false);
 
         PluginCall callWithNoParams = mock(PluginCall.class);
@@ -382,8 +424,9 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithGoodParams, times(1)).resolve();
         verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
 
-        verify(callWithNoParams, times(0)).resolve();
-        verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+        // We don't reject but instead use "null" for null parameters since it will cause an infinite loop
+        verify(callWithNoParams, times(1)).resolve();
+        verify(callWithNoParams, times(0)).reject(Mockito.anyString());
     }
 
     @Test
@@ -456,6 +499,16 @@ public class NewRelicCapacitorPluginUnitTest {
 
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+    }
+
+    @Test
+    public void testShutdown() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+
+        plugin.shutdown(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
     }
 
 

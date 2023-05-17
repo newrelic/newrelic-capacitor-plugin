@@ -46,6 +46,7 @@ export interface NewRelicCapacitorPluginPlugin {
   networkErrorRequestEnabled(options: {enabled: boolean}): void;
   httpResponseBodyCaptureEnabled(options: {enabled: boolean}): void;
   getAgentConfiguration(options?: {}) : Promise<AgentConfiguration>;
+  shutdown(options?: {}): void;
 }
 
 export interface AgentConfiguration {

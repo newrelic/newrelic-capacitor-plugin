@@ -89,6 +89,7 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
             resolve(a);
         })
     }
-
-
+    shutdown(_options?: {} | undefined): void {
+       //  throw new Error('Method not implemented.');
+    }
 }
