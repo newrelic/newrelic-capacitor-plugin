@@ -48,6 +48,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String collectorAddress;
         String crashCollectorAddress;
         boolean sendConsoleEvents;
+        boolean fedRampEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -61,6 +62,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.collectorAddress = "mobile-collector.newrelic.com";
             this.crashCollectorAddress = "mobile-crash.newrelic.com";
             this.sendConsoleEvents = true;
+            this.fedRampEnabled = false;
         }
     }
 
@@ -140,6 +142,14 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             } else {
                 NewRelic.enableFeature(FeatureFlag.HttpResponseBodyCapture);
                 agentConfig.httpResponseBodyCaptureEnabled = true;
+            }
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("fedRampEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.FedRampEnabled);
+                agentConfig.fedRampEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.FedRampEnabled);
+                agentConfig.fedRampEnabled = true;
             }
 
             if(agentConfiguration.getBool("loggingEnabled") != null) {
@@ -599,6 +609,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             ret.put("collectorAddress", agentConfig.collectorAddress);
             ret.put("crashCollectorAddress", agentConfig.crashCollectorAddress);
             ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
+            ret.put("fedRampEnabled", agentConfig.fedRampEnabled);
         }
         call.resolve(ret);
     }

@@ -83,7 +83,8 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
             logLevel: '',
             collectorAddress: '',
             crashCollectorAddress: '',
-            sendConsoleEvents: true
+            sendConsoleEvents: true,
+            fedRampEnabled: false
         };
        return new Promise((resolve) => {
             resolve(a);

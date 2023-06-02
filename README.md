@@ -78,13 +78,16 @@ let agentConfig : AgentConfiguration = {
   webViewInstrumentation: true,
 
   // Optional:Set a specific collector address for sending data. Omit this field for default address.
-  collectorAddress: "",
+  // collectorAddress: "",
 
   // Optional:Set a specific crash collector address for sending crashes. Omit this field for default address.
-  crashCollectorAddress: ""
+  // crashCollectorAddress: "",
 
   // Optional:Enable or disable sending JS console logs to New Relic.
-  sendConsoleEvents: true
+  sendConsoleEvents: true,
+
+  // Optional: nable or disable reporting data using different endpoints for US government clients.
+  // fedRampEnabled: false
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
