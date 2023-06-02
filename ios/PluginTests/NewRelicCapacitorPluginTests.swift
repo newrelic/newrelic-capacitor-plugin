@@ -423,7 +423,7 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             XCTFail("Bad call in testNoticeHttpTransaction")
             return
         }
-        
+
         guard let callWithNoParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
                                              options: [:],
                                              success: { (result, call) in
@@ -768,7 +768,7 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         
         NewRelicCapacitorPlugin.shutdown(call)
     }
-    
+
     func testGetAgentConfiguration() {
         guard let call = CAPPluginCall(callbackId: "getAgentConfiguration",
                                  options: [:],
@@ -781,9 +781,9 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             XCTFail("Bad call in getAgentConfiguration")
             return
         }
-        
+
         NewRelicCapacitorPlugin.getAgentConfiguration(call)
     }
-    
+
 }
 
