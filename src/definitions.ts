@@ -62,6 +62,7 @@ export interface AgentConfiguration {
   collectorAddress?: string
   crashCollectorAddress?: string
   sendConsoleEvents?: boolean
+  fedRampEnabled?: boolean
 }
 
 export namespace NREnums {

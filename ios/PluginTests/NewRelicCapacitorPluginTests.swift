@@ -733,7 +733,7 @@ class NewRelicCapacitorPluginTests: XCTestCase {
     }
     
     func testShutdown() {
-        guard let call = CAPPluginCall(callbackId: "currentSessionId",
+        guard let call = CAPPluginCall(callbackId: "shutdown",
                                  options: [:],
                                  success: { (result, call) in
             XCTAssertNotNil(result);
@@ -742,6 +742,22 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             XCTFail("Error shouldn't have been called")
         }) else {
             XCTFail("Bad call in testShutdown")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.shutdown(call)
+    }
+    
+    func testGetAgentConfiguration() {
+        guard let call = CAPPluginCall(callbackId: "getAgentConfiguration",
+                                 options: [:],
+                                 success: { (result, call) in
+            XCTAssertNotNil(result);
+        },
+                                 error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in getAgentConfiguration")
             return
         }
         

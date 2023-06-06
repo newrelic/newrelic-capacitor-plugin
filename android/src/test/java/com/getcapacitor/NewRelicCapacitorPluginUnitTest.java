@@ -511,5 +511,14 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
     }
 
+    @Test
+    public void testGetAgentConfiguration() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+
+        plugin.getAgentConfiguration(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve(Mockito.any());
+        verify(callWithGoodParams, times(0)).reject(Mockito.any());
+    }
 
 }

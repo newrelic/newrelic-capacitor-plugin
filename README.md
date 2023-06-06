@@ -78,13 +78,16 @@ let agentConfig : AgentConfiguration = {
   webViewInstrumentation: true,
 
   // Optional:Set a specific collector address for sending data. Omit this field for default address.
-  collectorAddress: "",
+  // collectorAddress: "",
 
   // Optional:Set a specific crash collector address for sending crashes. Omit this field for default address.
-  crashCollectorAddress: ""
+  // crashCollectorAddress: "",
 
   // Optional:Enable or disable sending JS console logs to New Relic.
-  sendConsoleEvents: true
+  sendConsoleEvents: true,
+
+  // Optional: nable or disable reporting data using different endpoints for US government clients.
+  // fedRampEnabled: false
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
@@ -105,7 +108,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.10.0"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.11.1"
       }
     }
   ```
@@ -154,6 +157,7 @@ ionic capacitor run ios
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
 * [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
 * [`getAgentConfiguration(...)`](#getagentconfiguration)
+
 
 
 
@@ -563,6 +567,23 @@ getAgentConfiguration(options?: {} | undefined) => Promise<AgentConfiguration>
 
     let agentConfig : AgentConfiguration = await NewRelicCapacitorPlugin.getAgentConfiguration();
     let sendConsoleEvents = agentConfig.sendConsoleEvents;
+```
+--------------------
+
+### [shutdown(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/shut-down/)
+> Shut down the agent within the current application lifecycle during runtime.
+```typescript
+shutdown(options?: {} | undefined) => void
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
+
+#### Usage:
+```ts
+    NewRelicCapacitorPlugin.shutdown();
 ```
 --------------------
 
