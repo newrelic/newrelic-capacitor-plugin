@@ -146,7 +146,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NRLogger.setLogLevels(logLevel)
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.2.0")
+        NewRelic.perform(selector, with:"1.2.1")
         
         if collectorAddress == nil && crashCollectorAddress == nil {
             NewRelic.start(withApplicationToken: appKey)
