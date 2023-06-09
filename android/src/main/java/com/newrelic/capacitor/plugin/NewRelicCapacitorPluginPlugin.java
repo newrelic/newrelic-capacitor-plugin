@@ -48,6 +48,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String collectorAddress;
         String crashCollectorAddress;
         boolean sendConsoleEvents;
+        boolean fedRampEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -61,6 +62,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.collectorAddress = "mobile-collector.newrelic.com";
             this.crashCollectorAddress = "mobile-crash.newrelic.com";
             this.sendConsoleEvents = true;
+            this.fedRampEnabled = false;
         }
     }
 
@@ -142,6 +144,14 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 agentConfig.httpResponseBodyCaptureEnabled = true;
             }
 
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("fedRampEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.FedRampEnabled);
+                agentConfig.fedRampEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.FedRampEnabled);
+                agentConfig.fedRampEnabled = true;
+            }
+
             if(agentConfiguration.getBool("loggingEnabled") != null) {
                 loggingEnabled = Boolean.TRUE.equals(agentConfiguration.getBool("loggingEnabled"));
                 agentConfig.loggingEnabled = loggingEnabled;
@@ -184,7 +194,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         // Use default collector addresses if not set
         if(collectorAddress == null && crashCollectorAddress == null) {
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.2.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.2.1")
                     .withLoggingEnabled(loggingEnabled)
                     .withLogLevel(logLevel)
                     .start(this.getActivity().getApplication());
@@ -196,7 +206,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 crashCollectorAddress = "mobile-crash.newrelic.com";
             }
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.2.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.2.1")
                     .withLoggingEnabled(loggingEnabled)
                     .withLogLevel(logLevel)
                     .usingCollectorAddress(collectorAddress)
@@ -599,6 +609,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             ret.put("collectorAddress", agentConfig.collectorAddress);
             ret.put("crashCollectorAddress", agentConfig.crashCollectorAddress);
             ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
+            ret.put("fedRampEnabled", agentConfig.fedRampEnabled);
         }
         call.resolve(ret);
     }

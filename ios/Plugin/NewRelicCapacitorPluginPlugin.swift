@@ -27,6 +27,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var collectorAddress: String = "mobile-collector.newrelic.com"
         var crashCollectorAddress: String = "mobile-crash.newrelic.com"
         var sendConsoleEvents: Bool = true;
+        var fedRampEnabled: Bool = false;
     }
     
     private let jscRegex = try! NSRegularExpression(pattern: #"^\s*(?:([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$"#,
@@ -80,6 +81,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             if agentConfiguration["webViewInstrumentation"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
                 agentConfig.webViewInstrumentation = false;
+            }
+
+            if agentConfiguration["fedRampEnabled"] as? Bool == true {
+                NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_FedRampEnabled)
+                agentConfig.fedRampEnabled = true;
             }
             
             if agentConfiguration["logLevel"] != nil {
@@ -140,7 +146,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NRLogger.setLogLevels(logLevel)
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.2.0")
+        NewRelic.perform(selector, with:"1.2.1")
         
         if collectorAddress == nil && crashCollectorAddress == nil {
             NewRelic.start(withApplicationToken: appKey)
@@ -487,7 +493,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "logLevel": agentConfig.logLevel,
             "collectorAddress": agentConfig.collectorAddress,
             "crashCollectorAddress": agentConfig.crashCollectorAddress,
-            "sendConsoleEvents": agentConfig.sendConsoleEvents
+            "sendConsoleEvents": agentConfig.sendConsoleEvents,
+            "fedRampEnabled": agentConfig.fedRampEnabled
         ])
     }
     @objc func shutdown(_ call: CAPPluginCall) {
