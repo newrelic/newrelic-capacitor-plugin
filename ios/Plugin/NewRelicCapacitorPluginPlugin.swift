@@ -428,6 +428,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "fatal": isFatal,
             "stackTraceElements": stackFramesArr
         ]
+        if let customAttributes = call.getObject("attributes") {
+            for (key, value) in customAttributes {
+                attributes[key] = value
+            }
+        }
         NewRelic.recordHandledException(withStackTrace: attributes)
 
         call.resolve()
