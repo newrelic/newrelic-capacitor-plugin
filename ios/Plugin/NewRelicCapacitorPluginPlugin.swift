@@ -422,7 +422,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         let stack = call.getString("stack") ?? ""
         let stackFramesArr = parseStackTrace(stackString: stack)
-        let attributes : [String: Any] = [
+        var attributes : [String: Any] = [
             "name" : name,
             "reason": message,
             "fatal": isFatal,
