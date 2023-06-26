@@ -227,6 +227,17 @@ public class NewRelicCapacitorPluginUnitTest {
         when(callWithGoodParams.getLong("bytesReceived")).thenReturn(10000L);
         when(callWithGoodParams.getString("body")).thenReturn("fakeBody");
 
+        PluginCall callWithTraceParams = mock(PluginCall.class);
+        when(callWithTraceParams.getString("url")).thenReturn("https://fakewebsite.com");
+        when(callWithTraceParams.getString("method")).thenReturn("GET");
+        when(callWithTraceParams.getInt("status")).thenReturn(200);
+        when(callWithTraceParams.getLong("startTime")).thenReturn(12345678L);
+        when(callWithTraceParams.getLong("endTime")).thenReturn(12345678L);
+        when(callWithTraceParams.getLong("bytesSent")).thenReturn(0L);
+        when(callWithTraceParams.getLong("bytesReceived")).thenReturn(10000L);
+        when(callWithTraceParams.getString("body")).thenReturn("fakeBody");
+        when(callWithTraceParams.getObject("traceAttributes")).thenReturn(new JSObject());
+
         PluginCall callWithNoParams = mock(PluginCall.class);
         when(callWithNoParams.getString("url")).thenReturn(null);
         when(callWithNoParams.getString("method")).thenReturn(null);
@@ -238,10 +249,14 @@ public class NewRelicCapacitorPluginUnitTest {
         when(callWithNoParams.getString("body")).thenReturn(null);
 
         plugin.noticeHttpTransaction(callWithGoodParams);
+        plugin.noticeHttpTransaction(callWithTraceParams);
         plugin.noticeHttpTransaction(callWithNoParams);
 
         verify(callWithGoodParams, times(1)).resolve();
         verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
+
+        verify(callWithTraceParams, times(1)).resolve();
+        verify(callWithTraceParams, times(0)).reject(Mockito.anyString());
 
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
@@ -519,6 +534,15 @@ public class NewRelicCapacitorPluginUnitTest {
 
         verify(callWithGoodParams, times(1)).resolve(Mockito.any());
         verify(callWithGoodParams, times(0)).reject(Mockito.any());
+    }
+
+    @Test
+    public void testGenerateDistributedTracingHeaders() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+
+        plugin.generateDistributedTracingHeaders(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve(Mockito.any());
     }
 
 }
