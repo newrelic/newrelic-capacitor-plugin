@@ -37,6 +37,15 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     private let nodeRegex = try! NSRegularExpression(pattern:#"^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$"#,
                                                      options: .caseInsensitive)
     
+    struct NRTraceConstants {
+        static let TRACE_PARENT = "traceparent";
+        static let TRACE_STATE = "tracestate";
+        static let NEWRELIC = "newrelic";
+        static let TRACE_ID = "trace.id";
+        static let GUID = "guid";
+        static let ID = "id";
+    }
+    
     public override func load() {
     }
 
@@ -288,6 +297,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         let uint_bytesSent = UInt(bytesSent)
         let uint_bytesReceived = UInt(bytesReceived)
         let data = Data(body.utf8)
+        let traceAttributes = call.getObject("traceAttributes")
         
         NewRelic.noticeNetworkRequest(
             for: nsurl,
@@ -299,7 +309,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             bytesSent: uint_bytesSent,
             bytesReceived: uint_bytesReceived,
             responseData: data,
-            traceHeaders: nil,
+            traceHeaders: traceAttributes,
             andParams: nil
         )
         call.resolve()
@@ -497,9 +507,19 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "fedRampEnabled": agentConfig.fedRampEnabled
         ])
     }
+
     @objc func shutdown(_ call: CAPPluginCall) {
-        NewRelic.shutdown();
-        call.resolve();
+        NewRelic.shutdown()
+        call.resolve()
+    }
+
+    @objc func generateDistributedTracingHeaders(_ call: CAPPluginCall) {
+        let headersDict = NewRelic.generateDistributedTracingHeaders()
+        call.resolve([
+            NRTraceConstants.TRACE_PARENT: headersDict[NRTraceConstants.TRACE_PARENT],
+            NRTraceConstants.TRACE_STATE: headersDict[NRTraceConstants.TRACE_STATE],
+            NRTraceConstants.NEWRELIC: headersDict[NRTraceConstants.NEWRELIC]
+        ])
     }
     
 }

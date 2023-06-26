@@ -133,6 +133,10 @@ ionic capacitor run android
 # iOS apps
 ionic capacitor run ios
 ```
+
+## Angular HttpClient Instrumentation
+To learn more about how to add custom instrumentation for Angular's HttpClient, follow the [link here](./angular_http_client_instrumentation.md).
+
 ## API
 
 
@@ -157,6 +161,8 @@ ionic capacitor run ios
 * [`networkErrorRequestEnabled(...)`](#networkerrorrequestenabled)
 * [`httpResponseBodyCaptureEnabled(...)`](#httpresponsebodycaptureenabled)
 * [`getAgentConfiguration(...)`](#getagentconfiguration)
+* [`shutdown(...)`](#shutdown)
+* [`generateDistributedTracingHeaders(...)`](#generateDistributedTracingHeaders)
 
 
 
@@ -363,12 +369,12 @@ incrementAttribute(options: { name: string; value?: number; }) => void
 ### [noticeHttpTransaction(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/notice-http-transaction)
 > Manually records HTTP transactions, with an option to also send a response body.
 ```typescript
-noticeHttpTransaction(options: { url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; }) => void
+noticeHttpTransaction(options: { url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; traceAttributes?: object}) => void
 ```
 
 | Param         | Type                                                                                                                                                      |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; }</code> |
+| **`options`** | <code>{ url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; traceAttributes?: object}</code> |
 
 #### Usage:
 ```ts
@@ -581,9 +587,34 @@ shutdown(options?: {} | undefined) => void
 | **`options`** | <code>{}</code> |
 
 
+--------------------
+
+### [generateDistributedTracingHeaders(...)]
+> Generates headers and trace attributes required for manual distributed tracing and http instrumentation.
+```typescript
+generateDistributedTracingHeaders(options?: {} | undefined) => Promise<object>
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{}</code> |
+
 #### Usage:
 ```ts
-    NewRelicCapacitorPlugin.shutdown();
+    let distributedTraceAttributes = await NewRelicCapacitorPlugin.generateDistributedTracingHeaders();
+    // Add traceparent, tracestate, and newrelic headers to http request
+    // ....
+    NewRelicCapacitorPlugin.noticeHttpTransaction({
+      url: "https://fakewebsite.com",
+      method: "GET",
+      status: 200,
+      startTime: Date.now(),
+      endTime: Date.now(),
+      bytesSent: 10,
+      bytesReceived: 2500,
+      body: "fake http response body 200",
+      traceAttributes: distributedTraceAttributes,
+    });
 ```
 --------------------
 
