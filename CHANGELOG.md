@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+## New in this release
+* Upgrade native Android agent to v7.0.0
+* AGP 8 and Capacitor 5.0 Support
+
 ## 1.2.1
 
 ## New in this release
