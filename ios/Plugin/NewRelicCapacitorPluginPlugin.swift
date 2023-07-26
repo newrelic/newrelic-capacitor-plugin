@@ -422,12 +422,17 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         let stack = call.getString("stack") ?? ""
         let stackFramesArr = parseStackTrace(stackString: stack)
-        let attributes : [String: Any] = [
+        var attributes : [String: Any] = [
             "name" : name,
             "reason": message,
             "fatal": isFatal,
             "stackTraceElements": stackFramesArr
         ]
+        if let customAttributes = call.getObject("attributes") {
+            for (key, value) in customAttributes {
+                attributes[key] = value
+            }
+        }
         NewRelic.recordHandledException(withStackTrace: attributes)
 
         call.resolve()

@@ -499,7 +499,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         stack = (stack == null) ? "null" : stack;
 
         StackTraceElement[] stackFrames = parseStackTrace(stack);
-
+        JSONObject customAttributes = call.getObject("attributes");
+        if(customAttributes != null) {
+            Map yourHashMap = new Gson().fromJson(String.valueOf(customAttributes), Map.class);
+            exceptionMap.putAll(yourHashMap);
+        }
         NewRelicCapacitorException exception = new NewRelicCapacitorException(message, stackFrames);
         NewRelic.recordHandledException(exception, exceptionMap);
 
