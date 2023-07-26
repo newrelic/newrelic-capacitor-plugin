@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1
+
+## New in this release
+* Upgrade native iOS agent to v7.4.6
+
 ## 1.3.0
 
 ## New in this release
