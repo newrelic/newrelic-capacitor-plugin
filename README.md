@@ -108,7 +108,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:6.11.1"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.0.0"
       }
     }
   ```
@@ -624,12 +624,12 @@ generateDistributedTracingHeaders(options?: {} | undefined) => Promise<object>
 > Records JavaScript/TypeScript errors for Ionic Capacitor. You should add this method to your framework's global error handler.
 
 ```typescript
-recordError(options: { name: string; message: string; stack: string; isFatal: boolean; }) => void
+recordError(options: { name: string; message: string; stack: string; isFatal: boolean; attributes?: object; }) => void
 ```
 
 | Param         | Type                                                                             |
 | ------------- | -------------------------------------------------------------------------------- |
-| **`options`** | <code>{ name: string; message: string; stack: string; isFatal: boolean; }</code> |
+| **`options`** | <code>{ name: string; message: string; stack: string; isFatal: boolean; attributes?: object; }</code> |
 
 #### Usage:
 ```ts
@@ -641,6 +641,10 @@ recordError(options: { name: string; message: string; stack: string; isFatal: bo
         message: e.message,
         stack: e.stack,
         isFatal: false,
+        attributes: {
+          "status": "pending",
+          "escalate": false,
+        },
       });
     }
 ```
@@ -663,6 +667,10 @@ export class GlobalErrorHandler extends ErrorHandler {
       message: error.message,
       stack: error.stack ? error.stack : "No stack available",
       isFatal: false,
+      attributes: {
+        "status": "pending",
+        "escalate": false,
+      },
     });
     super.handleError(error);
   }
@@ -710,6 +718,10 @@ class ErrorBoundary extends Component<Props, State> {
       message: error.message,
       stack: error.stack ? error.stack : "No stack available",
       isFatal: false,
+      attributes: {
+        "status": "pending",
+        "escalate": false,
+      },
     });
   }
 
@@ -763,6 +775,10 @@ Vue.config.errorHandler = (err, vm, info) => {
       message: err.message,
       stack: err.stack ? err.stack : "No stack available",
       isFatal: false,
+      attributes: {
+        "status": "pending",
+        "escalate": false,
+      },
     });
 }
 ```
