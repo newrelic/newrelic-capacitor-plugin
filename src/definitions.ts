@@ -41,6 +41,7 @@ export interface NewRelicCapacitorPluginPlugin {
     message: string;
     stack: string;
     isFatal: boolean;
+    attributes?: object;
   }): void;
   analyticsEventEnabled(options: {enabled: boolean}): void;
   networkRequestEnabled(options: {enabled: boolean}): void;

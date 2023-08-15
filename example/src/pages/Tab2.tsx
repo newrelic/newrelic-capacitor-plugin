@@ -18,10 +18,21 @@ import {
 import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 import ErrorBoundary from "../ErrorBoundary";
 import "./Tab2.css";
+import axios from 'axios';
 
 const Tab2: React.FC = () => {
 
   const badApiLoad = async () => {
+
+    axios.get('https://api.github.com/users/mapbo')
+  .then((response) => {
+    console.log(response.data);
+    console.log(response.status);
+    console.log(response.statusText);
+    console.log(response.headers);
+    console.log(response.config);
+  });
+
     const id = await NewRelicCapacitorPlugin.startInteraction({ value: 'StartLoadBadApiCall'});
     console.log(id);
     const url = 'https://fakewebsite.com/moviessssssssss.json';
@@ -53,7 +64,22 @@ const Tab2: React.FC = () => {
 
   // Should be caught by ErrorBoundary component where we record error
   const errorHandler = () => {
+    try {
     throw new Error("example error message");
+    } catch(e ) {
+    if (typeof e === "string") {
+        e.toUpperCase() // works, `e` narrowed to string
+    } else if (e instanceof Error) {
+        NewRelicCapacitorPlugin.recordError({
+          name: e.name,
+          message: e.message,
+          stack: e.stack ? e.stack : "",
+          isFatal: false,
+          attributes : {"error": "From Attributes"}
+        });
+      }
+    }
+
   }
 
   const consoleHandler = () => {

@@ -55,7 +55,7 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
     setMaxEventPoolSize(_options: { maxPoolSize: number; }): void {
         // throw new Error('Method not implemented.');
     }
-    recordError(_options: { name: string; message: string; stack: string; isFatal: boolean; }): void {
+    recordError(_options: { name: string; message: string; stack: string; isFatal: boolean; attributes?: object }): void {
        // throw new Error('Method not implemented.');
     }
     analyticsEventEnabled(_options: { enabled: boolean; }): void {
