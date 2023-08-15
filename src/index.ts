@@ -75,6 +75,7 @@ window.addEventListener('error', event => {
   });
 });
 
+
 window.addEventListener('unhandledrejection', e => {
   var err = new Error(e.reason);
   NewRelicCapacitorPlugin.recordError({
@@ -85,3 +86,86 @@ window.addEventListener('unhandledrejection', e => {
   });
 
 });
+
+type NetworkRequest = {
+  url: string;
+  method: string;
+  bytesSent: number;
+  startTime: number;
+  endTime?: number;
+  status?: number;
+  bytesreceived?: number;
+  body?: string;
+};
+
+const networkRequest: NetworkRequest = {
+  url: "",
+  method: "",
+  bytesSent: 0,
+  startTime: 0,
+};
+
+const originalXhrOpen = XMLHttpRequest.prototype.open;
+const originalXhrSend = XMLHttpRequest.prototype.send;
+
+window.XMLHttpRequest.prototype.open = function (
+  method: string,
+  url: string
+): void {
+  networkRequest.url = url;
+  networkRequest.method = method;
+  networkRequest.bytesSent = 0;
+  networkRequest.startTime = Date.now();
+  return originalXhrOpen.apply(this, arguments as any);
+};
+
+window.XMLHttpRequest.prototype.send = function (
+): void {
+  if (this.addEventListener) {
+    this.addEventListener(
+      "readystatechange",
+      async () => {
+        if (this.readyState === this.HEADERS_RECEIVED) {
+          if (this.getAllResponseHeaders()) {
+            const responseHeaders =
+              this.getAllResponseHeaders().split("\r\n");
+            const responseHeadersDictionary: {
+              [key: string]: string | undefined;
+            } = {};
+            responseHeaders.forEach((element) => {
+              const key = element.split(":")[0];
+              const value = element.split(":")[1];
+              responseHeadersDictionary[key] = value;
+            });
+          }
+        }
+        if (this.readyState === this.DONE) {
+          networkRequest.endTime = Date.now();
+          networkRequest.status = this.status;
+          
+          if (this.responseText !== undefined) {
+            networkRequest.bytesreceived = this.responseText.length;
+            networkRequest.body = this.responseText;
+          } else {
+            networkRequest.bytesreceived = 0;
+            networkRequest.body = "";
+          }
+
+          NewRelicCapacitorPlugin.noticeHttpTransaction({
+            url:networkRequest.url,
+            method:networkRequest.method,
+            status:networkRequest.status,
+            startTime:networkRequest.startTime,
+            endTime:networkRequest.endTime,
+            bytesSent:networkRequest.bytesSent,
+            bytesReceived:networkRequest.bytesreceived,
+            body:networkRequest.body
+          }
+          );
+        }
+      },
+      false
+    );
+  }
+  return originalXhrSend.apply(this, arguments as any);
+};

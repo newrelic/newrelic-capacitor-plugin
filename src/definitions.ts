@@ -23,7 +23,8 @@ export interface NewRelicCapacitorPluginPlugin {
     endTime: number, 
     bytesSent: number, 
     bytesReceived: number, 
-    body: string
+    body: string,
+    traceAttributes?: object
   }): void;
   recordMetric(options: {
     name: string,
@@ -40,6 +41,7 @@ export interface NewRelicCapacitorPluginPlugin {
     message: string;
     stack: string;
     isFatal: boolean;
+    attributes?: object;
   }): void;
   analyticsEventEnabled(options: {enabled: boolean}): void;
   networkRequestEnabled(options: {enabled: boolean}): void;
@@ -47,6 +49,7 @@ export interface NewRelicCapacitorPluginPlugin {
   httpResponseBodyCaptureEnabled(options: {enabled: boolean}): void;
   getAgentConfiguration(options?: {}) : Promise<AgentConfiguration>;
   shutdown(options?: {}): void;
+  generateDistributedTracingHeaders(options?: {}): Promise<object>;
 }
 
 export interface AgentConfiguration {
