@@ -93,4 +93,7 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
     shutdown(_options?: {} | undefined): void {
        //  throw new Error('Method not implemented.');
     }
+    generateDistributedTracingHeaders(_options: {}): any {
+        //  throw new Error('Method not implemented.');
+    }
 }

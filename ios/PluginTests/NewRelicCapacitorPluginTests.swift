@@ -404,6 +404,26 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             return
         }
         
+        guard let callWithTraceParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
+                                               options: ["url": "https://fakewebsite.com",
+                                                         "method": "GET",
+                                                         "status": 200,
+                                                         "startTime": Date().timeIntervalSince1970,
+                                                         "endTime": Date().timeIntervalSince1970,
+                                                         "bytesSent": 1000,
+                                                         "bytesReceived": 1000,
+                                                         "body": "fake body",
+                                                         "eventAttributes": ["{'traceTest': '12345'}"]],
+                                               success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                               error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransaction")
+            return
+        }
+        
         guard let callWithNoParams = CAPPluginCall(callbackId: "noticeHttpTransaction",
                                              options: [:],
                                              success: { (result, call) in
@@ -417,6 +437,7 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         }
         
         NewRelicCapacitorPlugin.noticeHttpTransaction(callWithGoodParams)
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithTraceParams)
         NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams)
     }
     
@@ -761,6 +782,8 @@ class NewRelicCapacitorPluginTests: XCTestCase {
             return
         }
         
-        NewRelicCapacitorPlugin.shutdown(call)
+        NewRelicCapacitorPlugin.getAgentConfiguration(call)
     }
+    
 }
+

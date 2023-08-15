@@ -17,6 +17,8 @@ import com.getcapacitor.annotation.Permission;
 import com.newrelic.agent.android.ApplicationFramework;
 import com.newrelic.agent.android.FeatureFlag;
 import com.newrelic.agent.android.NewRelic;
+import com.newrelic.agent.android.distributedtracing.TraceContext;
+import com.newrelic.agent.android.distributedtracing.TracePayload;
 import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.logging.AgentLog;
 import com.newrelic.com.google.gson.Gson;
@@ -72,6 +74,15 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     private Pattern nodeStackTraceRegex =
             Pattern.compile("^\\s*at (?:((?:\\[object object\\])?[^\\\\/]+(?: \\[as \\S+\\])?) )?\\(?(.*?):(\\d+)(?::(\\d+))?\\)?\\s*$",
                     Pattern.CASE_INSENSITIVE);
+
+    protected static final class NRTraceConstants {
+        public static final String TRACE_PARENT = "traceparent";
+        public static final String TRACE_STATE = "tracestate";
+        public static final String NEWRELIC = "newrelic";
+        public static final String TRACE_ID = "trace.id";
+        public static final String GUID = "guid";
+        public static final String ID = "id";
+    }
 
     @Override
     public void load() {
@@ -376,7 +387,13 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             return;
         }
 
-        NewRelic.noticeHttpTransaction(url, method, status, startTime, endTime, bytesSent, bytesReceived, body);
+        JSONObject traceAttributes = call.getObject("traceAttributes");
+        Map<String, Object> traceHeadersMap = new HashMap<String, Object>();
+        if (traceAttributes != null) {
+          traceHeadersMap = new Gson().fromJson(String.valueOf(traceAttributes), Map.class);
+        }
+
+        NewRelic.noticeHttpTransaction(url, method, status, startTime, endTime, bytesSent, bytesReceived, body, null, null, traceHeadersMap);
         call.resolve();
     }
 
@@ -622,6 +639,32 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     public void shutdown(PluginCall call) {
         NewRelic.shutdown();
         call.resolve();
+    }
+
+    @PluginMethod
+    public void generateDistributedTracingHeaders(PluginCall call) {
+
+        JSObject dtHeaders = new JSObject();
+        TraceContext traceContext = NewRelic.noticeDistributedTrace(null);
+        TracePayload tracePayload = traceContext.getTracePayload();
+
+        String headerName = tracePayload.getHeaderName();
+        String headerValue = tracePayload.getHeaderValue();
+        String spanId = tracePayload.getSpanId();
+        String traceId = tracePayload.getTraceId();
+        String parentId = traceContext.getParentId();
+        String vendor = traceContext.getVendor();
+        String accountId = traceContext.getAccountId();
+        String applicationId = traceContext.getApplicationId();
+
+        dtHeaders.put(headerName, headerValue);
+        dtHeaders.put(NRTraceConstants.TRACE_PARENT, "00-" + traceId + "-" + parentId + "-00");
+        dtHeaders.put(NRTraceConstants.TRACE_STATE, vendor + "=0-2-" + accountId + "-" + applicationId + "-" + parentId + "----" + System.currentTimeMillis());
+        dtHeaders.put(NRTraceConstants.TRACE_ID, traceId);
+        dtHeaders.put(NRTraceConstants.ID, spanId);
+        dtHeaders.put(NRTraceConstants.GUID, spanId);
+
+        call.resolve(dtHeaders);
     }
 
 }
