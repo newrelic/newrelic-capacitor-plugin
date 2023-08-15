@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.2
+
+## New in this release
+* Implementing HTTP Instrumentation for Angular HTTP Client
+* Integrated HTTP Instrumentation for XMLHttpRequest and Axios HTTP clients
+* Introduced support for custom attributes in the `recordError` method
+
 ## 1.3.1
 
 ## New in this release
