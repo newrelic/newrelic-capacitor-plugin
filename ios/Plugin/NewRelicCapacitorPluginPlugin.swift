@@ -231,7 +231,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         let interactionId = NewRelic.startInteraction(withName: actionName)
         call.resolve([
-            "value": interactionId
+            "value": interactionId as Any
         ])
     }
     
@@ -261,7 +261,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func currentSessionId(_ call: CAPPluginCall) {
         let sessionId = NewRelic.currentSessionId()
         call.resolve([
-            "sessionId": sessionId
+            "sessionId": sessionId as Any
         ])
     }
     
@@ -521,9 +521,9 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func generateDistributedTracingHeaders(_ call: CAPPluginCall) {
         let headersDict = NewRelic.generateDistributedTracingHeaders()
         call.resolve([
-            NRTraceConstants.TRACE_PARENT: headersDict[NRTraceConstants.TRACE_PARENT],
-            NRTraceConstants.TRACE_STATE: headersDict[NRTraceConstants.TRACE_STATE],
-            NRTraceConstants.NEWRELIC: headersDict[NRTraceConstants.NEWRELIC]
+            NRTraceConstants.TRACE_PARENT: headersDict[NRTraceConstants.TRACE_PARENT] as Any,
+            NRTraceConstants.TRACE_STATE: headersDict[NRTraceConstants.TRACE_STATE] as Any,
+            NRTraceConstants.NEWRELIC: headersDict[NRTraceConstants.NEWRELIC] as Any
         ])
     }
     
