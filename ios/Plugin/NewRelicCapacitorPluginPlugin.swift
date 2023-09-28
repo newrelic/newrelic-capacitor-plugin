@@ -156,16 +156,18 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
         NewRelic.perform(selector, with:"1.2.1")
-        
-        if collectorAddress == nil && crashCollectorAddress == nil {
-            NewRelic.start(withApplicationToken: appKey)
-        } else {
-            NewRelic.start(withApplicationToken: appKey,
-                           andCollectorAddress: collectorAddress ?? "mobile-collector.newrelic.com",
-                           andCrashCollectorAddress: crashCollectorAddress ?? "mobile-crash.newrelic.com")
+
+        DispatchQueue.main.async {
+            if collectorAddress == nil && crashCollectorAddress == nil {
+                NewRelic.start(withApplicationToken: appKey)
+            } else {
+                NewRelic.start(withApplicationToken: appKey,
+                               andCollectorAddress: collectorAddress ?? "mobile-collector.newrelic.com",
+                               andCrashCollectorAddress: crashCollectorAddress ?? "mobile-crash.newrelic.com")
+            }
+
+            call.resolve()
         }
-        
-        call.resolve()
     }
     
     @objc func setUserId(_ call: CAPPluginCall) {
@@ -231,7 +233,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         let interactionId = NewRelic.startInteraction(withName: actionName)
         call.resolve([
-            "value": interactionId
+            "value": interactionId as Any
         ])
     }
     
@@ -261,7 +263,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func currentSessionId(_ call: CAPPluginCall) {
         let sessionId = NewRelic.currentSessionId()
         call.resolve([
-            "sessionId": sessionId
+            "sessionId": sessionId as Any
         ])
     }
     
@@ -521,9 +523,9 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func generateDistributedTracingHeaders(_ call: CAPPluginCall) {
         let headersDict = NewRelic.generateDistributedTracingHeaders()
         call.resolve([
-            NRTraceConstants.TRACE_PARENT: headersDict[NRTraceConstants.TRACE_PARENT],
-            NRTraceConstants.TRACE_STATE: headersDict[NRTraceConstants.TRACE_STATE],
-            NRTraceConstants.NEWRELIC: headersDict[NRTraceConstants.NEWRELIC]
+            NRTraceConstants.TRACE_PARENT: headersDict[NRTraceConstants.TRACE_PARENT] as Any,
+            NRTraceConstants.TRACE_STATE: headersDict[NRTraceConstants.TRACE_STATE] as Any,
+            NRTraceConstants.NEWRELIC: headersDict[NRTraceConstants.NEWRELIC] as Any
         ])
     }
     
