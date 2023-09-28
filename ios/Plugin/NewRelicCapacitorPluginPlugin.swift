@@ -156,16 +156,18 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
         NewRelic.perform(selector, with:"1.2.1")
-        
-        if collectorAddress == nil && crashCollectorAddress == nil {
-            NewRelic.start(withApplicationToken: appKey)
-        } else {
-            NewRelic.start(withApplicationToken: appKey,
-                           andCollectorAddress: collectorAddress ?? "mobile-collector.newrelic.com",
-                           andCrashCollectorAddress: crashCollectorAddress ?? "mobile-crash.newrelic.com")
+
+        DispatchQueue.main.async {
+            if collectorAddress == nil && crashCollectorAddress == nil {
+                NewRelic.start(withApplicationToken: appKey)
+            } else {
+                NewRelic.start(withApplicationToken: appKey,
+                               andCollectorAddress: collectorAddress ?? "mobile-collector.newrelic.com",
+                               andCrashCollectorAddress: crashCollectorAddress ?? "mobile-crash.newrelic.com")
+            }
+
+            call.resolve()
         }
-        
-        call.resolve()
     }
     
     @objc func setUserId(_ call: CAPPluginCall) {
