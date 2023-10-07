@@ -95,12 +95,13 @@ type NetworkRequest = {
   endTime?: number;
   status?: number;
   bytesreceived?: number;
-  body?: string;
+  body: string;
 };
 
 const networkRequest: NetworkRequest = {
   url: "",
   method: "",
+  body: "",
   bytesSent: 0,
   startTime: 0,
 };
@@ -142,13 +143,18 @@ window.XMLHttpRequest.prototype.send = function (
         if (this.readyState === this.DONE) {
           networkRequest.endTime = Date.now();
           networkRequest.status = this.status;
-          
-          if (this.responseText !== undefined) {
+
+          const type = this.responseType;
+          if (type === "arraybuffer") {
+            networkRequest.bytesreceived = this.response.byteLength as number;
+          } else if (type === "blob") {
+            networkRequest.bytesreceived = this.response.size as number;
+          } else if (type === "text" || type === "" || type === undefined) {
             networkRequest.bytesreceived = this.responseText.length;
             networkRequest.body = this.responseText;
           } else {
+            // unsupported response type
             networkRequest.bytesreceived = 0;
-            networkRequest.body = "";
           }
 
           NewRelicCapacitorPlugin.noticeHttpTransaction({
