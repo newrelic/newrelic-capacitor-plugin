@@ -87,7 +87,7 @@ let agentConfig : AgentConfiguration = {
   sendConsoleEvents: true,
 
   // Optional: nable or disable reporting data using different endpoints for US government clients.
-  // fedRampEnabled: false
+   fedRampEnabled: false
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
