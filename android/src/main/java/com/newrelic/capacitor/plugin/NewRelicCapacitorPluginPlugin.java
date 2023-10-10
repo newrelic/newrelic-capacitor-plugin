@@ -6,8 +6,6 @@
 package com.newrelic.capacitor.plugin;
 
 import android.Manifest;
-import android.util.Log;
-
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -68,17 +66,16 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         }
     }
 
-    private Pattern chromeStackTraceRegex =
+    private final Pattern chromeStackTraceRegex =
             Pattern.compile("^\\s*at (.*?) ?\\(((?:file|https?|blob|chrome-extension|native|eval|webpack|<anonymous>|\\/|[a-z]:\\\\|\\\\\\\\).*?)(?::(\\d+))?(?::(\\d+))?\\)?\\s*$",
                     Pattern.CASE_INSENSITIVE);
-    private Pattern nodeStackTraceRegex =
+    private final Pattern nodeStackTraceRegex =
             Pattern.compile("^\\s*at (?:((?:\\[object object\\])?[^\\\\/]+(?: \\[as \\S+\\])?) )?\\(?(.*?):(\\d+)(?::(\\d+))?\\)?\\s*$",
                     Pattern.CASE_INSENSITIVE);
 
     protected static final class NRTraceConstants {
         public static final String TRACE_PARENT = "traceparent";
         public static final String TRACE_STATE = "tracestate";
-        public static final String NEWRELIC = "newrelic";
         public static final String TRACE_ID = "trace.id";
         public static final String GUID = "guid";
         public static final String ID = "id";
@@ -155,12 +152,12 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 agentConfig.httpResponseBodyCaptureEnabled = true;
             }
 
-            if(Boolean.FALSE.equals(agentConfiguration.getBool("fedRampEnabled"))) {
-                NewRelic.disableFeature(FeatureFlag.FedRampEnabled);
-                agentConfig.fedRampEnabled = false;
-            } else {
+            if(Boolean.TRUE.equals(agentConfiguration.getBool("fedRampEnabled"))) {
                 NewRelic.enableFeature(FeatureFlag.FedRampEnabled);
                 agentConfig.fedRampEnabled = true;
+            } else {
+                NewRelic.disableFeature(FeatureFlag.FedRampEnabled);
+                agentConfig.fedRampEnabled = false;
             }
 
             if(agentConfiguration.getBool("loggingEnabled") != null) {
@@ -197,7 +194,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             }
 
             if(agentConfiguration.getBool("sendConsoleEvents") != null) {
-                agentConfig.sendConsoleEvents = agentConfiguration.getBool("sendConsoleEvents");
+                agentConfig.sendConsoleEvents = Boolean.TRUE.equals(agentConfiguration.getBool("sendConsoleEvents"));
             } 
 
         }
