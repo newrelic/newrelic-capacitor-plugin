@@ -87,7 +87,7 @@ let agentConfig : AgentConfiguration = {
   sendConsoleEvents: true,
 
   // Optional: nable or disable reporting data using different endpoints for US government clients.
-  // fedRampEnabled: false
+   fedRampEnabled: false
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
@@ -108,7 +108,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.0.0"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.1.0"
       }
     }
   ```
