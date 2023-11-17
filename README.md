@@ -10,7 +10,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 
 ## Features
 * Capture JavaScript errors
-* Network Instrumentation
+* Network Instrumentation (CapacitorHttp Client and XMLHttpRequest) 
 * Distributed Tracing
 * Tracking console log, warn and error
 * Promise rejection tracking
