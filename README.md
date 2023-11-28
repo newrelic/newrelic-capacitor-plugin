@@ -391,7 +391,28 @@ noticeHttpTransaction(options: { url: string; method: string; status: number; st
 ```
 --------------------
 
+### [noticeNetworkFailure(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/notice-network-failure)
+> Records network failures. If a network request fails, use this method to record details about the failures. In most cases, place this call inside exception handlers, such as catch blocks. Supported failures are: Unknown, BadURL, TimedOut, CannotConnectToHost, DNSLookupFailed, BadServerResponse, SecureConnectionFailed.
+```typescript
+noticeNetworkFailure(options: { url: string; method: string; startTime: number; endTime: number; failure: string;
+}) => void
+```
 
+| Param         | Type                                                                                                                                                      |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ url: string; method: string; startTime: number; endTime: number; failure: string}</code> |
+
+#### Usage:
+```ts
+    NewRelicCapacitorPlugin.noticeNetworkFailure({
+      url: "https://fakewebsite400.com",
+      method: "GET",
+      startTime: Date.now(),
+      endTime: Date.now() + 200,
+      failure: "BadURL"
+    });
+
+```
 ### [recordMetric(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/recordmetric-android-sdk-api))
 > Records custom metrics (arbitrary numerical data), where countUnit is the measurement unit of the metric count and valueUnit is the measurement unit for the metric value. If using countUnit or valueUnit, then all of value, countUnit, and valueUnit must all be set. Supported measurements for countUnit and valueUnit are: `PERCENT`, `BYTES`, `SECONDS`, `BYTES_PER_SECOND`, `OPERATIONS`
 

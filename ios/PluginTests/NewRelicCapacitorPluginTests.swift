@@ -441,6 +441,40 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams)
     }
     
+    func testNoticeNetworkFailure() {
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "noticeNetworkFailure",
+                                               options: ["url": "https://fakewebsite.com",
+                                                         "method": "GET",
+                                                         "startTime": Date().timeIntervalSince1970,
+                                                         "endTime": Date().timeIntervalSince1970,
+                                                         "failure": "BadURL"],
+                                               success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                               error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in noticeNetworkFailure")
+            return
+        }
+        
+
+        guard let callWithNoParams = CAPPluginCall(callbackId: "noticeNetworkFailure",
+                                             options: [:],
+                                             success: { (result, call) in
+            XCTFail("noticeHttpTransaction should not work with nil params")
+        },
+                                             error:{ (err) in
+            XCTAssertEqual(err!.message, "Bad parameters given to noticeHttpTransaction")
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransaction")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithGoodParams)
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams)
+    }
+    
     func testRecordMetric() {
         guard let callWithGoodParams = CAPPluginCall(callbackId: "recordMetric",
                                                      options: ["name": "metricName",
