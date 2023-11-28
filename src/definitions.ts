@@ -15,6 +15,13 @@ export interface NewRelicCapacitorPluginPlugin {
   crashNow(options?: {message: string}): void;
   currentSessionId(options?: {}): Promise<{sessionId: string}>;
   incrementAttribute(options: {name: string, value?: number}): void;
+  noticeNetworkFailure(options: {
+    url: string, 
+    method: string, 
+    startTime: number, 
+    endTime: number, 
+    failure:string
+  }): void;
   noticeHttpTransaction(options: {
     url: string, 
     method: string, 

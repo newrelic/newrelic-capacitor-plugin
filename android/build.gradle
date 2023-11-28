@@ -16,6 +16,8 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
+
 
 android {
     namespace "com.newrelic.capacitor.plugin"
@@ -40,6 +42,21 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            all {
+                forkEvery = 1
+                jacoco {
+                    includeNoLocationClasses = true
+                    excludes = ['jdk.internal.*']
+                }
+            }
+        }
+    }
+
 }
 
 repositories {

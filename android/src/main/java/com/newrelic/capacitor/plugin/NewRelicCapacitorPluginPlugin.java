@@ -19,6 +19,7 @@ import com.newrelic.agent.android.distributedtracing.TraceContext;
 import com.newrelic.agent.android.distributedtracing.TracePayload;
 import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.logging.AgentLog;
+import com.newrelic.agent.android.util.NetworkFailure;
 import com.newrelic.com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -391,6 +392,36 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         }
 
         NewRelic.noticeHttpTransaction(url, method, status, startTime, endTime, bytesSent, bytesReceived, body, null, null, traceHeadersMap);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void noticeNetworkFailure(PluginCall call) {
+        String url = call.getString("url");
+        String method = call.getString("method");
+        Long startTime = call.getLong("startTime");
+        Long endTime = call.getLong("endTime");
+        String failure = call.getString("failure");
+
+        if (url == null ||
+                method == null ||
+                startTime == null ||
+                endTime == null ||
+                failure == null) {
+            call.reject("Bad parameters given to noticeNetworkFailure");
+            return;
+        }
+
+        Map<String, NetworkFailure> strToNetworkFailure = new HashMap<>();
+        strToNetworkFailure.put("Unknown", NetworkFailure.Unknown);
+        strToNetworkFailure.put("BadURL", NetworkFailure.BadURL);
+        strToNetworkFailure.put("TimedOut", NetworkFailure.TimedOut);
+        strToNetworkFailure.put("CannotConnectToHost", NetworkFailure.CannotConnectToHost);
+        strToNetworkFailure.put("DNSLookupFailed", NetworkFailure.DNSLookupFailed);
+        strToNetworkFailure.put("BadServerResponse", NetworkFailure.BadServerResponse);
+        strToNetworkFailure.put("SecureConnectionFailed", NetworkFailure.SecureConnectionFailed);
+
+        NewRelic.noticeNetworkFailure(url, method, startTime, endTime,strToNetworkFailure.get(failure));
         call.resolve();
     }
 

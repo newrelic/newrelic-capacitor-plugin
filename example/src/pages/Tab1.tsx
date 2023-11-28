@@ -112,6 +112,16 @@ const Tab1: React.FC = () => {
     });
   };
 
+  const noticeNetworkHandler = () => {
+    NewRelicCapacitorPlugin.noticeNetworkFailure({
+      url: "https://fakewebsite400.com",
+      method: "GET",
+      startTime: Date.now(),
+      endTime: Date.now() + 200,
+      failure: "BadURL"
+    });
+  };
+
   const errorHandler = () => {
     try {
       throw new Error('testMsg');
@@ -194,6 +204,7 @@ const Tab1: React.FC = () => {
           <IonButton onClick={poolHandler}>Pool Size</IonButton>
           <IonButton onClick={eventHandler}>Send many events</IonButton>
           <IonButton onClick={metricHandler}>Record Metrics</IonButton>
+          <IonButton onClick={noticeNetworkHandler}>Notice Network Failure</IonButton>
         </IonCard>
         <IonCard>
           <IonCardHeader>

@@ -317,6 +317,36 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         call.resolve()
     }
     
+    @objc func noticeNetworkFailure(_ call: CAPPluginCall) {
+        guard let url = call.getString("url"),
+              let method = call.getString("method"),
+              let startTime = call.getDouble("startTime"),
+              let endTime = call.getDouble("endTime"),
+              let failure = call.getString("failure")
+        else {
+            
+            call.reject("Bad parameters given to noticeNetworkFailure")
+            return
+        }
+        
+        let nsurl = URL(string: url)
+        
+        let dict: [String: NSNumber] = [
+            "Unknown": NSNumber(value: NRURLErrorUnknown.rawValue),
+            "BadURL": NSNumber(value: NRURLErrorBadURL.rawValue),
+            "TimedOut": NSNumber(value: NRURLErrorTimedOut.rawValue),
+            "CannotConnectToHost": NSNumber(value: NRURLErrorCannotConnectToHost.rawValue),
+            "DNSLookupFailed": NSNumber(value: NRURLErrorDNSLookupFailed.rawValue),
+            "BadServerResponse": NSNumber(value: NRURLErrorBadServerResponse.rawValue),
+            "SecureConnectionFailed": NSNumber(value: NRURLErrorSecureConnectionFailed.rawValue)
+        ]
+        
+        let iOSFailureCode = dict[failure]
+        NewRelic.noticeNetworkFailure(for: nsurl,httpMethod: method,
+                                      startTime: startTime,endTime: endTime, andFailureCode:iOSFailureCode as! Int)
+        call.resolve()
+    }
+    
     
     @objc func recordMetric(_ call: CAPPluginCall) {
         guard let name = call.getString("name"),
