@@ -12,7 +12,7 @@
     "@capacitor/status-bar": "5.0.5",
     "@ionic/react": "^7.1.2",
     "@ionic/react-router": "^7.1.2",
-    "@newrelic/newrelic-capacitor-plugin": "file:..",
+    "@newrelic/newrelic-capacitor-plugin": "^1.3.2",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^12.6.3",

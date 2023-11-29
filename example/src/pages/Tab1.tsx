@@ -112,14 +112,19 @@ const Tab1: React.FC = () => {
     });
   };
 
-  const noticeNetworkHandler = () => {
-    NewRelicCapacitorPlugin.noticeNetworkFailure({
-      url: "https://fakewebsite400.com",
-      method: "GET",
-      startTime: Date.now(),
-      endTime: Date.now() + 200,
-      failure: "BadURL"
-    });
+  const noticeNetworkHandler = async () => {
+
+    const response = await fetch("https://reactnative.dev/movies.json");
+    const movies = await response.json();
+    console.log(movies);
+
+    // NewRelicCapacitorPlugin.noticeNetworkFailure({
+    //   url: "https://fakewebsite400.com",
+    //   method: "GET",
+    //   startTime: Date.now(),
+    //   endTime: Date.now() + 200,
+    //   failure: "BadURL"
+    // });
   };
 
   const errorHandler = () => {
