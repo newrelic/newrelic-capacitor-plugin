@@ -120,6 +120,45 @@ window.XMLHttpRequest.prototype.open = function (
   return originalXhrOpen.apply(this, arguments as any);
 };
 
+const oldFetch = window.fetch;
+
+window.fetch = function fetch() {
+  var _arguments = arguments;
+  var urlOrRequest = arguments[0];
+  var options = arguments[1];
+
+  networkRequest.startTime = Date.now();
+  if (urlOrRequest && typeof urlOrRequest === 'object') {
+    networkRequest.url = urlOrRequest.url;
+
+    if (options && 'method' in options) {
+     networkRequest. method = options.method;
+    } else if (urlOrRequest && 'method' in urlOrRequest) {
+      networkRequest.method = urlOrRequest.method;
+    }
+  } else {
+    networkRequest.url = urlOrRequest;
+
+    if (options && 'method' in options) {
+      networkRequest.method = options.method;
+    }
+  }
+
+  if (networkRequest.method === undefined || networkRequest.method === "" ) {
+    networkRequest.method = 'GET';
+  }
+
+  return new Promise(function (resolve, reject) {
+    // pass through to native fetch
+    oldFetch.apply(void 0, _arguments as any).then(function (response) {
+      handleFetchSuccess(response, networkRequest.method, networkRequest.url,networkRequest.startTime);
+      resolve(response);
+    })["catch"](function (error) {
+      NewRelicCapacitorPlugin.recordError(error);
+      reject(error);
+    });
+  });
+};
 window.XMLHttpRequest.prototype.send = function (
 ): void {
   if (this.addEventListener) {
@@ -175,3 +214,20 @@ window.XMLHttpRequest.prototype.send = function (
   }
   return originalXhrSend.apply(this, arguments as any);
 };
+
+function handleFetchSuccess(response: Response, method: string, url: string, startTime: number) {
+  NewRelicCapacitorPlugin.noticeHttpTransaction({
+    url:url,
+    method:method,
+    status:response.status,
+    startTime:startTime,
+    endTime:Date.now(),
+    bytesSent:0,
+    bytesReceived:0,
+    body:""
+  }
+  );
+
+}
+
+
