@@ -10,8 +10,8 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 
 ## Features
 * Capture JavaScript errors
-* Network Instrumentation (CapacitorHttp Client and XMLHttpRequest) 
-* Distributed Tracing
+* Network Instrumentation (CapacitorHttp Client XMLHttpRequest and Fecth) 
+* Distributed Tracing (CapacitorHttp Client and Fecth)
 * Tracking console log, warn and error
 * Promise rejection tracking
 * Capture interactions and the sequence in which they were created
@@ -108,7 +108,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.0.0"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.2.0"
       }
     }
   ```
@@ -610,6 +610,7 @@ shutdown(options?: {} | undefined) => void
 
 --------------------
 
+
 ### [generateDistributedTracingHeaders(...)]
 > Generates headers and trace attributes required for manual distributed tracing and http instrumentation.
 ```typescript
@@ -636,6 +637,26 @@ generateDistributedTracingHeaders(options?: {} | undefined) => Promise<object>
       body: "fake http response body 200",
       traceAttributes: distributedTraceAttributes,
     });
+```
+--------------------
+
+### [addHTTPHeadersTrackingFor(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/shut-down/)
+> This API allows you to add any header field strings to a list that gets recorded as attributes with networking request events. After header fields have been added using this function, if the headers are in a network call they will be included in networking events in NR1.
+```typescript
+addHTTPHeadersTrackingFor(options:{headers: string[]}): void;
+```
+
+| Param         | Type            |
+| ------------- | --------------- |
+| **`options`** | <code>{headers: string[]}</code> |
+
+
+--------------------
+
+#### Usage:
+```ts
+ NewRelicCapacitorPlugin.addHTTPHeadersTrackingFor({headers:["Car","Music"]});
+
 ```
 --------------------
 
@@ -821,10 +842,13 @@ Our iOS agent includes a Swift script intended to be run from a build script in 
 
 To invoke this script during an XCode build:
 1. In Xcode, select your project in the navigator, then click on the application target.
-1. Select the Build Phases tab in the settings editor.
-1. Click the + icon above Target Dependencies and choose New Run Script Build Phase. Ensure the new build script is the very last build script.
-1. Add the following lines of code to the new phase and replace `APP_TOKEN` with your iOS application token.
+2. Select the Build Phases tab in the settings editor.
+3. Click the + icon above Target Dependencies and choose New Run Script Build Phase. Ensure the new build script is the very last build script.
+4. Add the following lines of code to the new phase and replace `APP_TOKEN` with your iOS application token.
     1. If there is a checkbox below Run script that says "Run script: Based on Dependency analysis" please make sure it is not checked.
+
+### Capacitor agent 1.3.1 or higher
+With the ios agent 7.4.6 release, the XCFramework no longer includes the dsym-upload-tools. You can find the dsym-upload-tools in the dsym-upload-tools folder of the https://github.com/newrelic/newrelic-ios-agent-spm Swift Package Manager repository. Please copy the dsym-upload-tools directory into your application source code directory by copying the XCFramework into your project or using Cocoapods if you're integrating the New Relic iOS Agent. Use the run script below in your Xcode build phases to perform symbol upload steps during app builds in Xcode.
 
 ```
 ARTIFACT_DIR="${BUILD_DIR%Build/*}SourcePackages/artifacts"

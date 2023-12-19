@@ -35,4 +35,9 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(getAgentConfiguration, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(shutdown, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(generateDistributedTracingHeaders, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(addHTTPHeadersTrackingFor, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getHTTPHeadersTrackingFor, CAPPluginReturnPromise);
+
+           
+
 )

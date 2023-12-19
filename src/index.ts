@@ -96,6 +96,8 @@ type NetworkRequest = {
   status?: number;
   bytesreceived?: number;
   body: string;
+  headers:any;
+  params:any
 };
 
 const networkRequest: NetworkRequest = {
@@ -104,10 +106,87 @@ const networkRequest: NetworkRequest = {
   body: "",
   bytesSent: 0,
   startTime: 0,
+  headers:[],
+  params:{}
+};
+
+
+
+
+
+
+const oldFetch = window.fetch;
+
+window.fetch = function fetch() {
+  var _arguments = arguments;
+  var urlOrRequest = arguments[0];
+  var options = arguments[1];
+
+ return NewRelicCapacitorPlugin.getHTTPHeadersTrackingFor().then((trackingHeadersList)=>{
+  console.log(trackingHeadersList);
+  return NewRelicCapacitorPlugin.generateDistributedTracingHeaders().then((headers) => {
+    console.log(headers);
+    networkRequest.startTime = Date.now();
+    if (urlOrRequest && typeof urlOrRequest === 'object') {
+      networkRequest.url = urlOrRequest.url;
+  
+      if (options && 'method' in options) {
+       networkRequest. method = options.method;
+      } else if (urlOrRequest && 'method' in urlOrRequest) {
+        networkRequest.method = urlOrRequest.method;
+      }
+    } else {
+      networkRequest.url = urlOrRequest;
+  
+      if (options && 'method' in options) {
+        networkRequest.method = options.method;
+      }
+    }
+  
+    if(options && 'headers' in options) {
+      options.headers['newrelic'] = headers['newrelic'];
+      options.headers['traceparent'] = headers['traceparent'];
+      options.headers['tracestate'] = headers['tracestate'];
+
+      JSON.parse(trackingHeadersList["headersList"]).forEach((e: string) => {
+        if(options.headers[e] !== undefined) {
+          networkRequest.params[e] = options.headers[e];     
+        }
+      });
+    } else {
+      options = {headers:{}};
+      options.headers['newrelic'] = headers['newrelic'];
+      options.headers['traceparent'] = headers['traceparent'];
+      options.headers['tracestate'] = headers['tracestate'];
+      _arguments[1] = options;
+    }
+
+    if(options && 'body' in options) {
+      networkRequest.bytesSent = options.body.length;
+    } else {
+      networkRequest.bytesSent = 0;
+    }
+  
+    if (networkRequest.method === undefined || networkRequest.method === "" ) {
+       networkRequest.method = 'GET';
+    }
+    return new Promise(function (resolve, reject) {
+      // pass through to native fetch
+      oldFetch.apply(void 0, _arguments as any).then(function(response) {
+        handleFetchSuccess(response.clone(), networkRequest.method, networkRequest.url,networkRequest.startTime,headers,networkRequest.params);
+        resolve(response)
+      })["catch"](function (error) {
+        NewRelicCapacitorPlugin.recordError(error);
+        reject(error);
+      });
+    });
+    });
+ });
 };
 
 const originalXhrOpen = XMLHttpRequest.prototype.open;
 const originalXhrSend = XMLHttpRequest.prototype.send;
+
 
 window.XMLHttpRequest.prototype.open = function (
   method: string,
@@ -117,117 +196,92 @@ window.XMLHttpRequest.prototype.open = function (
   networkRequest.method = method;
   networkRequest.bytesSent = 0;
   networkRequest.startTime = Date.now();
+  this.setRequestHeader("Car","Maruti");
   return originalXhrOpen.apply(this, arguments as any);
+
 };
 
-const oldFetch = window.fetch;
-
-window.fetch = function fetch() {
-  var _arguments = arguments;
-  var urlOrRequest = arguments[0];
-  var options = arguments[1];
-
-  networkRequest.startTime = Date.now();
-  if (urlOrRequest && typeof urlOrRequest === 'object') {
-    networkRequest.url = urlOrRequest.url;
-
-    if (options && 'method' in options) {
-     networkRequest. method = options.method;
-    } else if (urlOrRequest && 'method' in urlOrRequest) {
-      networkRequest.method = urlOrRequest.method;
-    }
-  } else {
-    networkRequest.url = urlOrRequest;
-
-    if (options && 'method' in options) {
-      networkRequest.method = options.method;
-    }
-  }
-
-  if (networkRequest.method === undefined || networkRequest.method === "" ) {
-    networkRequest.method = 'GET';
-  }
-
-  return new Promise(function (resolve, reject) {
-    // pass through to native fetch
-    oldFetch.apply(void 0, _arguments as any).then(function (response) {
-      handleFetchSuccess(response, networkRequest.method, networkRequest.url,networkRequest.startTime);
-      resolve(response);
-    })["catch"](function (error) {
-      NewRelicCapacitorPlugin.recordError(error);
-      reject(error);
-    });
-  });
-};
 window.XMLHttpRequest.prototype.send = function (
 ): void {
-  if (this.addEventListener) {
-    this.addEventListener(
-      "readystatechange",
-      async () => {
-        if (this.readyState === this.HEADERS_RECEIVED) {
-          if (this.getAllResponseHeaders()) {
-            const responseHeaders =
-              this.getAllResponseHeaders().split("\r\n");
-            const responseHeadersDictionary: {
-              [key: string]: string | undefined;
-            } = {};
-            responseHeaders.forEach((element) => {
-              const key = element.split(":")[0];
-              const value = element.split(":")[1];
-              responseHeadersDictionary[key] = value;
-            });
-          }
-        }
-        if (this.readyState === this.DONE) {
-          networkRequest.endTime = Date.now();
-          networkRequest.status = this.status;
 
-          const type = this.responseType;
-          if (type === "arraybuffer") {
-            networkRequest.bytesreceived = this.response.byteLength as number;
-          } else if (type === "blob") {
-            networkRequest.bytesreceived = this.response.size as number;
-          } else if (type === "text" || type === "" || type === undefined) {
-            networkRequest.bytesreceived = this.responseText.length;
-            networkRequest.body = this.responseText;
-          } else {
-            // unsupported response type
-            networkRequest.bytesreceived = 0;
-          }
-
-          NewRelicCapacitorPlugin.noticeHttpTransaction({
-            url:networkRequest.url,
-            method:networkRequest.method,
-            status:networkRequest.status,
-            startTime:networkRequest.startTime,
-            endTime:networkRequest.endTime,
-            bytesSent:networkRequest.bytesSent,
-            bytesReceived:networkRequest.bytesreceived,
-            body:networkRequest.body
-          }
-          );
-        }
-      },
-      false
-    );
-  }
-  return originalXhrSend.apply(this, arguments as any);
-};
-
-function handleFetchSuccess(response: Response, method: string, url: string, startTime: number) {
-  NewRelicCapacitorPlugin.noticeHttpTransaction({
-    url:url,
-    method:method,
-    status:response.status,
-    startTime:startTime,
-    endTime:Date.now(),
-    bytesSent:0,
-    bytesReceived:0,
-    body:""
-  }
-  );
-
+      if (this.addEventListener) {
+        this.addEventListener(
+          "readystatechange",
+          async () => {
+            if (this.readyState === this.OPENED) {
+            
+            }
+            if (this.readyState === this.HEADERS_RECEIVED) {
+              if (this.getAllResponseHeaders()) {
+                const responseHeaders =
+                  this.getAllResponseHeaders().split("\r\n");
+                const responseHeadersDictionary: {
+                  [key: string]: string | undefined;
+                } = {};
+                responseHeaders.forEach((element) => {
+                  const key = element.split(":")[0];
+                  const value = element.split(":")[1];
+                  responseHeadersDictionary[key] = value;
+                });
+              }
+            }
+            if (this.readyState === this.DONE) {
+              networkRequest.endTime = Date.now();
+              networkRequest.status = this.status;
+    
+              const type = this.responseType;
+              if (type === "arraybuffer") {
+                networkRequest.bytesreceived = this.response.byteLength as number;
+              } else if (type === "blob") {
+                networkRequest.bytesreceived = this.response.size as number;
+              } else if (type === "text" || type === "" || type === undefined) {
+                networkRequest.bytesreceived = this.responseText.length;
+                networkRequest.body = this.responseText;
+              } else {
+                // unsupported response type
+                networkRequest.bytesreceived = 0;
+              }
+    
+              NewRelicCapacitorPlugin.noticeHttpTransaction({
+                url:networkRequest.url,
+                method:networkRequest.method,
+                status:networkRequest.status,
+                startTime:networkRequest.startTime,
+                endTime:networkRequest.endTime,
+                bytesSent:networkRequest.bytesSent,
+                bytesReceived:networkRequest.bytesreceived,
+                body:networkRequest.body,
+                traceAttributes:networkRequest.headers,
+                params:networkRequest.params
+              }
+              );
+            }
+          },
+          false
+        );
+      }
+      return originalXhrSend.apply(this, arguments as any);
 }
+
+function handleFetchSuccess(response: Response, method: string, url: string, startTime: number,traceAttributes:object,params:object) {
+
+  response.text().then((v)=>{
+    NewRelicCapacitorPlugin.noticeHttpTransaction({
+      url:url,
+      method:method,
+      status:response.status,
+      startTime:startTime,
+      endTime:Date.now(),
+      bytesSent:networkRequest.bytesSent,
+      bytesReceived:v.length,
+      body:v,
+      traceAttributes:traceAttributes,
+      params: params
+    }
+    );
+
+  });
+}
+
 
 

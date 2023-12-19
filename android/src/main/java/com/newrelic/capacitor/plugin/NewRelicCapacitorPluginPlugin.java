@@ -6,6 +6,7 @@
 package com.newrelic.capacitor.plugin;
 
 import android.Manifest;
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -14,6 +15,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.newrelic.agent.android.ApplicationFramework;
 import com.newrelic.agent.android.FeatureFlag;
+import com.newrelic.agent.android.HttpHeaders;
 import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.distributedtracing.TraceContext;
 import com.newrelic.agent.android.distributedtracing.TracePayload;
@@ -21,11 +23,13 @@ import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.logging.AgentLog;
 import com.newrelic.agent.android.util.NetworkFailure;
 import com.newrelic.com.google.gson.Gson;
+import com.newrelic.com.google.gson.JsonArray;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -284,6 +288,31 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void addHTTPHeadersTrackingFor(PluginCall call) {
+        JSArray headersArray = call.getArray("headers");
+
+        List headersList = new Gson().fromJson(String.valueOf(headersArray), List.class);
+
+
+
+        NewRelic.addHTTPHeadersTrackingFor(headersList);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getHTTPHeadersTrackingFor(PluginCall call) {
+
+        JSObject headers = new JSObject();
+        List<String> arr = new ArrayList<>(HttpHeaders.getInstance().getHttpHeaders());
+        JsonArray array = new JsonArray();
+        for(int i=0 ;i < arr.size();i++) {
+            array.add(arr.get(i));
+        }
+        headers.put("headersList",array);
+        call.resolve(headers);
+    }
+
+    @PluginMethod
     public void recordCustomEvent(PluginCall call) {
         String name = call.getString("eventName");
         String eventType = call.getString("eventType");
@@ -391,7 +420,13 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
           traceHeadersMap = new Gson().fromJson(String.valueOf(traceAttributes), Map.class);
         }
 
-        NewRelic.noticeHttpTransaction(url, method, status, startTime, endTime, bytesSent, bytesReceived, body, null, null, traceHeadersMap);
+        JSONObject params = call.getObject("params");
+        Map<String, String> paramsMap = new HashMap<>();
+        if (params != null) {
+            paramsMap = new Gson().fromJson(String.valueOf(params), Map.class);
+        }
+
+        NewRelic.noticeHttpTransaction(url, method, status, startTime, endTime, bytesSent, bytesReceived, body, paramsMap, null, traceHeadersMap);
         call.resolve();
     }
 
