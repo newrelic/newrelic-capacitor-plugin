@@ -99,4 +99,11 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
     generateDistributedTracingHeaders(_options: {}): any {
         //  throw new Error('Method not implemented.');
     }
+
+    addHTTPHeadersTrackingFor(_options: {headers: string[]}): any {
+        //  throw new Error('Method not implemented.');
+    }
+    getHTTPHeadersTrackingFor(): any {
+        //  throw new Error('Method not implemented.');
+    }
 }

@@ -559,4 +559,19 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         ])
     }
     
+    @objc func addHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
+        
+        guard let headers = call.getArray("headers")?.capacitor.replacingNullValues() as? [String] else {
+            return ;
+        }
+        
+        let headersDict = NewRelic.addHTTPHeaderTracking(for: headers)
+    }
+    
+    @objc func getHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
+        
+        call.resolve([
+            "headersList": "[]"
+        ])
+    }
 }
