@@ -264,6 +264,33 @@ public class NewRelicCapacitorPluginUnitTest {
     }
 
     @Test
+    public void testNoticeNetworkFailure() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+        when(callWithGoodParams.getString("url")).thenReturn("https://fakewebsite.com");
+        when(callWithGoodParams.getString("method")).thenReturn("GET");
+        when(callWithGoodParams.getLong("startTime")).thenReturn(12345678L);
+        when(callWithGoodParams.getLong("endTime")).thenReturn(12345678L);
+        when(callWithGoodParams.getString("failure")).thenReturn("BadURL");
+
+        PluginCall callWithNoParams = mock(PluginCall.class);
+        when(callWithNoParams.getString("url")).thenReturn(null);
+        when(callWithNoParams.getString("method")).thenReturn(null);
+        when(callWithNoParams.getLong("startTime")).thenReturn(null);
+        when(callWithNoParams.getLong("endTime")).thenReturn(null);
+        when(callWithNoParams.getString("failure")).thenReturn(null);
+
+        plugin.noticeNetworkFailure(callWithGoodParams);
+        plugin.noticeNetworkFailure(callWithNoParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
+
+        verify(callWithNoParams, times(0)).resolve();
+        verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+
+    }
+
+    @Test
     public void testRecordMetric() {
         PluginCall callWithGoodParams = mock(PluginCall.class);
         when(callWithGoodParams.getString("name")).thenReturn("fakeMetricName");

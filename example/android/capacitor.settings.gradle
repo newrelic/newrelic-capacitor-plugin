@@ -15,4 +15,4 @@ include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
 include ':newrelic-newrelic-capacitor-plugin'
-project(':newrelic-newrelic-capacitor-plugin').projectDir = new File('../../android')
+project(':newrelic-newrelic-capacitor-plugin').projectDir = new File('../node_modules/@newrelic/newrelic-capacitor-plugin/android')

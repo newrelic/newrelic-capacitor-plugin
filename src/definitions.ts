@@ -15,6 +15,13 @@ export interface NewRelicCapacitorPluginPlugin {
   crashNow(options?: {message: string}): void;
   currentSessionId(options?: {}): Promise<{sessionId: string}>;
   incrementAttribute(options: {name: string, value?: number}): void;
+  noticeNetworkFailure(options: {
+    url: string, 
+    method: string, 
+    startTime: number, 
+    endTime: number, 
+    failure:string
+  }): void;
   noticeHttpTransaction(options: {
     url: string, 
     method: string, 
@@ -24,7 +31,8 @@ export interface NewRelicCapacitorPluginPlugin {
     bytesSent: number, 
     bytesReceived: number, 
     body: string,
-    traceAttributes?: object
+    traceAttributes?: object,
+    params?: object
   }): void;
   recordMetric(options: {
     name: string,
@@ -49,7 +57,10 @@ export interface NewRelicCapacitorPluginPlugin {
   httpResponseBodyCaptureEnabled(options: {enabled: boolean}): void;
   getAgentConfiguration(options?: {}) : Promise<AgentConfiguration>;
   shutdown(options?: {}): void;
-  generateDistributedTracingHeaders(options?: {}): Promise<object>;
+  generateDistributedTracingHeaders(options?: {}): Promise<DTHeaders>;
+  addHTTPHeadersTrackingFor(options:{headers: string[]}): void;
+  getHTTPHeadersTrackingFor(): Promise<HttpHeadersTracking>;
+
 }
 
 export interface AgentConfiguration {
@@ -66,6 +77,19 @@ export interface AgentConfiguration {
   crashCollectorAddress?: string
   sendConsoleEvents?: boolean
   fedRampEnabled?: boolean
+}
+
+export interface DTHeaders {
+  guid?: string
+  id?: string
+  newrelic?: string
+  traceid?: string
+  traceparent?: string
+  tracestate?: string
+}
+
+export interface HttpHeadersTracking {
+  headersList: string
 }
 
 export namespace NREnums {

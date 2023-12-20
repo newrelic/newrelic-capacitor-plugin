@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 #import <Capacitor/Capacitor.h>
 
+
 // Define the plugin using the CAP_PLUGIN Macro, and
 // each method the plugin supports using the CAP_PLUGIN_METHOD macro.
 CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
@@ -21,6 +22,7 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(currentSessionId, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(incrementAttribute, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(noticeHttpTransaction, CAPPluginReturnNone);
+           CAP_PLUGIN_METHOD(noticeNetworkFailure, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(recordMetric, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(removeAllAttributes, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(setMaxEventBufferTime, CAPPluginReturnNone);
@@ -33,4 +35,9 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(getAgentConfiguration, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(shutdown, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(generateDistributedTracingHeaders, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(addHTTPHeadersTrackingFor, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getHTTPHeadersTrackingFor, CAPPluginReturnPromise);
+
+           
+
 )

@@ -40,6 +40,9 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
     incrementAttribute(_options: { name: string; value?: number | undefined; }): void {
        // throw new Error('Method not implemented.');
     }
+    noticeNetworkFailure(_options: {url: string, method: string, startTime: number,  endTime: number, failure:string}): void {
+        // throw new Error('Method not implemented.');
+    }
     noticeHttpTransaction(_options: { url: string; method: string; status: number; startTime: number; endTime: number; bytesSent: number; bytesReceived: number; body: string; }): void {
         // throw new Error('Method not implemented.');
     }
@@ -94,6 +97,13 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
        //  throw new Error('Method not implemented.');
     }
     generateDistributedTracingHeaders(_options: {}): any {
+        //  throw new Error('Method not implemented.');
+    }
+
+    addHTTPHeadersTrackingFor(_options: {headers: string[]}): any {
+        //  throw new Error('Method not implemented.');
+    }
+    getHTTPHeadersTrackingFor(): any {
         //  throw new Error('Method not implemented.');
     }
 }
