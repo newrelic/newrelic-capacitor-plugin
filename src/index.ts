@@ -167,7 +167,7 @@ window.fetch = function fetch() {
       networkRequest.bytesSent = 0;
     }
   
-    if (networkRequest.method = undefined || networkRequest.method === "" ) {
+    if (networkRequest.method === undefined || networkRequest.method === "" ) {
        networkRequest.method = 'GET';
     }
     return new Promise(function (resolve, reject) {
