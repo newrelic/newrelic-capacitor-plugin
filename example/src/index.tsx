@@ -17,7 +17,7 @@ const root = createRoot(container!);
 
 var appToken;
 if (Capacitor.getPlatform() === "ios") {
-  appToken = "AAa413614341452f701db5d23e4574ff22fd30bf8b-NRMA";
+  appToken = "<IOS-APP-TOKEN>";
 } else {
   appToken = "<ANDROID-APP-TOKEN>";
 }
