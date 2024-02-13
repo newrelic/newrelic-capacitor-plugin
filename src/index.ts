@@ -154,7 +154,7 @@ window.fetch = function fetch() {
         }
       });
     } else {
-      options = {headers:{}};
+      options['headers']={};
       options.headers['newrelic'] = headers['newrelic'];
       options.headers['traceparent'] = headers['traceparent'];
       options.headers['tracestate'] = headers['tracestate'];
@@ -196,7 +196,6 @@ window.XMLHttpRequest.prototype.open = function (
   networkRequest.method = method;
   networkRequest.bytesSent = 0;
   networkRequest.startTime = Date.now();
-  this.setRequestHeader("Car","Maruti");
   return originalXhrOpen.apply(this, arguments as any);
 
 };
@@ -242,6 +241,7 @@ window.XMLHttpRequest.prototype.send = function (
                 networkRequest.bytesreceived = 0;
               }
     
+              if(isValidURL(networkRequest.url)) {
               NewRelicCapacitorPlugin.noticeHttpTransaction({
                 url:networkRequest.url,
                 method:networkRequest.method,
@@ -256,6 +256,7 @@ window.XMLHttpRequest.prototype.send = function (
               }
               );
             }
+            }
           },
           false
         );
@@ -266,6 +267,7 @@ window.XMLHttpRequest.prototype.send = function (
 function handleFetchSuccess(response: Response, method: string, url: string, startTime: number,traceAttributes:object,params:object) {
 
   response.text().then((v)=>{
+    if(isValidURL(url)) {
     NewRelicCapacitorPlugin.noticeHttpTransaction({
       url:url,
       method:method,
@@ -279,9 +281,21 @@ function handleFetchSuccess(response: Response, method: string, url: string, sta
       params: params
     }
     );
+  }
 
   });
 }
+
+function isValidURL(url: string) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(url);
+}
+
 
 
 

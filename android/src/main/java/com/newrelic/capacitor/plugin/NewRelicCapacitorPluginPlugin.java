@@ -414,7 +414,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             return;
         }
 
-        JSONObject traceAttributes = call.getObject("traceAttributes");
+                JSONObject traceAttributes = call.getObject("traceAttributes");
         Map<String, Object> traceHeadersMap = new HashMap<String, Object>();
         if (traceAttributes != null) {
           traceHeadersMap = new Gson().fromJson(String.valueOf(traceAttributes), Map.class);
