@@ -641,6 +641,7 @@ generateDistributedTracingHeaders(options?: {} | undefined) => Promise<object>
 --------------------
 
 ### [addHTTPHeadersTrackingFor(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile/mobile-sdk/add-tracked-headers/)
+
 > This API allows you to add any header field strings to a list that gets recorded as attributes with networking request events. After header fields have been added using this function, if the headers are in a network call they will be included in networking events in NR1.
 ```typescript
 addHTTPHeadersTrackingFor(options:{headers: string[]}): void;

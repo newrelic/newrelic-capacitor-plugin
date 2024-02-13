@@ -167,7 +167,7 @@ window.fetch = function fetch() {
       networkRequest.bytesSent = 0;
     }
   
-    if (networkRequest.method === undefined || networkRequest.method === "" ) {
+    if (networkRequest.method = undefined || networkRequest.method === "" ) {
        networkRequest.method = 'GET';
     }
     return new Promise(function (resolve, reject) {
@@ -196,6 +196,7 @@ window.XMLHttpRequest.prototype.open = function (
   networkRequest.method = method;
   networkRequest.bytesSent = 0;
   networkRequest.startTime = Date.now();
+  this.setRequestHeader("Car","Maruti");
   return originalXhrOpen.apply(this, arguments as any);
 
 };
