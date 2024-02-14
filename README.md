@@ -108,7 +108,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.2.0"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.2.1"
       }
     }
   ```
@@ -640,7 +640,8 @@ generateDistributedTracingHeaders(options?: {} | undefined) => Promise<object>
 ```
 --------------------
 
-### [addHTTPHeadersTrackingFor(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/android-sdk-api/shut-down/)
+### [addHTTPHeadersTrackingFor(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile/mobile-sdk/add-tracked-headers/)
+
 > This API allows you to add any header field strings to a list that gets recorded as attributes with networking request events. After header fields have been added using this function, if the headers are in a network call they will be included in networking events in NR1.
 ```typescript
 addHTTPHeadersTrackingFor(options:{headers: string[]}): void;

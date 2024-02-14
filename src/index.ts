@@ -154,7 +154,7 @@ window.fetch = function fetch() {
         }
       });
     } else {
-      options = {headers:{}};
+      options['headers']={};
       options.headers['newrelic'] = headers['newrelic'];
       options.headers['traceparent'] = headers['traceparent'];
       options.headers['tracestate'] = headers['tracestate'];
@@ -242,6 +242,7 @@ window.XMLHttpRequest.prototype.send = function (
                 networkRequest.bytesreceived = 0;
               }
     
+              if(isValidURL(networkRequest.url)) {
               NewRelicCapacitorPlugin.noticeHttpTransaction({
                 url:networkRequest.url,
                 method:networkRequest.method,
@@ -256,6 +257,7 @@ window.XMLHttpRequest.prototype.send = function (
               }
               );
             }
+            }
           },
           false
         );
@@ -266,6 +268,7 @@ window.XMLHttpRequest.prototype.send = function (
 function handleFetchSuccess(response: Response, method: string, url: string, startTime: number,traceAttributes:object,params:object) {
 
   response.text().then((v)=>{
+    if(isValidURL(url)) {
     NewRelicCapacitorPlugin.noticeHttpTransaction({
       url:url,
       method:method,
@@ -279,9 +282,20 @@ function handleFetchSuccess(response: Response, method: string, url: string, sta
       params: params
     }
     );
+  }
 
   });
 }
+
+function isValidURL(url: string) {
+  try {
+    const newUrl = new URL(url);
+    return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+  } catch (err) {
+    return false;
+  }
+}
+
 
 
 
