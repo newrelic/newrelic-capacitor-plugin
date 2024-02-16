@@ -1,5 +1,5 @@
 import { WebPlugin } from '@capacitor/core';
-import { NewRelicCapacitorPluginPlugin, AgentConfiguration } from './definitions';
+import { NewRelicCapacitorPluginPlugin, AgentConfiguration,DTHeaders ,HttpHeadersTracking} from './definitions';
 
 export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCapacitorPluginPlugin {
     start(_options: { appKey: string; agentConfiguration?: AgentConfiguration | undefined; }): void {
@@ -96,14 +96,33 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
     shutdown(_options?: {} | undefined): void {
        //  throw new Error('Method not implemented.');
     }
-    generateDistributedTracingHeaders(_options: {}): any {
+    generateDistributedTracingHeaders(_options: {}):  Promise<DTHeaders> {
+
+        let dtHeaders: DTHeaders ={
+            newrelic:"1",
+            traceparent:"1",
+            tracestate:"1",
+            traceid:"1",
+            guid:"1",
+            id:"1"
+
+        };
+       return new Promise((resolve) => {
+            resolve(dtHeaders);
+        })
         //  throw new Error('Method not implemented.');
     }
 
     addHTTPHeadersTrackingFor(_options: {headers: string[]}): any {
         //  throw new Error('Method not implemented.');
     }
-    getHTTPHeadersTrackingFor(): any {
-        //  throw new Error('Method not implemented.');
+    getHTTPHeadersTrackingFor(): Promise<HttpHeadersTracking> {
+        
+        let httpHeadersTracking: HttpHeadersTracking = {
+            headersList:"[]"
+        };
+       return new Promise((resolve) => {
+            resolve(httpHeadersTracking);
+        })
     }
 }
