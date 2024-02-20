@@ -154,6 +154,9 @@ window.fetch = function fetch() {
         }
       });
     } else {
+      if(options === undefined) {
+        options = {};
+      }
       options['headers']={};
       options.headers['newrelic'] = headers['newrelic'];
       options.headers['traceparent'] = headers['traceparent'];
@@ -196,7 +199,6 @@ window.XMLHttpRequest.prototype.open = function (
   networkRequest.method = method;
   networkRequest.bytesSent = 0;
   networkRequest.startTime = Date.now();
-  this.setRequestHeader("Car","Maruti");
   return originalXhrOpen.apply(this, arguments as any);
 
 };
