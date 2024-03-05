@@ -37,6 +37,8 @@ CAP_PLUGIN(NewRelicCapacitorPluginPlugin, "NewRelicCapacitorPlugin",
            CAP_PLUGIN_METHOD(generateDistributedTracingHeaders, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(addHTTPHeadersTrackingFor, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getHTTPHeadersTrackingFor, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setMaxOfflineStorageSize, CAPPluginReturnPromise);
+
 
            
 

@@ -16,6 +16,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 * Promise rejection tracking
 * Capture interactions and the sequence in which they were created
 * Pass user information to New Relic to track user sessions
+* Collect offline Events when there is no internet connection
 
 ## Current Support:
 - Android API 24+
@@ -86,8 +87,11 @@ let agentConfig : AgentConfiguration = {
   // Optional:Enable or disable sending JS console logs to New Relic.
   sendConsoleEvents: true,
 
-  // Optional: nable or disable reporting data using different endpoints for US government clients.
+  // Optional: Enable or disable reporting data using different endpoints for US government clients.
    fedRampEnabled: false
+
+  // Optional: Enable or disable offline data storage when no internet connection is available.
+  offlineStorageEnabled:true
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
@@ -108,7 +112,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.2.1"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.3.0"
       }
     }
   ```
@@ -163,7 +167,7 @@ To learn more about how to add custom instrumentation for Angular's HttpClient, 
 * [`getAgentConfiguration(...)`](#getagentconfiguration)
 * [`shutdown(...)`](#shutdown)
 * [`generateDistributedTracingHeaders(...)`](#generateDistributedTracingHeaders)
-
+* [`setMaxOfflineStorageSize(...)`](#setMaxOfflineStorageSize)
 
 
 
@@ -660,6 +664,24 @@ addHTTPHeadersTrackingFor(options:{headers: string[]}): void;
 
 ```
 --------------------
+
+### [setMaxOfflineStorageSize(...)](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile/mobile-sdk/set-max-offline-storage/)
+> Sets the maximum size of total data that can be stored for offline storage.By default, mobile monitoring can collect a maximum of 100 megaBytes of offline storage. When a data payload fails to send because the device doesn't have an internet connection, it can be stored in the file system until an internet connection has been made. After a typical harvest payload has been successfully sent, all offline data is sent to New Relic and cleared from storage.
+
+```typescript
+setMaxOfflineStorageSize(options: { megaBytes: number; }) => void
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ megaBytes: number; }</code> |
+
+#### Usage:
+```ts
+    NewRelicCapacitorPlugin.setMaxOfflineStorageSize({ megaBytes: 200 })
+```
+--------------------
+
 
 
 ## Error Reporting

@@ -44,6 +44,7 @@ export interface NewRelicCapacitorPluginPlugin {
   removeAllAttributes(options?: {}): void;
   setMaxEventBufferTime(options: {maxBufferTimeInSeconds: number}): void;
   setMaxEventPoolSize(options: {maxPoolSize: number}): void;
+  setMaxOfflineStorageSize(options: {megaBytes: number}): void;
   recordError(options: {
     name: string;
     message: string;
@@ -77,6 +78,7 @@ export interface AgentConfiguration {
   crashCollectorAddress?: string
   sendConsoleEvents?: boolean
   fedRampEnabled?: boolean
+  offlineStorageEnabled?: boolean
 }
 
 export interface DTHeaders {

@@ -58,6 +58,10 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
     setMaxEventPoolSize(_options: { maxPoolSize: number; }): void {
         // throw new Error('Method not implemented.');
     }
+
+    setMaxOfflineStorageSize(_options: { megaBytes: number; }): void {
+        // throw new Error('Method not implemented.');
+    }
     recordError(_options: { name: string; message: string; stack: string; isFatal: boolean; attributes?: object }): void {
        // throw new Error('Method not implemented.');
     }
@@ -87,7 +91,8 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
             collectorAddress: '',
             crashCollectorAddress: '',
             sendConsoleEvents: true,
-            fedRampEnabled: false
+            fedRampEnabled: false,
+            offlineStorageEnabled:true
         };
        return new Promise((resolve) => {
             resolve(a);
