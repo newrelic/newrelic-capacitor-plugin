@@ -164,7 +164,7 @@ window.fetch = function fetch() {
       _arguments[1] = options;
     }
 
-    if(options && 'body' in options) {
+    if(options && 'body' in options && options.body !== null) {
       networkRequest.bytesSent = options.body.length;
     } else {
       networkRequest.bytesSent = 0;

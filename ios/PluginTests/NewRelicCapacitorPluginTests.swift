@@ -618,6 +618,37 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.setMaxEventBufferTime(callWithNoParams)
         
     }
+
+       func testSetMaxOfflineStorageSize() {
+        guard let callWithGoodParams = CAPPluginCall(callbackId: "setMaxOfflineStorageSize",
+                                               options: ["megaBytes": 100],
+                                               success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                               error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testSetMaxOfflineStorageSize")
+            return
+        }
+        
+        // Should work since it will go to default value
+        guard let callWithNoParams = CAPPluginCall(callbackId: "setMaxOfflineStorageSize",
+                                             options: [:],
+                                             success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                             error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testSetMaxOfflineStorageSize")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.setMaxOfflineStorageSize(callWithGoodParams)
+        NewRelicCapacitorPlugin.setMaxOfflineStorageSize(callWithNoParams)
+        
+    }
     
     func testSetMaxEventPoolSize() {
         guard let callWithGoodParams = CAPPluginCall(callbackId: "setMaxEventPoolSize",

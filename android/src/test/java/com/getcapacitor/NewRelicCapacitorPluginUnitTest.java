@@ -361,15 +361,6 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithBadMetricUnit2, times(1)).reject(Mockito.anyString());
     }
 
-//    @Test
-//    public void testRemoveAllAttributes() {
-//        PluginCall callWithGoodParams = mock(PluginCall.class);
-//
-//        plugin.removeAllAttributes(callWithGoodParams);
-//
-//        verify(callWithGoodParams, times(1)).resolve();
-//    }
-
     @Test
     public void testSetMaxEventBufferTime() {
         PluginCall callWithGoodParams = mock(PluginCall.class);
@@ -405,6 +396,25 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
     }
+
+    @Test
+    public void testsetMaxOfflineStorageSize() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+        when(callWithGoodParams.getInt("megaBytes")).thenReturn(2000);
+
+        PluginCall callWithNoParams = mock(PluginCall.class);
+        when(callWithNoParams.getInt("megaBytes")).thenReturn(null);
+
+        plugin.setMaxOfflineStorageSize(callWithGoodParams);
+        plugin.setMaxOfflineStorageSize(callWithNoParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
+
+        verify(callWithNoParams, times(0)).resolve();
+        verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+    }
+
 
     @Test
     public void testParseStackTrace() {

@@ -54,6 +54,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         String crashCollectorAddress;
         boolean sendConsoleEvents;
         boolean fedRampEnabled;
+        boolean offlineStorageEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -68,6 +69,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.crashCollectorAddress = "mobile-crash.newrelic.com";
             this.sendConsoleEvents = true;
             this.fedRampEnabled = false;
+            this.offlineStorageEnabled = true;
         }
     }
 
@@ -201,6 +203,15 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             if(agentConfiguration.getBool("sendConsoleEvents") != null) {
                 agentConfig.sendConsoleEvents = Boolean.TRUE.equals(agentConfiguration.getBool("sendConsoleEvents"));
             } 
+            
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("offlineStorageEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.OfflineStorage);
+                agentConfig.offlineStorageEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.OfflineStorage);
+                agentConfig.offlineStorageEnabled = true;
+            }
+         
 
         }
 
@@ -459,37 +470,6 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         NewRelic.noticeNetworkFailure(url, method, startTime, endTime,strToNetworkFailure.get(failure));
         call.resolve();
     }
-
-    @PluginMethod
-    public void noticeNetworkFailure(PluginCall call) {
-        String url = call.getString("url");
-        String method = call.getString("method");
-        Long startTime = call.getLong("startTime");
-        Long endTime = call.getLong("endTime");
-        String failure = call.getString("failure");
-
-        if (url == null ||
-                method == null ||
-                startTime == null ||
-                endTime == null ||
-                failure == null) {
-            call.reject("Bad parameters given to noticeNetworkFailure");
-            return;
-        }
-
-        Map<String, NetworkFailure> strToNetworkFailure = new HashMap<>();
-        strToNetworkFailure.put("Unknown", NetworkFailure.Unknown);
-        strToNetworkFailure.put("BadURL", NetworkFailure.BadURL);
-        strToNetworkFailure.put("TimedOut", NetworkFailure.TimedOut);
-        strToNetworkFailure.put("CannotConnectToHost", NetworkFailure.CannotConnectToHost);
-        strToNetworkFailure.put("DNSLookupFailed", NetworkFailure.DNSLookupFailed);
-        strToNetworkFailure.put("BadServerResponse", NetworkFailure.BadServerResponse);
-        strToNetworkFailure.put("SecureConnectionFailed", NetworkFailure.SecureConnectionFailed);
-
-        NewRelic.noticeNetworkFailure(url, method, startTime, endTime,strToNetworkFailure.get(failure));
-        call.resolve();
-    }
-
     @PluginMethod
     public void recordMetric(PluginCall call) {
         String name = call.getString("name");
@@ -563,6 +543,19 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         }
 
         NewRelic.setMaxEventPoolSize(maxPoolSize);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setMaxOfflineStorageSize(PluginCall call) {
+        Integer megabytes = call.getInt("megaBytes");
+
+        if (megabytes == null) {
+            call.reject("Bad megabytes in setMaxOfflineStorageSize");
+            return;
+        }
+
+        NewRelic.setMaxEventPoolSize(megabytes);
         call.resolve();
     }
 
@@ -724,6 +717,8 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             ret.put("crashCollectorAddress", agentConfig.crashCollectorAddress);
             ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
             ret.put("fedRampEnabled", agentConfig.fedRampEnabled);
+            ret.put("offlineStorageEnabled", agentConfig.offlineStorageEnabled);
+
         }
         call.resolve(ret);
     }

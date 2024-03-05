@@ -28,6 +28,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var crashCollectorAddress: String = "mobile-crash.newrelic.com"
         var sendConsoleEvents: Bool = true;
         var fedRampEnabled: Bool = false;
+        var offlineStorageEnabled = true;
+
     }
     
     private let jscRegex = try! NSRegularExpression(pattern: #"^\s*(?:([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$"#,
@@ -90,6 +92,14 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             if agentConfiguration["webViewInstrumentation"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
                 agentConfig.webViewInstrumentation = false;
+            }
+
+             if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
+                agentConfig.offlineStorageEnabled = false;
+            } else {
+                NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
+                agentConfig.offlineStorageEnabled = true;
             }
 
             if agentConfiguration["fedRampEnabled"] as? Bool == true {
@@ -416,7 +426,16 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         NewRelic.setMaxEventPoolSize(uint_maxPoolSize)
         call.resolve()
     }
-    
+
+    @objc func setMaxOfflineStorageSize(_ call: CAPPluginCall) {
+
+        let megaBytes = call.getInt("megaBytes") ?? 100
+        
+        let uint_megaBytes = UInt32(megaBytes)
+        
+        NewRelic.setMaxOfflineStorageSize(uint_megaBytes)
+        call.resolve()
+    }    
     func parseStackTrace(stackString : String) -> NSMutableArray {
         let lines = stackString.split(whereSeparator: \.isNewline)
 
@@ -541,7 +560,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "collectorAddress": agentConfig.collectorAddress,
             "crashCollectorAddress": agentConfig.crashCollectorAddress,
             "sendConsoleEvents": agentConfig.sendConsoleEvents,
-            "fedRampEnabled": agentConfig.fedRampEnabled
+            "fedRampEnabled": agentConfig.fedRampEnabled,
+            "offlineStorageEnabled":agentConfig.offlineStorageEnabled
         ])
     }
 
