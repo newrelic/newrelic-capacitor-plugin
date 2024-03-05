@@ -277,7 +277,7 @@ public class NewRelicCapacitorPluginUnitTest {
         when(callWithNoParams.getString("method")).thenReturn(null);
         when(callWithNoParams.getLong("startTime")).thenReturn(null);
         when(callWithNoParams.getLong("endTime")).thenReturn(null);
-        when(callWithGoodParams.getString("failure")).thenReturn(null);
+        when(callWithNoParams.getString("failure")).thenReturn(null);
 
         plugin.noticeNetworkFailure(callWithGoodParams);
         plugin.noticeNetworkFailure(callWithNoParams);
