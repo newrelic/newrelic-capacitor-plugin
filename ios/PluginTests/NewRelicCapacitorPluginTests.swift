@@ -449,15 +449,15 @@ class NewRelicCapacitorPluginTests: XCTestCase {
                                                          "endTime": Date().timeIntervalSince1970,
                                                          "failure": "BadURL"],
                                                success: { (result, call) in
-            XCTAssertNotNil(result)
+            XCTFail("noticeHttpTransaction should not work with bad params")
         },
                                                error:{ (err) in
-            XCTFail("Error shouldn't have been called")
+            XCTAssertNotNil(err)
+            XCTAssertEqual(err!.message, "Bad parameters given to noticeHttpTransaction")
         }) else {
             XCTFail("Bad call in noticeNetworkFailure")
             return
         }
-        
 
         guard let callWithNoParams = CAPPluginCall(callbackId: "noticeNetworkFailure",
                                              options: [:],
