@@ -585,7 +585,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             return ;
         }
         
-        let headersDict = NewRelic.addHTTPHeaderTracking(for: headers)
+        NewRelic.addHTTPHeaderTracking(for: headers)
     }
     
     @objc func getHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
