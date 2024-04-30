@@ -2,7 +2,9 @@
 
 ## 1.4.0
 
-* Capacitor 6.0 Support
+- Capacitor 6.0 Support
+- Upgrading the native iOS agent to version 7.4.11.
+- Upgrading the native Android agent to version 7.3.1.
 
 ## 1.3.7
 
