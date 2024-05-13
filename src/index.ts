@@ -24,33 +24,30 @@ const defaultError = window.console.error;
 
 console.log = function () {
   var msgs = [];
-
+  defaultLog(...arguments);
   while (arguments.length) {
     var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('log', copyArguments);
   }
-  defaultLog.apply(console, msgs);
 };
 console.warn = function () {
   var msgs = [];
-
+  defaultWarn(...arguments);
   while (arguments.length) {
     var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('warn', copyArguments);
   }
-  defaultWarn.apply(console, msgs);
 };
 console.error = function () {
   var msgs = [];
-
+  defaultError(...arguments);
   while (arguments.length) {
     var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('error', copyArguments);
   }
-  defaultError.apply(console, msgs);
 };
 
 function sendConsole(consoleType: string, _arguments: any) {
@@ -129,7 +126,7 @@ window.fetch = function fetch() {
     networkRequest.startTime = Date.now();
     if (urlOrRequest && typeof urlOrRequest === 'object') {
       networkRequest.url = urlOrRequest.url;
-  
+
       if (options && 'method' in options) {
        networkRequest. method = options.method;
       } else if (urlOrRequest && 'method' in urlOrRequest) {
@@ -137,12 +134,12 @@ window.fetch = function fetch() {
       }
     } else {
       networkRequest.url = urlOrRequest;
-  
+
       if (options && 'method' in options) {
         networkRequest.method = options.method;
       }
     }
-  
+
     if(options && 'headers' in options) {
       options.headers['newrelic'] = headers['newrelic'];
       options.headers['traceparent'] = headers['traceparent'];
@@ -150,7 +147,7 @@ window.fetch = function fetch() {
 
       JSON.parse(trackingHeadersList["headersList"]).forEach((e: string) => {
         if(options.headers[e] !== undefined) {
-          networkRequest.params[e] = options.headers[e];     
+          networkRequest.params[e] = options.headers[e];
         }
       });
     } else {
@@ -169,7 +166,7 @@ window.fetch = function fetch() {
     } else {
       networkRequest.bytesSent = 0;
     }
-  
+
     if (networkRequest.method === undefined || networkRequest.method === "" ) {
        networkRequest.method = 'GET';
     }
@@ -211,7 +208,7 @@ window.XMLHttpRequest.prototype.send = function (
           "readystatechange",
           async () => {
             if (this.readyState === this.OPENED) {
-            
+
             }
             if (this.readyState === this.HEADERS_RECEIVED) {
               if (this.getAllResponseHeaders()) {
@@ -230,7 +227,7 @@ window.XMLHttpRequest.prototype.send = function (
             if (this.readyState === this.DONE) {
               networkRequest.endTime = Date.now();
               networkRequest.status = this.status;
-    
+
               const type = this.responseType;
               if (type === "arraybuffer") {
                 networkRequest.bytesreceived = this.response.byteLength as number;
@@ -243,7 +240,7 @@ window.XMLHttpRequest.prototype.send = function (
                 // unsupported response type
                 networkRequest.bytesreceived = 0;
               }
-    
+
               if(isValidURL(networkRequest.url)) {
               NewRelicCapacitorPlugin.noticeHttpTransaction({
                 url:networkRequest.url,
