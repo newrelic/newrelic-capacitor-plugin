@@ -62,6 +62,8 @@ android {
 repositories {
     google()
     mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/comnewrelic-2914"}
+
 }
 
 
@@ -72,7 +74,7 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation 'com.newrelic.agent.android:android-agent:7.+'
+    implementation 'com.newrelic.agent.android:android-agent:7.4.0-alpha01'
     testImplementation "org.mockito:mockito-core:3.+"
     testImplementation 'org.json:json:20220924'
 }

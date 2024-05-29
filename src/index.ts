@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { registerPlugin } from '@capacitor/core';
+import {registerPlugin} from '@capacitor/core';
 
 import type { NewRelicCapacitorPluginPlugin } from './definitions';
 import getCircularReplacer from './circular-replacer';
@@ -21,6 +21,8 @@ export { NewRelicCapacitorPlugin };
 const defaultLog = window.console.log;
 const defaultWarn = window.console.warn;
 const defaultError = window.console.error;
+const defaultAssert = window.console.assert;
+const defaultDebug = window.console.debug;
 
 console.log = function () {
   var msgs = [];
@@ -50,10 +52,42 @@ console.error = function () {
   }
 };
 
+console.assert= function () {
+  var msgs = [];
+  defaultAssert(...arguments);
+  while (arguments.length) {
+    var copyArguments = Object.assign({}, arguments);
+    msgs.push('[]' + ': ' + [].shift.call(arguments));
+    sendConsole('assert', copyArguments);
+  }
+};
+
+console.debug = function () {
+  var msgs = [];
+  defaultDebug(...arguments);
+  while (arguments.length) {
+    var copyArguments = Object.assign({}, arguments);
+    msgs.push('[]' + ': ' + [].shift.call(arguments));
+    sendConsole('debug', copyArguments);
+  }
+};
+
 function sendConsole(consoleType: string, _arguments: any) {
   NewRelicCapacitorPlugin.getAgentConfiguration().then((agentConfig) => {
     if (agentConfig.sendConsoleEvents) {
+
       const argsStr = JSON.stringify(_arguments, getCircularReplacer());
+
+      if(consoleType === 'error') {
+        NewRelicCapacitorPlugin.logError({message: argsStr});
+      }else if(consoleType === 'warn') {
+        NewRelicCapacitorPlugin.logWarning({message: argsStr});
+      }else if(consoleType === 'debug') {
+        NewRelicCapacitorPlugin.logDebug({message: argsStr});
+      } else {
+        NewRelicCapacitorPlugin.logInfo({message: argsStr});
+      }
+
       NewRelicCapacitorPlugin.recordCustomEvent({
         eventType: 'consoleEvents',
         eventName: 'JSConsole',

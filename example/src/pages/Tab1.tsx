@@ -3,24 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0 
  */
 
-import { CapacitorHttp } from "@capacitor/core";
 import {
-  IonContent,
-  IonList,
+  IonButton,
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonButton,
+  IonContent,
   IonItem,
   IonLabel,
+  IonList,
   IonToggle,
 } from "@ionic/react";
 
-import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
-import { useState } from "react";
+import {NewRelicCapacitorPlugin, NREnums} from "@newrelic/newrelic-capacitor-plugin";
+import {useState} from "react";
 import ErrorBoundary from "../ErrorBoundary";
 
 import './Tab1.css';
+import LogLevel = NREnums.LogLevel;
 
 
 const Tab1: React.FC = () => {
@@ -34,6 +34,12 @@ const Tab1: React.FC = () => {
   };
 
   const httpHandler = async () => {
+
+    NewRelicCapacitorPlugin.log({level:LogLevel.INFO, message: "http transaction started"});
+    NewRelicCapacitorPlugin.log({level:LogLevel.ERROR, message: "http transaction error"});
+    NewRelicCapacitorPlugin.logAll({ error: "http transaction warn", attributes: { "val": "teststtststst", "level": LogLevel.INFO } });
+    NewRelicCapacitorPlugin.logAttributes({ attributes: { "name": "CapaCitor APP", "message": "httpHandler", "level": LogLevel.VERBOSE } });
+
     NewRelicCapacitorPlugin.noticeHttpTransaction({
       url: "https://fakewebsite201.com",
       method: "GET",
@@ -44,6 +50,8 @@ const Tab1: React.FC = () => {
       bytesReceived: 20000,
       body: "fake http response body 201",
     });
+    NewRelicCapacitorPlugin.logInfo({ message: "http transaction ended" });
+
   }
   const networkFailureHandler = () => {
     NewRelicCapacitorPlugin.noticeHttpTransaction({
@@ -59,6 +67,7 @@ const Tab1: React.FC = () => {
   };
 
   const setAttrHandler = () => {
+    NewRelicCapacitorPlugin.logDebug({ message: "set attribute" });
     NewRelicCapacitorPlugin.setAttribute({ name: "testSetAttr", value: "5" });
   };
   const incrementHandler = () => {
@@ -94,6 +103,8 @@ const Tab1: React.FC = () => {
   };
 
   const metricHandler = () => {
+    NewRelicCapacitorPlugin.log({level:LogLevel.INFO, message: "record metrics"});
+    NewRelicCapacitorPlugin.logVerbose({ message: "send many events" });
     NewRelicCapacitorPlugin.recordMetric({
       name: "testMetricName",
       category: "testMetricCategory",
@@ -114,6 +125,8 @@ const Tab1: React.FC = () => {
 
   const noticeNetworkHandler = async () => {
 
+    NewRelicCapacitorPlugin.logError({ message: "notice network failure" });
+    NewRelicCapacitorPlugin.logAttributes({attributes: {"test":"test","message":"noticeNetworkHandler", "level":LogLevel.VERBOSE}});
     const response = await fetch("https://reactnative.dev/movies.json");
     const movies = await response.json();
     console.log(movies);
@@ -128,6 +141,8 @@ const Tab1: React.FC = () => {
   };
 
   const errorHandler = () => {
+
+    NewRelicCapacitorPlugin.logAll({error: "record error", attributes: {"test":"test", "level":LogLevel.INFO}});
     try {
       throw new Error('testMsg');
     } catch (e: any) {
