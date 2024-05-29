@@ -850,5 +850,7 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.getAgentConfiguration(call)
     }
 
+
+
 }
 
