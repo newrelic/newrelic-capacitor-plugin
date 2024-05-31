@@ -29,6 +29,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var sendConsoleEvents: Bool = true;
         var fedRampEnabled: Bool = false;
         var offlineStorageEnabled = true;
+        var backgroundReportingEnabled = false;
+        var newEventSystemEnabled = true;
 
     }
     
@@ -101,6 +103,22 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                 NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
                 agentConfig.offlineStorageEnabled = true;
             }
+            
+            if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+               NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
+               agentConfig.newEventSystemEnabled = false;
+           } else {
+               NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
+               agentConfig.newEventSystemEnabled = true;
+           }
+            
+            if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+               NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+               agentConfig.backgroundReportingEnabled = false;
+           } else {
+               NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+               agentConfig.backgroundReportingEnabled = true;
+           }
 
             if agentConfiguration["fedRampEnabled"] as? Bool == true {
                 NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_FedRampEnabled)
