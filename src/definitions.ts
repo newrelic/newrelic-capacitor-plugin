@@ -79,6 +79,8 @@ export interface AgentConfiguration {
   sendConsoleEvents?: boolean
   fedRampEnabled?: boolean
   offlineStorageEnabled?: boolean
+  backgroundReportingEnabled?: boolean
+  newEventSystemEnabled?: boolean
 }
 
 export interface DTHeaders {

@@ -17,6 +17,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 * Capture interactions and the sequence in which they were created
 * Pass user information to New Relic to track user sessions
 * Collect offline Events when there is no internet connection
+* Collect Background Events when the app is in the background
 
 ## Current Support:
 - Android API 24+
@@ -88,10 +89,18 @@ let agentConfig : AgentConfiguration = {
   sendConsoleEvents: true,
 
   // Optional: Enable or disable reporting data using different endpoints for US government clients.
-   fedRampEnabled: false
+   fedRampEnabled: false,
 
   // Optional: Enable or disable offline data storage when no internet connection is available.
-  offlineStorageEnabled:true
+  offlineStorageEnabled:true,
+  
+  // iOS Specific
+  // Optional: Enable or disable Background Reporting.
+  backgroundReportingEnabled:true,
+
+  // iOS Specific
+  // Optional: Enable or disable to use our new, more stable, event system for iOS agent.
+  newEventSystemEnabled:true
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
