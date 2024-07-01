@@ -28,9 +28,9 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var crashCollectorAddress: String = "mobile-crash.newrelic.com"
         var sendConsoleEvents: Bool = true;
         var fedRampEnabled: Bool = false;
-        var offlineStorageEnabled = true;
-        var backgroundReportingEnabled = false;
-        var newEventSystemEnabled = true;
+        var offlineStorageEnabled: Bool = true;
+        var backgroundReportingEnabled: Bool = false;
+        var newEventSystemEnabled: Bool = true;
 
     }
     
@@ -112,12 +112,12 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                agentConfig.newEventSystemEnabled = true;
            }
             
-            if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+            if agentConfiguration["backgroundReportingEnabled"] as? Bool == true {
+                  NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+               agentConfig.backgroundReportingEnabled = true;
+           } else {
                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
                agentConfig.backgroundReportingEnabled = false;
-           } else {
-               NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
-               agentConfig.backgroundReportingEnabled = true;
            }
 
             if agentConfiguration["fedRampEnabled"] as? Bool == true {
