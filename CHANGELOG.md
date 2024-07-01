@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.2
+
+- Disabled the background reporting functionality to resolve an issue on the iOS side.
+
+
 ## 1.4.1
 
 * Improvements
