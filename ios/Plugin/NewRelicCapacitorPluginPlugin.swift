@@ -28,7 +28,6 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var crashCollectorAddress: String = "mobile-crash.newrelic.com"
         var sendConsoleEvents: Bool = true;
         var fedRampEnabled: Bool = false;
-        var logReportingEnabled = true;
         var offlineStorageEnabled: Bool = true;
         var backgroundReportingEnabled: Bool = false;
         var newEventSystemEnabled: Bool = true;
@@ -105,15 +104,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                 agentConfig.offlineStorageEnabled = true;
             }
 
-            if agentConfiguration["logReportingEnabled"] as? Bool == false {
-               NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_LogReporting)
-               agentConfig.logReportingEnabled = false;
-           } else {
-               NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_LogReporting)
-               agentConfig.logReportingEnabled = true;
-           }
 
-            if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+            if agentConfiguration["newEventSystemEnabled"] as? Bool == false {
                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
                agentConfig.newEventSystemEnabled = false;
            } else {
@@ -189,10 +181,9 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             }
         }
         
-        NRLogger.setLogLevels(logLevel)
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.4.0")
+        NewRelic.perform(selector, with:"1.5.0")
 
         DispatchQueue.main.async {
             if collectorAddress == nil && crashCollectorAddress == nil {
@@ -617,8 +608,101 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     
     @objc func getHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
         
+        let headerArray = NewRelic.httpHeadersAddedForTracking();
         call.resolve([
-            "headersList": "[]"
+            "headersList": headerArray
         ])
     }
+
+     @objc func logDebug(_ call: CAPPluginCall) {
+
+            let message = call.getString("message") ?? "null"
+
+            NewRelic.log(message, level: NRLogLevelDebug)
+
+
+        }
+
+        @objc func logWarning(_ call: CAPPluginCall) {
+
+            let message = call.getString("message") ?? "null"
+
+            NewRelic.log(message, level: NRLogLevelWarning)
+
+
+        }
+
+        @objc func logError(_ call: CAPPluginCall) {
+
+            let message = call.getString("message") ?? "null"
+
+            NewRelic.log(message, level: NRLogLevelError)
+
+
+        }
+
+        @objc func logVerbose(_ call: CAPPluginCall) {
+
+            let message = call.getString("message") ?? "null"
+
+            NewRelic.log(message, level: NRLogLevelVerbose)
+
+
+        }
+
+        @objc func logInfo(_ call: CAPPluginCall) {
+
+            let message = call.getString("message") ?? "null"
+
+            NewRelic.log(message, level: NRLogLevelInfo)
+
+        }
+
+        @objc func log(_ call: CAPPluginCall) {
+
+            let message = call.getString("message") ?? "null"
+            let level = call.getString("level")
+
+            let strToLogLevel = [
+                "ERROR": NRLogLevelError,
+                "WARNING": NRLogLevelWarning,
+                "INFO": NRLogLevelInfo,
+                "VERBOSE": NRLogLevelVerbose,
+                "AUDIT": NRLogLevelAudit
+            ]
+
+            let configLogLevel =  strToLogLevel[level!]
+
+            NewRelic.log(message, level: configLogLevel!)
+        }
+
+
+
+        @objc func logAll(_ call: CAPPluginCall) {
+
+            let error = call.getString("error") ?? "null"
+
+            let attributes = call.getObject("attributes")
+
+            var allAttributes: [String: Any] = ["message":error];
+
+            for (key,value) in attributes! {
+                allAttributes[key] = value;
+            }
+
+            NewRelic.logAttributes(allAttributes)
+
+        }
+
+        @objc func logAttributes(_ call: CAPPluginCall) {
+
+            let attributes = call.getObject("attributes")
+
+            if(attributes!.isEmpty){
+                print("Attributes are Empty")
+                return
+            }
+
+            NewRelic.logAttributes(attributes!);
+        }
 }

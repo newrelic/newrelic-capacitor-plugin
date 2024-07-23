@@ -79,20 +79,14 @@ function sendConsole(consoleType: string, _arguments: any) {
       const argsStr = JSON.stringify(_arguments, getCircularReplacer());
 
       if(consoleType === 'error') {
-        NewRelicCapacitorPlugin.logError({message: argsStr});
+        NewRelicCapacitorPlugin.logError({message: `[CONSOLE][ERROR]${argsStr}`});
       }else if(consoleType === 'warn') {
-        NewRelicCapacitorPlugin.logWarning({message: argsStr});
+        NewRelicCapacitorPlugin.logWarning({message: `[CONSOLE][WARN]${argsStr}`});
       }else if(consoleType === 'debug') {
-        NewRelicCapacitorPlugin.logDebug({message: argsStr});
+        NewRelicCapacitorPlugin.logDebug({message: `[CONSOLE][DEBUG]${argsStr}`});
       } else {
-        NewRelicCapacitorPlugin.logInfo({message: argsStr});
+        NewRelicCapacitorPlugin.logInfo({message: `[CONSOLE][LOG]${argsStr}`});
       }
-
-      NewRelicCapacitorPlugin.recordCustomEvent({
-        eventType: 'consoleEvents',
-        eventName: 'JSConsole',
-        attributes: { consoleType: consoleType, args: argsStr },
-      });
     }
   });
 }

@@ -61,6 +61,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         boolean fedRampEnabled;
         boolean offlineStorageEnabled;
         boolean logReportingEnabled;
+        boolean backgroundReportingEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -76,7 +77,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.sendConsoleEvents = true;
             this.fedRampEnabled = false;
             this.offlineStorageEnabled = true;
-            this.logReportingEnabled = true;
+            this.backgroundReportingEnabled = false;
         }
     }
 
@@ -174,18 +175,20 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 agentConfig.fedRampEnabled = false;
             }
 
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("backgroundReportingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.BackgroundReporting);
+                agentConfig.backgroundReportingEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.BackgroundReporting);
+                agentConfig.backgroundReportingEnabled = true;
+            }
+
+
             if(agentConfiguration.getBool("loggingEnabled") != null) {
                 loggingEnabled = Boolean.TRUE.equals(agentConfiguration.getBool("loggingEnabled"));
                 agentConfig.loggingEnabled = loggingEnabled;
             }
 
-            if(Boolean.TRUE.equals(agentConfiguration.getBool("logReportingEnabled"))) {
-                NewRelic.enableFeature(FeatureFlag.LogReporting);
-                agentConfig.logReportingEnabled = true;
-            } else {
-                NewRelic.disableFeature(FeatureFlag.LogReporting);
-                agentConfig.logReportingEnabled = false;
-            }
 
             if(agentConfiguration.getString("logLevel") != null) {
                 Map<String, Integer> strToLogLevel = new HashMap<>();
@@ -230,12 +233,10 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
 
         }
 
-        NewRelic.setEntityGuid("MXxNT0JJTEV8QVBQTElDQVRJT058NjAxMzQ0MTMy");
-        LogReporting.setLogLevel(LogLevel.INFO);
         // Use default collector addresses if not set
         if(collectorAddress == null && crashCollectorAddress == null) {
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.4.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.0")
                     .withLoggingEnabled(loggingEnabled)
                     .start(this.getActivity().getApplication());
         } else {
@@ -246,7 +247,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 crashCollectorAddress = "mobile-crash.newrelic.com";
             }
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.4.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.0")
                     .withLoggingEnabled(loggingEnabled)
                     .withLogLevel(logLevel)
                     .usingCollectorAddress(collectorAddress)
