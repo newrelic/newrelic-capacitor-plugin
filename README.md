@@ -12,7 +12,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 * Capture JavaScript errors
 * Network Instrumentation (CapacitorHttp Client XMLHttpRequest and Fecth) 
 * Distributed Tracing (CapacitorHttp Client and Fecth)
-* Tracking console log, warn and error
+* Tracking console log, warn and error as Logs
 * Promise rejection tracking
 * Capture interactions and the sequence in which they were created
 * Pass user information to New Relic to track user sessions
@@ -121,7 +121,7 @@ AppToken is platform-specific. You need to generate separate tokens for Android 
       }
       dependencies {
         ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.3.1"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.5.0"
       }
     }
   ```
@@ -691,6 +691,137 @@ setMaxOfflineStorageSize(options: { megaBytes: number; }) => void
 ```
 --------------------
 
+### `logInfo(...)`
+Logs informational messages to the New Relic agent.
+
+```typescript
+logInfo(options: { message: string}) => void
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ message: string;}</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logInfo(
+   {message: "User profile loaded successfully"});
+```
+--------------------
+### `logVerbose(...)`
+Logs verbose messages for detailed debugging information.
+
+```typescript
+logVerbose(options: { message: string }) => void
+```
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ message: string}</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logVerbose({message:"Verbose logging example"});
+```
+
+--------------------
+
+### `logError(...)`
+Logs error messages. 
+
+```typescript
+logError(options: { message: string}) => void
+```
+
+| Param         | Type                                   |
+| ------------- | -------------------------------------- |
+| **`options`** | <code>{ message: string}</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logError({message:"Error loading user profile"});
+```
+
+--------------------
+
+### `logWarn(...)`
+Logs warning messages.
+
+```typescript
+logWarn(options: { message: string}) => void
+```
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ message: string }</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logWarn({message: "Low disk space warning"});
+```
+
+--------------------
+
+### `logDebug(...)`
+Logs debug messages.
+
+```typescript
+logDebug(options: { message: string }) => void
+```
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ message: string }</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logDebug({message:"Debugging session started"});
+```
+--------------------
+
+### `logAll(...)`
+Logs a message with an associated set of attributes. This method is designed for logging generic events or errors along with detailed attributes for further analysis. It is a versatile logging function that can be used to log any type of information, including errors, warnings, or informational messages.
+
+```typescript
+logAll(options: { error: string; attributes: object; }): void
+```
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ error: string; attributes: object; }</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logAll({
+    error: "UnexpectedError",
+    attributes: { "errorCode": "500", "errorMessage": "Internal Server Error" ,level:"WARN"}
+});
+```
+
+--------------------
+
+### `logAttributes(...)`
+Logs multiple attributes at once by passing a map of key-value pairs. This method allows for the efficient addition of contextual information to logs, enhancing the diagnostic capability of logged event
+
+```typescript
+logAttributes(options: { attributes: object; }): void
+```
+
+| Param         | Type                              |
+| ------------- | --------------------------------- |
+| **`options`** | <code>{ attributes: object; }</code> |
+
+#### Usage:
+```typescript
+NewRelicCapacitorPlugin.logAttributes({attributes:{
+  "userID": 12345,
+  "sessionID": "abcde12345",
+  "isLoggedIn": true,
+  "message":"this is test",
+  "level":"INFO"
+}});
+```
+--------------------
 
 
 ## Error Reporting

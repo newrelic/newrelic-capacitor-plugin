@@ -6,6 +6,8 @@
 package com.newrelic.capacitor.plugin;
 
 import android.Manifest;
+import android.util.Log;
+
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -19,6 +21,8 @@ import com.newrelic.agent.android.HttpHeaders;
 import com.newrelic.agent.android.NewRelic;
 import com.newrelic.agent.android.distributedtracing.TraceContext;
 import com.newrelic.agent.android.distributedtracing.TracePayload;
+import com.newrelic.agent.android.logging.LogLevel;
+import com.newrelic.agent.android.logging.LogReporting;
 import com.newrelic.agent.android.metric.MetricUnit;
 import com.newrelic.agent.android.logging.AgentLog;
 import com.newrelic.agent.android.util.NetworkFailure;
@@ -40,6 +44,7 @@ import java.util.regex.Pattern;
 public class NewRelicCapacitorPluginPlugin extends Plugin {
 
     private final NewRelicCapacitorPlugin implementation = new NewRelicCapacitorPlugin();
+    private static final String TAG = "NewRelicCapacitorPlugin";
     private AgentConfig agentConfig;
     private static class AgentConfig {
         boolean analyticsEventEnabled;
@@ -55,6 +60,8 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         boolean sendConsoleEvents;
         boolean fedRampEnabled;
         boolean offlineStorageEnabled;
+        boolean logReportingEnabled;
+        boolean backgroundReportingEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -70,6 +77,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.sendConsoleEvents = true;
             this.fedRampEnabled = false;
             this.offlineStorageEnabled = true;
+            this.backgroundReportingEnabled = false;
         }
     }
 
@@ -167,10 +175,20 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 agentConfig.fedRampEnabled = false;
             }
 
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("backgroundReportingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.BackgroundReporting);
+                agentConfig.backgroundReportingEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.BackgroundReporting);
+                agentConfig.backgroundReportingEnabled = true;
+            }
+
+
             if(agentConfiguration.getBool("loggingEnabled") != null) {
                 loggingEnabled = Boolean.TRUE.equals(agentConfiguration.getBool("loggingEnabled"));
                 agentConfig.loggingEnabled = loggingEnabled;
             }
+
 
             if(agentConfiguration.getString("logLevel") != null) {
                 Map<String, Integer> strToLogLevel = new HashMap<>();
@@ -218,9 +236,8 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         // Use default collector addresses if not set
         if(collectorAddress == null && crashCollectorAddress == null) {
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.4.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.0")
                     .withLoggingEnabled(loggingEnabled)
-                    .withLogLevel(logLevel)
                     .start(this.getActivity().getApplication());
         } else {
             if(collectorAddress == null) {
@@ -230,7 +247,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 crashCollectorAddress = "mobile-crash.newrelic.com";
             }
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.2.1")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.0")
                     .withLoggingEnabled(loggingEnabled)
                     .withLogLevel(logLevel)
                     .usingCollectorAddress(collectorAddress)
@@ -753,6 +770,146 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         dtHeaders.put(NRTraceConstants.GUID, spanId);
 
         call.resolve(dtHeaders);
+    }
+
+    @PluginMethod
+    public void logAttributes(PluginCall call) {
+        JSObject attributes = call.getObject("attributes");
+
+        if(attributes == null) {
+            call.reject("Null attributes given to logAttributes");
+            return;
+        }
+
+        Map logAttributes = new Gson().fromJson(String.valueOf(attributes), Map.class);
+        logAttributes(logAttributes);
+        call.resolve();
+    }
+
+
+    private boolean  log(LogLevel logLevel, String message, PluginCall call) {
+
+        if(message == null || message.isEmpty()) {
+            Log.w(TAG, "Empty message given to log");
+            call.reject("Empty message given to log");
+            return false;
+        }
+
+        if(logLevel == null) {
+            Log.w(TAG, "Null logLevel given to log");
+            call.reject("Null logLevel given to log");
+            return false;
+        }
+        NewRelic.log(logLevel, message);
+        return true;
+    }
+    private boolean logAttributes(Map<String,Object> logAttributes) {
+
+        if(logAttributes.isEmpty()) {
+            Log.w(TAG, "Empty attributes given to logAttributes");
+            return false;
+        }
+        NewRelic.logAttributes(logAttributes);
+        return true;
+    }
+
+    public void log(PluginCall call) {
+        String message = call.getString("message");
+        String level = call.getString("level");
+
+        Map<String, LogLevel> strToLogLevel = new HashMap<>();
+        strToLogLevel.put("ERROR", LogLevel.ERROR);
+        strToLogLevel.put("WARNING", LogLevel.WARN);
+        strToLogLevel.put("INFO", LogLevel.INFO);
+        strToLogLevel.put("VERBOSE", LogLevel.VERBOSE);
+        strToLogLevel.put("AUDIT", LogLevel.DEBUG);
+
+        LogLevel logLevel = strToLogLevel.get(level);
+
+        boolean result = log(logLevel, message,call);
+        if (result) {
+            call.resolve();
+        } else {
+            call.reject("Empty message or level given to logInfo");
+        }
+    }
+
+
+
+    @PluginMethod
+    public void logInfo(PluginCall call) {
+        String message = call.getString("message");
+        boolean result = log(LogLevel.INFO, message, call);
+        if (result) {
+            call.resolve();
+        } else {
+            call.reject("Empty message given to logInfo");
+        }
+    }
+
+    @PluginMethod
+    public void logVerbose(PluginCall call) {
+        String message = call.getString("message");
+        boolean result = log(LogLevel.VERBOSE, message,call);
+        if (result) {
+            call.resolve();
+        } else {
+            call.reject("Empty message given to logVerbose");
+        }
+    }
+
+    @PluginMethod
+    public void logError(PluginCall call) {
+        String message = call.getString("message");
+        boolean result = log(LogLevel.ERROR, message,call);
+        if (result) {
+            call.resolve();
+        } else {
+            call.reject("Empty message given to logError");
+        }
+    }
+
+    @PluginMethod
+    public void logWarning(PluginCall call) {
+        String message = call.getString("message");
+        boolean result = log(LogLevel.WARN, message,call);
+        if (result) {
+            call.resolve();
+        } else {
+            call.reject("Empty message given to logWarning");
+        }
+    }
+
+    @PluginMethod
+    public void logDebug(PluginCall call) {
+        String message = call.getString("message");
+        boolean result = log(LogLevel.DEBUG, message,call);
+        if (result) {
+            call.resolve();
+        } else {
+            call.reject("Empty message given to logDebug");
+        }
+    }
+
+    @PluginMethod
+    public void logAll(PluginCall call) {
+        String error = call.getString("error");
+        JSObject attributes = call.getObject("attributes");
+
+        if(attributes == null) {
+            call.reject("Null attributes given to logAttributes");
+            return;
+        }
+
+        Map<String,Object> logAttributes = new Gson().fromJson(String.valueOf(attributes), Map.class);
+
+        Map<String,Object> logAttributesMap = new HashMap<>();
+        logAttributesMap.put("message", error);
+        logAttributesMap.putAll(logAttributes);
+
+        logAttributes(logAttributesMap);
+
+        call.resolve();
     }
 
 }

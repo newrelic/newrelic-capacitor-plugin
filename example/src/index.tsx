@@ -11,17 +11,22 @@ import reportWebVitals from "./reportWebVitals";
 
 import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 import { Capacitor } from "@capacitor/core";
+import {AgentConfiguration} from "../../src";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
 var appToken;
+
+let config:AgentConfiguration= {
+    logReportingEnabled: true
+};
 if (Capacitor.getPlatform() === "ios") {
   appToken = "AAa413614341452f701db5d23e4574ff22fd30bf8b-NRMA";
 } else {
-  appToken = "<ANDROID-APP-TOKEN>";
+  appToken = "AAa413614341452f701db5d23e4574ff22fd30bf8b-NRMA";
 }
-NewRelicCapacitorPlugin.start({appKey:appToken});
+NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:config});
 
 root.render(
   <React.StrictMode>

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.newrelic.agent.android.logging.LogLevel;
 import com.newrelic.capacitor.plugin.NewRelicCapacitorPluginPlugin;
 
 import org.json.JSONException;
@@ -581,5 +582,65 @@ public class NewRelicCapacitorPluginUnitTest {
 
         verify(callWithGoodParams, times(1)).resolve(Mockito.any());
     }
+
+    @Test
+    public void testLogInfo() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+        when(callWithGoodParams.getString("message")).thenReturn("fakeMessage");
+
+        PluginCall callWithNoParams = mock(PluginCall.class);
+        when(callWithNoParams.getString("message")).thenReturn(null);
+
+        plugin.logInfo(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
+
+        plugin.logInfo(callWithNoParams);
+        verify(callWithNoParams, times(0)).resolve();
+        verify(callWithNoParams, times(2)).reject(Mockito.anyString());
+    }
+
+    @Test
+    public void testLog() {
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+        when(callWithGoodParams.getString("message")).thenReturn("fakeMessage");
+        when(callWithGoodParams.getString("level")).thenReturn("INFO");
+
+        PluginCall callWithNoParams = mock(PluginCall.class);
+        when(callWithNoParams.getString("message")).thenReturn(null);
+        when(callWithNoParams.getString("level")).thenReturn(null);
+
+        plugin.log(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
+
+        plugin.log(callWithNoParams);
+        verify(callWithNoParams, times(0)).resolve();
+        verify(callWithNoParams, times(2)).reject(Mockito.anyString());
+    }
+
+    @Test
+    public void testLogAttributes() throws JSONException {
+
+        PluginCall callWithGoodParams = mock(PluginCall.class);
+        when(callWithGoodParams.getObject("attributes")).thenReturn(new JSObject("{'fakeVal': 2}"));
+
+        PluginCall callWithNoParams = mock(PluginCall.class);
+        when(callWithNoParams.getObject("attributes")).thenReturn(null);
+
+        plugin.logAttributes(callWithGoodParams);
+
+        verify(callWithGoodParams, times(1)).resolve();
+        verify(callWithGoodParams, times(0)).reject(Mockito.anyString());
+
+        plugin.logAttributes(callWithNoParams);
+        verify(callWithNoParams, times(0)).resolve();
+        verify(callWithNoParams, times(1)).reject(Mockito.anyString());
+
+
+    }
+
 
 }

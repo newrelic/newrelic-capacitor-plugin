@@ -61,7 +61,15 @@ export interface NewRelicCapacitorPluginPlugin {
   generateDistributedTracingHeaders(options?: {}): Promise<DTHeaders>;
   addHTTPHeadersTrackingFor(options:{headers: string[]}): void;
   getHTTPHeadersTrackingFor(): Promise<HttpHeadersTracking>;
-
+  log(options: {level: NREnums.LogLevel, message: string}): void;
+  logError(options: {message: string}): void;
+  logWarning(options: {message: string}): void;
+  logInfo(options: {message: string}): void;
+  logVerbose(options: {message: string}): void;
+  logDebug(options: {message: string}): void;
+  logWarning(options: {message: string}): void;
+  logAll(options: {error: string,attributes: object}): void;
+  logAttributes(options: {attributes: object}): void;
 }
 
 export interface AgentConfiguration {
@@ -81,6 +89,7 @@ export interface AgentConfiguration {
   offlineStorageEnabled?: boolean
   backgroundReportingEnabled?: boolean
   newEventSystemEnabled?: boolean
+  logReportingEnabled?: boolean
 }
 
 export interface DTHeaders {
