@@ -150,7 +150,6 @@ window.fetch = function fetch() {
  return NewRelicCapacitorPlugin.getHTTPHeadersTrackingFor().then((trackingHeadersList)=>{
   console.log(trackingHeadersList);
   return NewRelicCapacitorPlugin.generateDistributedTracingHeaders().then((headers) => {
-    console.log(headers);
     networkRequest.startTime = Date.now();
     if (urlOrRequest && typeof urlOrRequest === 'object') {
       networkRequest.url = urlOrRequest.url;
@@ -168,10 +167,14 @@ window.fetch = function fetch() {
       }
     }
 
+    return NewRelicCapacitorPlugin.getAgentConfiguration().then((agentConfig) => {
     if(options && 'headers' in options) {
+
+      if(agentConfig.distributedTracingEnabled) {
       options.headers['newrelic'] = headers['newrelic'];
       options.headers['traceparent'] = headers['traceparent'];
       options.headers['tracestate'] = headers['tracestate'];
+      }
 
       JSON.parse(trackingHeadersList["headersList"]).forEach((e: string) => {
         if(options.headers[e] !== undefined) {
@@ -182,11 +185,17 @@ window.fetch = function fetch() {
       if(options === undefined) {
         options = {};
       }
-      options['headers']={};
-      options.headers['newrelic'] = headers['newrelic'];
-      options.headers['traceparent'] = headers['traceparent'];
-      options.headers['tracestate'] = headers['tracestate'];
+      if(agentConfig.distributedTracingEnabled) {
+        options['headers']={};
+        options.headers['newrelic'] = headers['newrelic'];
+        options.headers['traceparent'] = headers['traceparent'];
+        options.headers['tracestate'] = headers['tracestate'];
+        }
       _arguments[1] = options;
+    }
+
+    if(!agentConfig.distributedTracingEnabled){
+          headers = {};
     }
 
     if(options && 'body' in options && options.body !== null && options.body !== undefined) {
@@ -209,6 +218,7 @@ window.fetch = function fetch() {
       });
     });
     });
+ });
  });
 };
 

@@ -62,6 +62,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         boolean offlineStorageEnabled;
         boolean logReportingEnabled;
         boolean backgroundReportingEnabled;
+        boolean distributedTracingEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -78,6 +79,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.fedRampEnabled = false;
             this.offlineStorageEnabled = true;
             this.backgroundReportingEnabled = false;
+            this.distributedTracingEnabled = true;
         }
     }
 
@@ -165,6 +167,15 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             } else {
                 NewRelic.enableFeature(FeatureFlag.HttpResponseBodyCapture);
                 agentConfig.httpResponseBodyCaptureEnabled = true;
+            }
+
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("distributedTracingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.DistributedTracing);
+                agentConfig.distributedTracingEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.DistributedTracing);
+                agentConfig.distributedTracingEnabled = true;
             }
 
             if(Boolean.TRUE.equals(agentConfiguration.getBool("fedRampEnabled"))) {
@@ -735,6 +746,8 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
             ret.put("fedRampEnabled", agentConfig.fedRampEnabled);
             ret.put("offlineStorageEnabled", agentConfig.offlineStorageEnabled);
+            ret.put("distributedTracingEnabled", agentConfig.distributedTracingEnabled);
+
 
         }
         call.resolve(ret);

@@ -98,7 +98,8 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
             crashCollectorAddress: '',
             sendConsoleEvents: true,
             fedRampEnabled: false,
-            offlineStorageEnabled:true
+            offlineStorageEnabled:true,
+            distributedTracingEnabled:true,
         };
        return new Promise((resolve) => {
             resolve(a);

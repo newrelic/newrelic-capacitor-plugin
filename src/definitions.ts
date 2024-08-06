@@ -90,6 +90,7 @@ export interface AgentConfiguration {
   backgroundReportingEnabled?: boolean
   newEventSystemEnabled?: boolean
   logReportingEnabled?: boolean
+  distributedTracingEnabled?: boolean
 }
 
 export interface DTHeaders {
