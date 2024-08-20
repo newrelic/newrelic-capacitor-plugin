@@ -182,9 +182,9 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
         this.log({level:NREnums.LogLevel.AUDIT, message:_options.message});
     }
 
-    logAttributes(_options: { attributes: object }) {
+    logAttributes(_options: { attributes: Map<string, any> }) {
 
-        if(_options.attributes === undefined || Object.keys(_options.attributes).length === 0){
+        if(_options.attributes === undefined || _options.attributes.size === 0) {
             // If the attributes are empty, log an error message and return
             console.error("Attributes are empty.");
             return;
