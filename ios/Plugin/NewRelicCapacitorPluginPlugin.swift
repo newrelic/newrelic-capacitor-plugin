@@ -31,6 +31,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var offlineStorageEnabled: Bool = true;
         var backgroundReportingEnabled: Bool = false;
         var newEventSystemEnabled: Bool = true;
+        var distributedTracingEnabled: Bool = true;
 
     }
     
@@ -89,6 +90,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             if agentConfiguration["httpResponseBodyCaptureEnabled"] as? Bool == false {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
                 agentConfig.httpResponseBodyCaptureEnabled = false
+            }
+
+            if agentConfiguration["distributedTracingEnabled"] as? Bool == false {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_DistributedTracing)
+                agentConfig.distributedTracingEnabled = false
             }
             
             if agentConfiguration["webViewInstrumentation"] as? Bool == false {
@@ -183,7 +189,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.5.0")
+        NewRelic.perform(selector, with:"1.5.1")
 
         DispatchQueue.main.async {
             if collectorAddress == nil && crashCollectorAddress == nil {
@@ -579,7 +585,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             "crashCollectorAddress": agentConfig.crashCollectorAddress,
             "sendConsoleEvents": agentConfig.sendConsoleEvents,
             "fedRampEnabled": agentConfig.fedRampEnabled,
-            "offlineStorageEnabled":agentConfig.offlineStorageEnabled
+            "offlineStorageEnabled":agentConfig.offlineStorageEnabled,
+            "distributedTracingEnabled": agentConfig.distributedTracingEnabled,
         ])
     }
 

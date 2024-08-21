@@ -62,6 +62,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         boolean offlineStorageEnabled;
         boolean logReportingEnabled;
         boolean backgroundReportingEnabled;
+        boolean distributedTracingEnabled;
 
         public AgentConfig() {
             this.analyticsEventEnabled = true;
@@ -78,6 +79,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.fedRampEnabled = false;
             this.offlineStorageEnabled = true;
             this.backgroundReportingEnabled = false;
+            this.distributedTracingEnabled = true;
         }
     }
 
@@ -167,6 +169,15 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 agentConfig.httpResponseBodyCaptureEnabled = true;
             }
 
+
+            if(Boolean.FALSE.equals(agentConfiguration.getBool("distributedTracingEnabled"))) {
+                NewRelic.disableFeature(FeatureFlag.DistributedTracing);
+                agentConfig.distributedTracingEnabled = false;
+            } else {
+                NewRelic.enableFeature(FeatureFlag.DistributedTracing);
+                agentConfig.distributedTracingEnabled = true;
+            }
+
             if(Boolean.TRUE.equals(agentConfiguration.getBool("fedRampEnabled"))) {
                 NewRelic.enableFeature(FeatureFlag.FedRampEnabled);
                 agentConfig.fedRampEnabled = true;
@@ -236,7 +247,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         // Use default collector addresses if not set
         if(collectorAddress == null && crashCollectorAddress == null) {
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.1")
                     .withLoggingEnabled(loggingEnabled)
                     .start(this.getActivity().getApplication());
         } else {
@@ -247,7 +258,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 crashCollectorAddress = "mobile-crash.newrelic.com";
             }
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.0")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.1")
                     .withLoggingEnabled(loggingEnabled)
                     .withLogLevel(logLevel)
                     .usingCollectorAddress(collectorAddress)
@@ -735,6 +746,8 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             ret.put("sendConsoleEvents", agentConfig.sendConsoleEvents);
             ret.put("fedRampEnabled", agentConfig.fedRampEnabled);
             ret.put("offlineStorageEnabled", agentConfig.offlineStorageEnabled);
+            ret.put("distributedTracingEnabled", agentConfig.distributedTracingEnabled);
+
 
         }
         call.resolve(ret);

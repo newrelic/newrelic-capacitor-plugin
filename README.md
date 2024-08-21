@@ -10,8 +10,8 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 
 ## Features
 * Capture JavaScript errors
-* Network Instrumentation (CapacitorHttp Client XMLHttpRequest and Fecth) 
-* Distributed Tracing (CapacitorHttp Client and Fecth)
+* Network Instrumentation (CapacitorHttp Client , XMLHttpRequest and Fetch) 
+* Distributed Tracing (CapacitorHttp Client and Fetch)
 * Tracking console log, warn and error as Logs
 * Promise rejection tracking
 * Capture interactions and the sequence in which they were created
@@ -101,6 +101,9 @@ let agentConfig : AgentConfiguration = {
   // iOS Specific
   // Optional: Enable or disable to use our new, more stable, event system for iOS agent.
   newEventSystemEnabled:true
+  
+  // Optional: Enable or disable distributed tracing.
+   distributedTracingEnabled: true,
 }
 
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
@@ -110,29 +113,49 @@ NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:agentConfig})
 AppToken is platform-specific. You need to generate separate tokens for Android and iOS apps.
 
 ### Android Setup
-1. Install the New Relic native Android agent ([instructions here](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/install-configure/install-android-apps-gradle-android-studio)).
-2. Update `build.gradle`:
-  ```groovy
-    buildscript {
-      ...
-      repositories {
-        ...
-        mavenCentral()
-      }
-      dependencies {
-        ...
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.5.0"
-      }
-    }
-  ```
+1. Install the New Relic native Android agent ([instructions here](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/install-configure/install-android-apps-gradle-android-studio)). 
+2. Add the following changes to Apply Gradle Plugin:
 
-3. Update `app/build.gradle`:
-  ```groovy
-    apply plugin: "com.android.application"
-    apply plugin: 'newrelic' // <-- add this
-  
-  ```
+If you are using Plugins DSL to Apply the NewRelic Gradle Plugin, make the following changes:
 
+In android/settings.gradle:
+   ```groovy
+   plugins {
+      id "com.android.application" version "7.4.2" apply false
+      id "org.jetbrains.kotlin.android" version "1.7.10" apply false
+      id "com.newrelic.agent.android" version "7.5.1" apply false // <-- include this
+   }
+   ```
+
+In android/app/build.gradle:
+   ```groovy
+   plugins {
+      id "com.android.application"
+      id "kotlin-android"
+      id "com.newrelic.agent.android"  //<-- include this
+   }
+   ```
+
+Or, if you are using the traditional way to apply the plugin:
+   ```groovy
+   buildscript {
+     ...
+     repositories {
+       ...
+       mavenCentral()
+     }
+     dependencies {
+       ...
+       classpath "com.newrelic.agent.android:agent-gradle-plugin:7.5.1"
+     }
+   }
+   ```
+
+Apply the NewRelic plugin to the top of the android/app/build.gradle file:
+   ```groovy
+   apply plugin: "com.android.application"
+   apply plugin: 'newrelic' // <-- include this
+   ```
 4. Make sure your app requests INTERNET and ACCESS_NETWORK_STATE permissions by adding these lines to your `AndroidManifest.xml`
   ```
     <uses-permission android:name="android.permission.INTERNET" />
