@@ -616,8 +616,14 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func getHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
         
         let headerArray = NewRelic.httpHeadersAddedForTracking();
+        var headerArrayString = "[]";
+        if let jsonData = try? JSONSerialization.data(withJSONObject: headerArray, options: .prettyPrinted) {
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                headerArrayString = jsonString;
+            }
+        }
         call.resolve([
-            "headersList": headerArray
+            "headersList": headerArrayString
         ])
     }
 
