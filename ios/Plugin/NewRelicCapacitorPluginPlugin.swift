@@ -189,7 +189,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.5.1")
+        NewRelic.perform(selector, with:"1.5.2")
 
         DispatchQueue.main.async {
             if collectorAddress == nil && crashCollectorAddress == nil {
@@ -616,8 +616,14 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     @objc func getHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
         
         let headerArray = NewRelic.httpHeadersAddedForTracking();
+        var headerArrayString = "[]";
+        if let jsonData = try? JSONSerialization.data(withJSONObject: headerArray, options: .prettyPrinted) {
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                headerArrayString = jsonString;
+            }
+        }
         call.resolve([
-            "headersList": headerArray
+            "headersList": headerArrayString
         ])
     }
 
