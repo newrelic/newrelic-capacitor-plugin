@@ -1057,6 +1057,12 @@ Deployment Postprocessing: Yes
 Strip Linked Product: Yes
 Strip Debug Symbols During Copy : Yes
 ```
+### Known Issues
+
+**Crash reports may not be sent when ProGuard rules are not properly configured for New Relic in hybrid Android applications.**
+
+**Solution**:
+Ensure proper ProGuard rules are added to your ProGuard configuration file. See ["Configuring ProGuard Rules"](https://docs.newrelic.com/docs/mobile-monitoring/new-relic-mobile-android/install-configure/configure-proguard-or-dexguard-android-apps/) in setup documentation.
 
 ## Contribute
 
