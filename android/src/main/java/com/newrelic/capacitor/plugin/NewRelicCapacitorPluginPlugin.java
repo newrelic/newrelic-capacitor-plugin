@@ -247,7 +247,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         // Use default collector addresses if not set
         if(collectorAddress == null && crashCollectorAddress == null) {
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.3")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.4")
                     .withLoggingEnabled(loggingEnabled)
                     .start(this.getActivity().getApplication());
         } else {
@@ -258,7 +258,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 crashCollectorAddress = "mobile-crash.newrelic.com";
             }
             NewRelic.withApplicationToken(appKey)
-                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.3")
+                    .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.4")
                     .withLoggingEnabled(loggingEnabled)
                     .withLogLevel(logLevel)
                     .usingCollectorAddress(collectorAddress)
