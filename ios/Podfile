@@ -9,11 +9,11 @@ end
 
 target 'Plugin' do
   capacitor_pods
-  pod 'NewRelicAgent', '7.5.2'
+  pod 'NewRelicAgent', '7.5.3'
 end
 
 target 'PluginTests' do
   capacitor_pods
-  pod 'NewRelicAgent', '7.5.2'
+  pod 'NewRelicAgent', '7.5.3'
 end
 
