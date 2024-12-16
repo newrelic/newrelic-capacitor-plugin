@@ -99,7 +99,7 @@ export class NewRelicCapacitorPluginWeb extends WebPlugin implements NewRelicCap
             sendConsoleEvents: true,
             fedRampEnabled: false,
             offlineStorageEnabled:true,
-            distributedTracingEnabled:true,
+            distributedTracingEnabled:false,
         };
        return new Promise((resolve) => {
             resolve(a);
