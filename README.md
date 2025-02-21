@@ -11,7 +11,7 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 ## Features
 * Capture JavaScript errors
 * Network Instrumentation (CapacitorHttp Client , XMLHttpRequest and Fetch) 
-* Distributed Tracing (CapacitorHttp Client and Fetch)
+* Distributed Tracing
 * Tracking console log, warn and error as Logs
 * Promise rejection tracking
 * Capture interactions and the sequence in which they were created
@@ -146,7 +146,7 @@ Or, if you are using the traditional way to apply the plugin:
      }
      dependencies {
        ...
-       classpath "com.newrelic.agent.android:agent-gradle-plugin:7.6.2"
+       classpath "com.newrelic.agent.android:agent-gradle-plugin:7.6.4"
      }
    }
    ```
