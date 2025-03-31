@@ -12,6 +12,7 @@ import reportWebVitals from "./reportWebVitals";
 import { NewRelicCapacitorPlugin } from "@newrelic/newrelic-capacitor-plugin";
 import { Capacitor } from "@capacitor/core";
 import {AgentConfiguration} from "../../src";
+import * as rrweb from 'rrweb';
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
@@ -27,6 +28,13 @@ if (Capacitor.getPlatform() === "ios") {
   appToken = "AAa413614341452f701db5d23e4574ff22fd30bf8b-NRMA";
 }
 NewRelicCapacitorPlugin.start({appKey:appToken, agentConfiguration:config});
+
+rrweb.record({
+  emit(event) {
+    console.log(event);
+    // store the event in any way you like
+  },
+});
 
 root.render(
   <React.StrictMode>
