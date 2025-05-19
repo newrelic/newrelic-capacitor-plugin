@@ -249,6 +249,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             NewRelic.withApplicationToken(appKey)
                     .withApplicationFramework(ApplicationFramework.Capacitor, "1.5.8")
                     .withLoggingEnabled(loggingEnabled)
+                    .withLogLevel(logLevel)
                     .start(this.getActivity().getApplication());
         } else {
             if(collectorAddress == null) {
