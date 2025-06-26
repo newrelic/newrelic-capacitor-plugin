@@ -213,7 +213,6 @@ window.fetch = function fetch() {
         handleFetchSuccess(response.clone(), networkRequest.method, networkRequest.url,networkRequest.startTime,headers,networkRequest.params);
         resolve(response)
       })["catch"](function (error) {
-        NewRelicCapacitorPlugin.recordError(error);
         reject(error);
       });
     });
