@@ -1,5 +1,13 @@
 # Changelog
 
+ ## 1.5.9
+
+## Improvements
+
+- Native Android agent updated to version 7.6.7
+- Native iOS agent updated to version 7.5.6
+- Fixed Abort Signal related Crash in iOS
+
  ## 1.5.8
 
 ## Improvements
