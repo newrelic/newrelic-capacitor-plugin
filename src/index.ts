@@ -313,7 +313,7 @@ function handleFetchSuccess(response: Response, method: string, url: string, sta
       endTime:Date.now(),
       bytesSent:networkRequest.bytesSent,
       bytesReceived:v.length,
-      body:v,
+      body: v.length > 4096 ? v.slice(0, 4090) : v,
       traceAttributes:traceAttributes,
       params: params
     }

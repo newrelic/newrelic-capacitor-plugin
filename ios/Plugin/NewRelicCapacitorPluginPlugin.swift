@@ -185,6 +185,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                     agentConfig.sendConsoleEvents = configSendConsoleEvents
                 }
             }
+             NRLogger.setLogLevels(logLevel)
         }
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)

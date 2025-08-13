@@ -1,5 +1,13 @@
 # Changelog
 
+ ## 1.5.10
+
+## Improvements
+
+- Native Android agent updated to version 7.6.8
+- Native iOS agent updated to version 7.5.8
+- Fixed Crash related to fetch Instrumentation
+
  ## 1.5.9
 
 ## Improvements
