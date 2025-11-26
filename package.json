@@ -11,7 +11,8 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "NewrelicNewrelicCapacitorPlugin.podspec"
+    "NewrelicNewrelicCapacitorPlugin.podspec",
+    "Package.swift"
   ],
   "author": "Newrelic",
   "license": "Apache-2.0",
