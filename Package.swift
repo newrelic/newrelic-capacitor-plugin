@@ -15,13 +15,41 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "NewrelicNewrelicCapacitorPluginObjC",
+            dependencies: [
+                .product(name: "Capacitor", package: "capacitor-swift-pm"),
+                .product(name: "CapacitorCordova", package: "capacitor-swift-pm")
+            ],
+            path: "ios/Plugin",
+            exclude: [
+                "Info.plist",
+                "NewRelicCapacitorPlugin.swift",
+                "NewRelicCapacitorPluginPlugin.swift"
+            ],
+            sources: [
+                "NewRelicCapacitorPluginPlugin.m"
+            ],
+            publicHeadersPath: "Public"
+        ),
+        .target(
             name: "NewrelicNewrelicCapacitorPlugin",
             dependencies: [
+                "NewrelicNewrelicCapacitorPluginObjC",
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "CapacitorCordova", package: "capacitor-swift-pm"),
                 .product(name: "NewRelic", package: "newrelic-ios-agent-spm")
             ],
-            path: "ios/Plugin"
+            path: "ios/Plugin",
+            exclude: [
+                "Info.plist",
+                "NewRelicCapacitorPluginPlugin.m",
+                "NewRelicCapacitorPluginPlugin.h",
+                "Public"
+            ],
+            sources: [
+                "NewRelicCapacitorPlugin.swift",
+                "NewRelicCapacitorPluginPlugin.swift"
+            ]
         )
     ]
 )
