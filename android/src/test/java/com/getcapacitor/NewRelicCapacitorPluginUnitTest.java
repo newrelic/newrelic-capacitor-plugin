@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2022-present New Relic Corporation. All rights reserved.
- * SPDX-License-Identifier: Apache-2.0 
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package com.getcapacitor;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,14 +13,10 @@ import static org.mockito.Mockito.when;
 
 import com.newrelic.agent.android.logging.LogLevel;
 import com.newrelic.capacitor.plugin.NewRelicCapacitorPluginPlugin;
-
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import static org.junit.Assert.assertEquals;
-
-
 
 public class NewRelicCapacitorPluginUnitTest {
 
@@ -261,7 +258,6 @@ public class NewRelicCapacitorPluginUnitTest {
 
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
-
     }
 
     @Test
@@ -288,7 +284,6 @@ public class NewRelicCapacitorPluginUnitTest {
 
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
-
     }
 
     @Test
@@ -334,7 +329,6 @@ public class NewRelicCapacitorPluginUnitTest {
         when(callWithBadMetricUnit2.getDouble("value")).thenReturn(12.0);
         when(callWithBadMetricUnit2.getString("countUnit")).thenReturn("SECONDS");
         when(callWithBadMetricUnit2.getString("valueUnit")).thenReturn(null);
-
 
         plugin.recordMetric(callWithGoodParams);
         plugin.recordMetric(callWithGoodParams2);
@@ -416,33 +410,31 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
     }
 
-
     @Test
     public void testParseStackTrace() {
-        String validStackTrace = "URIError: URI malformed\n" +
-                "    at decodeURI (<anonymous>)\n" +
-                "    at onClick (http://localhost/static/js/main.c5c44c49.js:2:617162)\n" +
-                "    at l.onClick (http://localhost/static/js/main.c5c44c49.js:2:549166)\n" +
-                "    at Object.Ae (http://localhost/static/js/main.c5c44c49.js:2:104391)\n" +
-                "    at We (http://localhost/static/js/main.c5c44c49.js:2:104545)\n" +
-                "    at http://localhost/static/js/main.c5c44c49.js:2:124445\n" +
-                "    at jr (http://localhost/static/js/main.c5c44c49.js:2:124539)\n" +
-                "    at zr (http://localhost/static/js/main.c5c44c49.js:2:124954)\n" +
-                "    at http://localhost/static/js/main.c5c44c49.js:2:130396\n" +
-                "    at cc (http://localhost/static/js/main.c5c44c49.js:2:194065)";
+        String validStackTrace =
+            "URIError: URI malformed\n" +
+            "    at decodeURI (<anonymous>)\n" +
+            "    at onClick (http://localhost/static/js/main.c5c44c49.js:2:617162)\n" +
+            "    at l.onClick (http://localhost/static/js/main.c5c44c49.js:2:549166)\n" +
+            "    at Object.Ae (http://localhost/static/js/main.c5c44c49.js:2:104391)\n" +
+            "    at We (http://localhost/static/js/main.c5c44c49.js:2:104545)\n" +
+            "    at http://localhost/static/js/main.c5c44c49.js:2:124445\n" +
+            "    at jr (http://localhost/static/js/main.c5c44c49.js:2:124539)\n" +
+            "    at zr (http://localhost/static/js/main.c5c44c49.js:2:124954)\n" +
+            "    at http://localhost/static/js/main.c5c44c49.js:2:130396\n" +
+            "    at cc (http://localhost/static/js/main.c5c44c49.js:2:194065)";
 
         StackTraceElement[] parsedStackTrace = plugin.parseStackTrace(validStackTrace);
         // Should be 10 lines (does not include name and message of error)
         Assert.assertEquals(10, parsedStackTrace.length);
-        for(StackTraceElement ste : parsedStackTrace) {
+        for (StackTraceElement ste : parsedStackTrace) {
             Assert.assertNotNull(ste.getClassName());
             Assert.assertNotNull(ste.getFileName());
             Assert.assertNotNull(ste.getMethodName());
         }
 
-        String invalidStackTrace = "fakeStackHere\n" +
-                "random words\n" +
-                "testing";
+        String invalidStackTrace = "fakeStackHere\n" + "random words\n" + "testing";
         StackTraceElement[] invalidParse = plugin.parseStackTrace(invalidStackTrace);
         Assert.assertEquals(0, invalidParse.length);
     }
@@ -452,7 +444,8 @@ public class NewRelicCapacitorPluginUnitTest {
         PluginCall callWithGoodParams = mock(PluginCall.class);
         when(callWithGoodParams.getString("name")).thenReturn("URIError");
         when(callWithGoodParams.getString("message")).thenReturn("URI malformed");
-        when(callWithGoodParams.getString("stack")).thenReturn("URIError: URI malformed\n" +
+        when(callWithGoodParams.getString("stack")).thenReturn(
+            "URIError: URI malformed\n" +
                 "    at decodeURI (<anonymous>)\n" +
                 "    at onClick (http://localhost/static/js/main.c5c44c49.js:2:617162)\n" +
                 "    at l.onClick (http://localhost/static/js/main.c5c44c49.js:2:549166)\n" +
@@ -462,7 +455,8 @@ public class NewRelicCapacitorPluginUnitTest {
                 "    at jr (http://localhost/static/js/main.c5c44c49.js:2:124539)\n" +
                 "    at zr (http://localhost/static/js/main.c5c44c49.js:2:124954)\n" +
                 "    at http://localhost/static/js/main.c5c44c49.js:2:130396\n" +
-                "    at cc (http://localhost/static/js/main.c5c44c49.js:2:194065)");
+                "    at cc (http://localhost/static/js/main.c5c44c49.js:2:194065)"
+        );
         when(callWithGoodParams.getBoolean("isFatal")).thenReturn(false);
 
         PluginCall callWithNoParams = mock(PluginCall.class);
@@ -499,6 +493,7 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
     }
+
     @Test
     public void testNetworkRequestEnabled() {
         PluginCall callWithGoodParams = mock(PluginCall.class);
@@ -516,7 +511,6 @@ public class NewRelicCapacitorPluginUnitTest {
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
     }
-
 
     @Test
     public void testNetworkErrorRequestEnabled() {
@@ -623,7 +617,6 @@ public class NewRelicCapacitorPluginUnitTest {
 
     @Test
     public void testLogAttributes() throws JSONException {
-
         PluginCall callWithGoodParams = mock(PluginCall.class);
         when(callWithGoodParams.getObject("attributes")).thenReturn(new JSObject("{'fakeVal': 2}"));
 
@@ -638,9 +631,17 @@ public class NewRelicCapacitorPluginUnitTest {
         plugin.logAttributes(callWithNoParams);
         verify(callWithNoParams, times(0)).resolve();
         verify(callWithNoParams, times(1)).reject(Mockito.anyString());
-
-
     }
 
+    @Test
+    public void testLogAttributesWithWarningLevel() throws JSONException {
+        // Test that logAttributes works with WARN level (matching Android SDK expectation)
+        PluginCall callWithWarningLevel = mock(PluginCall.class);
+        when(callWithWarningLevel.getObject("attributes")).thenReturn(new JSObject("{'level': 'WARN', 'message': 'Hello world'}"));
 
+        plugin.logAttributes(callWithWarningLevel);
+
+        verify(callWithWarningLevel, times(1)).resolve();
+        verify(callWithWarningLevel, times(0)).reject(Mockito.anyString());
+    }
 }
