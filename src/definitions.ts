@@ -61,7 +61,6 @@ export interface NewRelicCapacitorPluginPlugin {
   logInfo(options: { message: string }): void;
   logVerbose(options: { message: string }): void;
   logDebug(options: { message: string }): void;
-  logWarning(options: { message: string }): void;
   logAll(options: { error: string; attributes: object }): void;
   logAttributes(options: { attributes: object }): void;
 }
