@@ -146,7 +146,7 @@ Or, if you are using the traditional way to apply the plugin:
      }
      dependencies {
        ...
-       classpath "com.newrelic.agent.android:agent-gradle-plugin:7.6.8"
+       classpath "com.newrelic.agent.android:agent-gradle-plugin:7.6.13"
      }
    }
    ```
@@ -156,10 +156,7 @@ Apply the NewRelic plugin to the top of the android/app/build.gradle file:
    apply plugin: "com.android.application"
    apply plugin: 'newrelic' // <-- include this
    ```
-4. Make sure your app requests INTERNET and ACCESS_NETWORK_STATE permissions by adding these lines to your `AndroidManifest.xml`
-  ```
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
   ```
 To automatically link the package, rebuild your project:
 ```shell

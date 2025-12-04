@@ -6,7 +6,7 @@ name: "release npm publish"
 
 # Controls when the action will run.
 # Workflow runs when manually triggered using the UI
-# or API.
+# or API, or when code is merged to main branch.
 on:
   workflow_dispatch:
     # Inputs the workflow accepts.
@@ -19,6 +19,9 @@ on:
         default: false
         # Input has to be provided for the workflow to run
         required: true
+  push:
+    branches:
+      - main
 
 permissions:
   # In order to create the git tag, we must have write permissions.
