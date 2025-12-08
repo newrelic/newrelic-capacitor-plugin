@@ -1,6 +1,6 @@
 {
   "name": "@newrelic/newrelic-capacitor-plugin",
-  "version": "1.5.13",
+  "version": "1.5.14",
   "description": "NewRelic Plugin for ionic Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -88,7 +88,7 @@
   },
   "sdkVersions": {
     "android": {
-      "newrelic": "7.6.13"
+      "newrelic": "7.6.14"
     },
     "ios": {
       "newrelic": "~>7.6.0"
