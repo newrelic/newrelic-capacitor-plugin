@@ -31,6 +31,16 @@ npm install @newrelic/newrelic-capacitor-plugin
 npx cap sync
 ```
 
+### Swift Package Manager (SPM) Support
+
+This plugin supports Swift Package Manager (SPM) for iOS dependency management, available since Capacitor 6. If your project uses SPM instead of CocoaPods, the plugin will automatically integrate using the `Package.swift` manifest included in the package.
+
+The SPM integration includes:
+- New Relic iOS Agent (via [newrelic-ios-agent-spm](https://github.com/newrelic/newrelic-ios-agent-spm))
+- Capacitor framework dependencies
+
+No additional configuration is needed - `npx cap sync` will handle the SPM integration automatically.
+
 
 ## Ionic Capacitor Setup
 
