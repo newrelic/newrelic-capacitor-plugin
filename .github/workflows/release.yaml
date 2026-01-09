@@ -46,10 +46,6 @@ jobs:
     steps:
       - name: Checkout the release branch for testing
         uses: actions/checkout@v2
-        with:
-          ref: main
-          # token: ${{ secrets.API_CLI_TOKEN }}
-          # path: newrelic-actions  # This might have to exist within ".github"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v5 # https://github.com/actions/setup-node
