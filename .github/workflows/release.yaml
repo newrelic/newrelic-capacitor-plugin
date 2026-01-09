@@ -46,10 +46,6 @@ jobs:
     steps:
       - name: Checkout the release branch for testing
         uses: actions/checkout@v2
-        with:
-          ref: main
-          # token: ${{ secrets.API_CLI_TOKEN }}
-          # path: newrelic-actions  # This might have to exist within ".github"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v5 # https://github.com/actions/setup-node
@@ -57,12 +53,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
 
-      - name: create tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git tag v$(jq -r '.version' package.json)
-          git push --tags
       - name: Install Dependencies
         run: |
           if [ -e yarn.lock ]; then
@@ -72,16 +62,24 @@ jobs:
           else
           npm i
           fi
+
+      - name: Publish as NPM package on new relic account(we need npm secret from new relic account)
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.MOBILE_AGENT_NPM_TOKEN}}
+        run: npm publish
+
+      - name: create tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag v$(jq -r '.version' package.json)
+          git push --tags
+
       - name: create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create v$(jq -r '.version' package.json) --generate-notes
-          
-      - name: Publish as NPM package on new relic account(we need npm secret from new relic account)
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.MOBILE_AGENT_NPM_TOKEN}}
-        run: npm publish --access public
 
       - name: Capture logs if previous failure
         if: ${{ failure() }}
