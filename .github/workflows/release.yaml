@@ -38,6 +38,10 @@ jobs:
   release:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
+    
+    outputs:
+      version: ${{ steps.version_check.outputs.current_version }}
+
     strategy:
       matrix:
         node-version: [24.x]
