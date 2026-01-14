@@ -2,7 +2,6 @@ name: Update Native Agent Version
 permissions:
   contents: write
   pull-requests: write
-name: Update Native Agent Versions
 
 on:
   workflow_dispatch:
@@ -44,7 +43,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Fetch latest Android agent version
         id: android_version
