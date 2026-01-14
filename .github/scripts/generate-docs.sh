@@ -9,12 +9,13 @@ fi
 VERSION=$PASSED_VERSION
 
 # --- 2. PARSE CHANGELOG.MD ---
-# Note: Changed to search for "## VERSION" to match your Capacitor changelog
-# and stop at the next "## " header.
-RELEASE_NOTES=$(awk "/^## ${VERSION}/{flag=1;next} /^## /{flag=0} flag" CHANGELOG.md)
+# 1. Start at the header matching your version
+# 2. Stop ONLY when hitting a line that starts with '## ' followed by a number
+# 3. This allows it to skip over '## Improvements'
+RELEASE_NOTES=$(awk "/^## ${VERSION}/{flag=1;next} /^## [0-9]/{flag=0} flag" CHANGELOG.md)
 
 # Clean up: Remove empty lines and format bullets
-# This takes any line starting with '-' and turns it into '* '
+# This looks for lines starting with '-' and converts them to '* '
 IMPROVEMENTS=$(echo "$RELEASE_NOTES" | grep "^-" | sed 's/^- /* /')
 
 # Check if we actually found improvements
