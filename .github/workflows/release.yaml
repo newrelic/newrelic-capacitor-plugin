@@ -22,6 +22,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'package.json'
 
 permissions:
   # In order to create the git tag, we must have write permissions.
@@ -36,6 +38,10 @@ jobs:
   release:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
+    
+    outputs:
+      version: ${{ steps.version_check.outputs.current_version }}
+
     strategy:
       matrix:
         node-version: [24.x]
@@ -62,6 +68,12 @@ jobs:
           else
           npm i
           fi
+
+      - name: Get current version
+        id: version_check
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "current_version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Publish as NPM package on new relic account(we need npm secret from new relic account)
         env:
@@ -92,3 +104,73 @@ jobs:
       - name: Check environmental variables
         if: ${{ always() }}
         run: printenv | sort -f
+        
+  update-documentation:
+    needs: release
+    runs-on: ubuntu-latest
+    env:
+      AGENT_NAME: "capacitor"
+      AGENT_TITLE: "Capacitor agent"
+      DOCS_PATH: "src/content/docs/release-notes/mobile-release-notes/capacitor-release-notes"
+      REPO_URL: "https://github.com/newrelic/newrelic-capacitor-plugin"
+      BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
+      # We use the version output from the release job
+      PASSED_VERSION: ${{ needs.release.outputs.version }}
+
+    steps:
+      - name: Checkout Agent Repo
+        uses: actions/checkout@v4
+        with:
+          path: agent-repo
+
+      - name: Checkout Docs-Website
+        uses: actions/checkout@v4
+        with:
+          repository: newrelic/docs-website
+          ref: develop
+          token: ${{ secrets.BOT_PAT }}
+          path: docs-website
+          fetch-depth: 1
+
+      - name: Generate Release Document
+        working-directory: agent-repo
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          chmod +x ./.github/scripts/generate-docs.sh
+          ./.github/scripts/generate-docs.sh
+          
+          if [ -f "release_info.env" ]; then
+            cat release_info.env >> $GITHUB_ENV
+          else
+            echo "::error::Script failed to create release_info.env"
+            exit 1
+          fi
+
+      - name: Create branch, commit, and PR
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          cd docs-website
+          VERSION="${{ env.FINAL_VERSION }}"
+          VERSION_STRIPPED=$(echo "${VERSION}" | tr -d '.')
+          FINAL_FILENAME="${{ env.AGENT_NAME }}-agent-${VERSION_STRIPPED}.mdx"
+          BRANCH_NAME="${{ env.AGENT_NAME }}_release_notes_$(echo ${VERSION} | tr '.' '-')"
+          
+          git config user.name "newrelic-mobile-agent-bot"
+          git config user.email "${{ env.BOT_EMAIL }}"
+          
+          git checkout -b "$BRANCH_NAME"
+          cp ../agent-repo/release-notes.mdx "${{ env.DOCS_PATH }}/$FINAL_FILENAME"
+          
+          git add .
+          git commit -m "chore(${{ env.AGENT_NAME }} agent): add release notes v${VERSION}"
+          git push origin "$BRANCH_NAME"
+
+          gh pr create \
+            --repo newrelic/docs-website \
+            --base develop \
+            --head "$BRANCH_NAME" \
+            --title "${{ env.AGENT_TITLE }} Release Notes v${VERSION}" \
+            --body "Automated PR for ${{ env.AGENT_TITLE }} v${VERSION} release." \
+            --label "documentation"
