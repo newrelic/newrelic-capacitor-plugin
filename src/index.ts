@@ -131,6 +131,9 @@ const networkRequest: NetworkRequest = {
   body: "",
   bytesSent: 0,
   startTime: 0,
+  endTime: 0,
+  status: 0,
+  bytesreceived: 0,
   headers:[],
   params:{}
 };
@@ -281,15 +284,15 @@ window.XMLHttpRequest.prototype.send = function (
               if(isValidURL(networkRequest.url)) {
               NewRelicCapacitorPlugin.noticeHttpTransaction({
                 url:networkRequest.url,
-                method:networkRequest.method,
-                status:networkRequest.status,
+                method:networkRequest.method || 'GET',
+                status:networkRequest.status || 0,
                 startTime:networkRequest.startTime,
-                endTime:networkRequest.endTime,
-                bytesSent:networkRequest.bytesSent,
-                bytesReceived:networkRequest.bytesreceived,
-                body:networkRequest.body,
-                traceAttributes:networkRequest.headers,
-                params:networkRequest.params
+                endTime:networkRequest.endTime || Date.now(),
+                bytesSent:networkRequest.bytesSent || 0,
+                bytesReceived:networkRequest.bytesreceived || 0,
+                body:networkRequest.body || '',
+                traceAttributes:networkRequest.headers || [],
+                params:networkRequest.params || []
               }
               );
             }
@@ -307,15 +310,15 @@ function handleFetchSuccess(response: Response, method: string, url: string, sta
     if(isValidURL(url)) {
     NewRelicCapacitorPlugin.noticeHttpTransaction({
       url:url,
-      method:method,
-      status:response.status,
+      method:method || 'GET',
+      status:response.status || 0,
       startTime:startTime,
       endTime:Date.now(),
-      bytesSent:networkRequest.bytesSent,
-      bytesReceived:v.length,
-      body: v.length > 4096 ? v.slice(0, 4090) : v,
-      traceAttributes:traceAttributes,
-      params: params
+      bytesSent:networkRequest.bytesSent || 0,
+      bytesReceived:v.length || 0,
+      body: v.length > 4096 ? v.slice(0, 4090) : v || '',
+      traceAttributes:traceAttributes || [],
+      params: params || []
     }
     );
   }
