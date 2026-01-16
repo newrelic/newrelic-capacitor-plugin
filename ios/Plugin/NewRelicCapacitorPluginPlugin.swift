@@ -65,72 +65,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         var collectorAddress: String? = nil
         var crashCollectorAddress: String? = nil
         
+        // Parse configuration on current thread
         if let agentConfiguration = call.getObject("agentConfiguration") {
-            
-            if agentConfiguration["crashReportingEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_CrashReporting)
-                agentConfig.crashReportingEnabled = false
-            }
-            
-            if agentConfiguration["interactionTracingEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_InteractionTracing)
-                agentConfig.interactionTracingEnabled = false
-            }
-            
-            if agentConfiguration["networkRequestEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
-                agentConfig.networkRequestEnabled = false
-            }
-            
-            if agentConfiguration["networkErrorRequestEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
-                agentConfig.networkErrorRequestEnabled = false
-            }
-            
-            if agentConfiguration["httpResponseBodyCaptureEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
-                agentConfig.httpResponseBodyCaptureEnabled = false
-            }
-
-            if agentConfiguration["distributedTracingEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_DistributedTracing)
-                agentConfig.distributedTracingEnabled = false
-            }
-            
-            if agentConfiguration["webViewInstrumentation"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
-                agentConfig.webViewInstrumentation = false;
-            }
-
-             if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
-                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
-                agentConfig.offlineStorageEnabled = false;
-            } else {
-                NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
-                agentConfig.offlineStorageEnabled = true;
-            }
-
-
-            if agentConfiguration["newEventSystemEnabled"] as? Bool == false {
-               NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
-               agentConfig.newEventSystemEnabled = false;
-           } else {
-               NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
-               agentConfig.newEventSystemEnabled = true;
-           }
-
-            if agentConfiguration["backgroundReportingEnabled"] as? Bool == true {
-                  NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
-               agentConfig.backgroundReportingEnabled = true;
-           } else {
-               NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
-               agentConfig.backgroundReportingEnabled = false;
-           }
-
-            if agentConfiguration["fedRampEnabled"] as? Bool == true {
-                NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_FedRampEnabled)
-                agentConfig.fedRampEnabled = true;
-            }
             
             if agentConfiguration["logLevel"] != nil {
                 
@@ -173,26 +109,88 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                 }
             }
 
-            if agentConfiguration["crashCollectorAddress"] != nil {
-                if let configCrashCollectorAddress = agentConfiguration["crashCollectorAddress"] as? String, !configCrashCollectorAddress.isEmpty {
-                    crashCollectorAddress = configCrashCollectorAddress
-                    agentConfig.crashCollectorAddress = configCrashCollectorAddress
-                }
-            }
-
             if agentConfiguration["sendConsoleEvents"] != nil {
                 if let configSendConsoleEvents = agentConfiguration["sendConsoleEvents"] as? Bool {
                     agentConfig.sendConsoleEvents = configSendConsoleEvents
                 }
             }
-             NRLogger.setLogLevels(logLevel)
         }
         
-        NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
-        let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.5.14")
+        // All NewRelic SDK calls must be on main thread
+        DispatchQueue.main.async { [self] in
+            if let agentConfiguration = call.getObject("agentConfiguration") {
+                
+                if agentConfiguration["crashReportingEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_CrashReporting)
+                    agentConfig.crashReportingEnabled = false
+                }
+                
+                if agentConfiguration["interactionTracingEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_InteractionTracing)
+                    agentConfig.interactionTracingEnabled = false
+                }
+                
+                if agentConfiguration["networkRequestEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NetworkRequestEvents)
+                    agentConfig.networkRequestEnabled = false
+                }
+                
+                if agentConfiguration["networkErrorRequestEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_RequestErrorEvents)
+                    agentConfig.networkErrorRequestEnabled = false
+                }
+                
+                if agentConfiguration["httpResponseBodyCaptureEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_HttpResponseBodyCapture)
+                    agentConfig.httpResponseBodyCaptureEnabled = false
+                }
 
-        DispatchQueue.main.async {
+                if agentConfiguration["distributedTracingEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_DistributedTracing)
+                    agentConfig.distributedTracingEnabled = false
+                }
+                
+                if agentConfiguration["webViewInstrumentation"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
+                    agentConfig.webViewInstrumentation = false;
+                }
+
+                 if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
+                    agentConfig.offlineStorageEnabled = false;
+                } else {
+                    NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
+                    agentConfig.offlineStorageEnabled = true;
+                }
+
+
+                if agentConfiguration["newEventSystemEnabled"] as? Bool == false {
+                   NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
+                   agentConfig.newEventSystemEnabled = false;
+               } else {
+                   NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
+                   agentConfig.newEventSystemEnabled = true;
+               }
+
+                if agentConfiguration["backgroundReportingEnabled"] as? Bool == true {
+                      NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+                   agentConfig.backgroundReportingEnabled = true;
+               } else {
+                   NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+                   agentConfig.backgroundReportingEnabled = false;
+               }
+
+                if agentConfiguration["fedRampEnabled"] as? Bool == true {
+                    NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_FedRampEnabled)
+                    agentConfig.fedRampEnabled = true;
+                }
+            }
+            
+            NRLogger.setLogLevels(logLevel)
+            NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
+            let selector = NSSelectorFromString("setPlatformVersion:")
+            NewRelic.perform(selector, with:"1.5.14")
+            
             if collectorAddress == nil && crashCollectorAddress == nil {
                 NewRelic.start(withApplicationToken: appKey)
             } else {
