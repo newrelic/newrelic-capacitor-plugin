@@ -323,8 +323,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
               let startTime = call.getDouble("startTime"),
               let endTime = call.getDouble("endTime"),
               let bytesSent = call.getInt("bytesSent"),
-              let bytesReceived = call.getInt("bytesReceived"),
-              let body = call.getString("body") else {
+              let bytesReceived = call.getInt("bytesReceived") else {
             
             call.reject("Bad parameters given to noticeHttpTransaction")
             return
@@ -333,8 +332,22 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         let nsurl = URL(string: url)
         let uint_bytesSent = UInt(bytesSent)
         let uint_bytesReceived = UInt(bytesReceived)
+        
+        // Body is optional - use empty string if not provided
+        let body = call.getString("body") ?? ""
         let data = Data(body.utf8)
-        let traceAttributes = call.getObject("traceAttributes")
+        
+        // Filter out NSNull values from traceAttributes to prevent crashes
+        var cleanedTraceAttributes: [String: Any]? = nil
+        if let traceAttributes = call.getObject("traceAttributes") {
+            var cleaned = [String: Any]()
+            for (key, value) in traceAttributes {
+                if !(value is NSNull) {
+                    cleaned[key] = value
+                }
+            }
+            cleanedTraceAttributes = cleaned.isEmpty ? nil : cleaned
+        }
         
         NewRelic.noticeNetworkRequest(
             for: nsurl,
@@ -346,7 +359,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
             bytesSent: uint_bytesSent,
             bytesReceived: uint_bytesReceived,
             responseData: data,
-            traceHeaders: traceAttributes,
+            traceHeaders: cleanedTraceAttributes,
             andParams: nil
         )
         call.resolve()

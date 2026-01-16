@@ -441,6 +441,73 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNoParams)
     }
     
+    func testNoticeHttpTransactionWithNullValues() {
+        // Test with missing body parameter - should succeed with empty string
+        guard let callWithoutBody = CAPPluginCall(callbackId: "noticeHttpTransaction",
+                                                options: ["url": "https://fakewebsite.com",
+                                                          "method": "GET",
+                                                          "status": 200,
+                                                          "startTime": Date().timeIntervalSince1970,
+                                                          "endTime": Date().timeIntervalSince1970,
+                                                          "bytesSent": 1000,
+                                                          "bytesReceived": 1000],
+                                                success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                                error:{ (err) in
+            XCTFail("Error shouldn't have been called for missing body")
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransactionWithNullValues")
+            return
+        }
+        
+        // Test with traceAttributes containing NSNull values - should succeed by filtering them out
+        guard let callWithNullTraceAttributes = CAPPluginCall(callbackId: "noticeHttpTransaction",
+                                                options: ["url": "https://fakewebsite.com",
+                                                          "method": "GET",
+                                                          "status": 200,
+                                                          "startTime": Date().timeIntervalSince1970,
+                                                          "endTime": Date().timeIntervalSince1970,
+                                                          "bytesSent": 1000,
+                                                          "bytesReceived": 1000,
+                                                          "body": "fake body",
+                                                          "traceAttributes": ["traceparent": NSNull(), "tracestate": NSNull(), "newrelic": NSNull()]],
+                                                success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                                error:{ (err) in
+            XCTFail("Error shouldn't have been called for NSNull in traceAttributes")
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransactionWithNullValues")
+            return
+        }
+        
+        // Test with mixed valid and null values in traceAttributes - should succeed with only valid values
+        guard let callWithMixedTraceAttributes = CAPPluginCall(callbackId: "noticeHttpTransaction",
+                                                options: ["url": "https://fakewebsite.com",
+                                                          "method": "GET",
+                                                          "status": 200,
+                                                          "startTime": Date().timeIntervalSince1970,
+                                                          "endTime": Date().timeIntervalSince1970,
+                                                          "bytesSent": 1000,
+                                                          "bytesReceived": 1000,
+                                                          "body": "fake body",
+                                                          "traceAttributes": ["traceparent": "valid-trace-id", "tracestate": NSNull(), "newrelic": "valid-value"]],
+                                                success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                                error:{ (err) in
+            XCTFail("Error shouldn't have been called for mixed traceAttributes")
+        }) else {
+            XCTFail("Bad call in testNoticeHttpTransactionWithNullValues")
+            return
+        }
+        
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithoutBody)
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithNullTraceAttributes)
+        NewRelicCapacitorPlugin.noticeHttpTransaction(callWithMixedTraceAttributes)
+    }
+    
     func testNoticeNetworkFailure() {
         guard let callWithGoodParams = CAPPluginCall(callbackId: "noticeNetworkFailure",
                                                options: ["url": "https://fakewebsite.com",
