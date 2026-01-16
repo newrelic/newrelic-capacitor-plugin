@@ -117,7 +117,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         }
         
         // All NewRelic SDK calls must be on main thread
-        DispatchQueue.main.async { [self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             if let agentConfiguration = call.getObject("agentConfiguration") {
                 
                 if agentConfiguration["crashReportingEnabled"] as? Bool == false {
@@ -155,7 +156,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                     agentConfig.webViewInstrumentation = false;
                 }
 
-                 if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
+                if agentConfiguration["offlineStorageEnabled"] as? Bool == false {
                     NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_OfflineStorage)
                     agentConfig.offlineStorageEnabled = false;
                 } else {
@@ -163,22 +164,21 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
                     agentConfig.offlineStorageEnabled = true;
                 }
 
-
                 if agentConfiguration["newEventSystemEnabled"] as? Bool == false {
-                   NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
-                   agentConfig.newEventSystemEnabled = false;
-               } else {
-                   NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
-                   agentConfig.newEventSystemEnabled = true;
-               }
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
+                    agentConfig.newEventSystemEnabled = false;
+                } else {
+                    NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_NewEventSystem)
+                    agentConfig.newEventSystemEnabled = true;
+                }
 
                 if agentConfiguration["backgroundReportingEnabled"] as? Bool == true {
-                      NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
-                   agentConfig.backgroundReportingEnabled = true;
-               } else {
-                   NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
-                   agentConfig.backgroundReportingEnabled = false;
-               }
+                    NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+                    agentConfig.backgroundReportingEnabled = true;
+                } else {
+                    NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_BackgroundReporting)
+                    agentConfig.backgroundReportingEnabled = false;
+                }
 
                 if agentConfiguration["fedRampEnabled"] as? Bool == true {
                     NewRelic.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_FedRampEnabled)
