@@ -1,4 +1,12 @@
 # Changelog
+## 1.5.15
+
+## Improvements
+
+- Updated the Native Android agent to version 7.6.15.
+- Updated the Native iOS agent to version 7.6.1.
+
+
 ## 1.5.14
 
 ## Improvements
