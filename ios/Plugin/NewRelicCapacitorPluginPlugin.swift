@@ -320,22 +320,24 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         guard let url = call.getString("url"),
               let method = call.getString("method"),
               let status = call.getInt("status"),
-              let startTime = call.getDouble("startTime"),
-              let endTime = call.getDouble("endTime"),
-              let bytesSent = call.getInt("bytesSent"),
-              let bytesReceived = call.getInt("bytesReceived"),
-              let body = call.getString("body") else {
-            
+              let startTime = call.getDouble("startTime") else {
+
             call.reject("Bad parameters given to noticeHttpTransaction")
             return
         }
-        
+
+        // Handle optional parameters with defaults
+        let endTime = call.getDouble("endTime") ?? Date().timeIntervalSince1970 * 1000
+        let bytesSent = call.getInt("bytesSent") ?? 0
+        let bytesReceived = call.getInt("bytesReceived") ?? 0
+        let body = call.getString("body") ?? ""
+
         let nsurl = URL(string: url)
         let uint_bytesSent = UInt(bytesSent)
         let uint_bytesReceived = UInt(bytesReceived)
         let data = Data(body.utf8)
         let traceAttributes = call.getObject("traceAttributes")
-        
+
         NewRelic.noticeNetworkRequest(
             for: nsurl,
             httpMethod: method,
