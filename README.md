@@ -21,7 +21,9 @@ NewRelic Plugin for ionic Capacitor. This plugin uses native New Relic Android a
 
 ## Current Support:
 - Android API 24+
-- iOS 10
+- iOS:
+  - iOS 10+ (for plugin versions below 1.5.12)
+  - iOS 16+ (starting from plugin version 1.5.12)
 - Depends on New Relic iOS/XCFramework and Android agents
 
 ## Install
