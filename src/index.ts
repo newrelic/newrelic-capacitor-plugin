@@ -5,8 +5,8 @@
 
 import {registerPlugin} from '@capacitor/core';
 
-import getCircularReplacer from './circular-replacer';
 import type { NewRelicCapacitorPluginPlugin } from './definitions';
+import getCircularReplacer from './circular-replacer';
 
 const NewRelicCapacitorPlugin = registerPlugin<NewRelicCapacitorPluginPlugin>(
   'NewRelicCapacitorPlugin',
@@ -25,48 +25,48 @@ const defaultAssert = window.console.assert;
 const defaultDebug = window.console.debug;
 
 console.log = function () {
-  const msgs = [];
+  var msgs = [];
   defaultLog(...arguments);
   while (arguments.length) {
-    const copyArguments = Object.assign({}, arguments);
+    var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('log', copyArguments);
   }
 };
 console.warn = function () {
-  const msgs = [];
+  var msgs = [];
   defaultWarn(...arguments);
   while (arguments.length) {
-    const copyArguments = Object.assign({}, arguments);
+    var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('warn', copyArguments);
   }
 };
 console.error = function () {
-  const msgs = [];
+  var msgs = [];
   defaultError(...arguments);
   while (arguments.length) {
-    const copyArguments = Object.assign({}, arguments);
+    var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('error', copyArguments);
   }
 };
 
 console.assert= function () {
-  const msgs = [];
+  var msgs = [];
   defaultAssert(...arguments);
   while (arguments.length) {
-    const copyArguments = Object.assign({}, arguments);
+    var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('assert', copyArguments);
   }
 };
 
 console.debug = function () {
-  const msgs = [];
+  var msgs = [];
   defaultDebug(...arguments);
   while (arguments.length) {
-    const copyArguments = Object.assign({}, arguments);
+    var copyArguments = Object.assign({}, arguments);
     msgs.push('[]' + ': ' + [].shift.call(arguments));
     sendConsole('debug', copyArguments);
   }
@@ -102,7 +102,7 @@ window.addEventListener('error', event => {
 
 
 window.addEventListener('unhandledrejection', e => {
-  const err = new Error(e.reason);
+  var err = new Error(e.reason);
   NewRelicCapacitorPlugin.recordError({
     name: err.name,
     message: err.message,
@@ -146,11 +146,12 @@ const networkRequest: NetworkRequest = {
 const oldFetch = window.fetch;
 
 window.fetch = function fetch() {
-  const _arguments = arguments;
-  const urlOrRequest = arguments[0];
-  let options = arguments[1];
+  var _arguments = arguments;
+  var urlOrRequest = arguments[0];
+  var options = arguments[1];
 
  return NewRelicCapacitorPlugin.getHTTPHeadersTrackingFor().then((trackingHeadersList)=>{
+  console.log(trackingHeadersList);
   return NewRelicCapacitorPlugin.generateDistributedTracingHeaders().then((headers) => {
     networkRequest.startTime = Date.now();
     if (urlOrRequest && typeof urlOrRequest === 'object') {
