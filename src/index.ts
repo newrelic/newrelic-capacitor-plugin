@@ -151,7 +151,6 @@ window.fetch = function fetch() {
   var options = arguments[1];
 
  return NewRelicCapacitorPlugin.getHTTPHeadersTrackingFor().then((trackingHeadersList)=>{
-  console.log(trackingHeadersList);
   return NewRelicCapacitorPlugin.generateDistributedTracingHeaders().then((headers) => {
     networkRequest.startTime = Date.now();
     if (urlOrRequest && typeof urlOrRequest === 'object') {
