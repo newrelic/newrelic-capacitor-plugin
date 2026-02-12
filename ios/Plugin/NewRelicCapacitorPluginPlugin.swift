@@ -11,7 +11,48 @@ import NewRelic
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(NewRelicCapacitorPluginPlugin)
-public class NewRelicCapacitorPluginPlugin: CAPPlugin {
+public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "NewRelicCapacitorPlugin"
+    public let jsName = "NewRelicCapacitorPlugin"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "start", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setUserId", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setAttribute", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "removeAttribute", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordBreadcrumb", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordCustomEvent", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "startInteraction", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "endInteraction", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "crashNow", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "currentSessionId", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "incrementAttribute", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "noticeHttpTransaction", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "noticeNetworkFailure", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordMetric", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "removeAllAttributes", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setMaxEventBufferTime", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setMaxEventPoolSize", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordError", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "analyticsEventEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "networkRequestEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "networkErrorRequestEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "httpResponseBodyCaptureEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "getAgentConfiguration", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "shutdown", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "generateDistributedTracingHeaders", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "addHTTPHeadersTrackingFor", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "getHTTPHeadersTrackingFor", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setMaxOfflineStorageSize", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logAll", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logDebug", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logWarning", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logError", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logVerbose", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logInfo", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "log", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "logAttributes", returnType: CAPPluginReturnNone)
+    ]
+
     private let implementation = NewRelicCapacitorPlugin()
     private var agentConfig = AgentConfiguration()
     
@@ -190,7 +231,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.5.14")
+        NewRelic.perform(selector, with:"1.5.16")
 
         DispatchQueue.main.async {
             if collectorAddress == nil && crashCollectorAddress == nil {
@@ -606,12 +647,14 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
     }
     
     @objc func addHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
-        
+
         guard let headers = call.getArray("headers")?.capacitor.replacingNullValues() as? [String] else {
-            return ;
+            call.reject("Bad headers parameter given to addHTTPHeadersTrackingFor")
+            return
         }
-        
+
         NewRelic.addHTTPHeaderTracking(for: headers)
+        call.resolve()
     }
     
     @objc func getHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
@@ -628,95 +671,76 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin {
         ])
     }
 
-     @objc func logDebug(_ call: CAPPluginCall) {
+    @objc func logDebug(_ call: CAPPluginCall) {
+        let message = call.getString("message") ?? "null"
+        NewRelic.log(message, level: NRLogLevelDebug)
+        call.resolve()
+    }
 
-            let message = call.getString("message") ?? "null"
+    @objc func logWarning(_ call: CAPPluginCall) {
+        let message = call.getString("message") ?? "null"
+        NewRelic.log(message, level: NRLogLevelWarning)
+        call.resolve()
+    }
 
-            NewRelic.log(message, level: NRLogLevelDebug)
+    @objc func logError(_ call: CAPPluginCall) {
+        let message = call.getString("message") ?? "null"
+        NewRelic.log(message, level: NRLogLevelError)
+        call.resolve()
+    }
 
+    @objc func logVerbose(_ call: CAPPluginCall) {
+        let message = call.getString("message") ?? "null"
+        NewRelic.log(message, level: NRLogLevelVerbose)
+        call.resolve()
+    }
 
+    @objc func logInfo(_ call: CAPPluginCall) {
+        let message = call.getString("message") ?? "null"
+        NewRelic.log(message, level: NRLogLevelInfo)
+        call.resolve()
+    }
+
+    @objc func log(_ call: CAPPluginCall) {
+        let message = call.getString("message") ?? "null"
+        let level = call.getString("level")
+
+        let strToLogLevel = [
+            "ERROR": NRLogLevelError,
+            "WARNING": NRLogLevelWarning,
+            "INFO": NRLogLevelInfo,
+            "VERBOSE": NRLogLevelVerbose,
+            "AUDIT": NRLogLevelAudit
+        ]
+
+        let configLogLevel = strToLogLevel[level!]
+        NewRelic.log(message, level: configLogLevel!)
+        call.resolve()
+    }
+
+    @objc func logAll(_ call: CAPPluginCall) {
+        let error = call.getString("error") ?? "null"
+        let attributes = call.getObject("attributes")
+
+        var allAttributes: [String: Any] = ["message": error]
+
+        for (key, value) in attributes! {
+            allAttributes[key] = value
         }
 
-        @objc func logWarning(_ call: CAPPluginCall) {
+        NewRelic.logAttributes(allAttributes)
+        call.resolve()
+    }
 
-            let message = call.getString("message") ?? "null"
+    @objc func logAttributes(_ call: CAPPluginCall) {
+        let attributes = call.getObject("attributes")
 
-            NewRelic.log(message, level: NRLogLevelWarning)
-
-
+        if attributes!.isEmpty {
+            call.reject("Attributes are empty")
+            return
         }
 
-        @objc func logError(_ call: CAPPluginCall) {
-
-            let message = call.getString("message") ?? "null"
-
-            NewRelic.log(message, level: NRLogLevelError)
-
-
-        }
-
-        @objc func logVerbose(_ call: CAPPluginCall) {
-
-            let message = call.getString("message") ?? "null"
-
-            NewRelic.log(message, level: NRLogLevelVerbose)
-
-
-        }
-
-        @objc func logInfo(_ call: CAPPluginCall) {
-
-            let message = call.getString("message") ?? "null"
-
-            NewRelic.log(message, level: NRLogLevelInfo)
-
-        }
-
-        @objc func log(_ call: CAPPluginCall) {
-
-            let message = call.getString("message") ?? "null"
-            let level = call.getString("level")
-
-            let strToLogLevel = [
-                "ERROR": NRLogLevelError,
-                "WARNING": NRLogLevelWarning,
-                "INFO": NRLogLevelInfo,
-                "VERBOSE": NRLogLevelVerbose,
-                "AUDIT": NRLogLevelAudit
-            ]
-
-            let configLogLevel =  strToLogLevel[level!]
-
-            NewRelic.log(message, level: configLogLevel!)
-        }
-
-
-
-        @objc func logAll(_ call: CAPPluginCall) {
-
-            let error = call.getString("error") ?? "null"
-
-            let attributes = call.getObject("attributes")
-
-            var allAttributes: [String: Any] = ["message":error];
-
-            for (key,value) in attributes! {
-                allAttributes[key] = value;
-            }
-
-            NewRelic.logAttributes(allAttributes)
-
-        }
-
-        @objc func logAttributes(_ call: CAPPluginCall) {
-
-            let attributes = call.getObject("attributes")
-
-            if(attributes!.isEmpty){
-                print("Attributes are Empty")
-                return
-            }
-
-            NewRelic.logAttributes(attributes!);
-        }
+        NewRelic.logAttributes(attributes!)
+        call.resolve()
+    }
 }

@@ -1,4 +1,13 @@
 # Changelog
+
+## 1.5.16
+
+### Improvements
+
+- Fixed missing SPM Configuration for Capacitor 8.x compatibility
+- Implemented `CAPBridgedPlugin` protocol for Swift Package Manager support
+- Updated iOS minimum deployment target to iOS 16
+
 ## 1.5.14
 
 ## Improvements
