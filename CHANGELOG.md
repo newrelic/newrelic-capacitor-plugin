@@ -1,4 +1,11 @@
 # Changelog
+## 1.5.16
+
+## Improvements
+
+- Fixed missing SPM Configuration
+
+
 ## 1.5.15
 
 ## Improvements

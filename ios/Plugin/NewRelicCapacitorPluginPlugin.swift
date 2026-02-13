@@ -11,7 +11,48 @@ import NewRelic
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(NewRelicCapacitorPluginPlugin)
-public class NewRelicCapacitorPluginPlugin: CAPPlugin {
+public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "NewRelicCapacitorPlugin"
+    public let jsName = "NewRelicCapacitorPlugin"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "start", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setUserId", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setAttribute", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "removeAttribute", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordBreadcrumb", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordCustomEvent", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "startInteraction", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "endInteraction", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "crashNow", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "currentSessionId", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "incrementAttribute", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "noticeHttpTransaction", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "noticeNetworkFailure", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordMetric", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "removeAllAttributes", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setMaxEventBufferTime", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "setMaxEventPoolSize", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "recordError", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "analyticsEventEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "networkRequestEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "networkErrorRequestEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "httpResponseBodyCaptureEnabled", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "getAgentConfiguration", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "shutdown", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "generateDistributedTracingHeaders", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "addHTTPHeadersTrackingFor", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getHTTPHeadersTrackingFor", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setMaxOfflineStorageSize", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logAll", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logDebug", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logWarning", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logError", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logVerbose", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logInfo", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "log", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logAttributes", returnType: CAPPluginReturnPromise)
+    ]
+
     private let implementation = NewRelicCapacitorPlugin()
     private var agentConfig = AgentConfiguration()
     
