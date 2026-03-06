@@ -357,7 +357,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
     }
     
     
-    @objc func noticeHttpTransaction(_ call: CAPPluginCall) {
+        @objc func noticeHttpTransaction(_ call: CAPPluginCall) {
         guard let url = call.getString("url"),
               let method = call.getString("method"),
               let status = call.getInt("status"),
@@ -378,7 +378,27 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
         let uint_bytesReceived = UInt(bytesReceived)
         let data = Data(body.utf8)
         let traceAttributes = call.getObject("traceAttributes")
+        
+        
+        var sanitizedTraceHeaders: [String: String]? = nil
 
+        if let dict = traceAttributes as? [String: Any] {
+            var out: [String: String] = [:]
+            out.reserveCapacity(dict.count)
+
+            for (key, value) in dict {
+                if value is NSNull {
+                    out[key] = ""
+                } else if let s = value as? String {
+                    out[key] = s
+                } else {
+                    out[key] = ""
+                }
+            }
+
+            sanitizedTraceHeaders = out.isEmpty ? nil : out
+        }
+        
         NewRelic.noticeNetworkRequest(
             for: nsurl,
             httpMethod: method,
@@ -389,7 +409,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
             bytesSent: uint_bytesSent,
             bytesReceived: uint_bytesReceived,
             responseData: data,
-            traceHeaders: traceAttributes,
+            traceHeaders: sanitizedTraceHeaders,
             andParams: nil
         )
         call.resolve()
