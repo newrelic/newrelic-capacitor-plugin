@@ -1,18 +1,12 @@
 # Changelog
+
 ## 1.5.16
 
-## Improvements
+### Improvements
 
-- Fixed missing SPM Configuration
-
-
-## 1.5.15
-
-## Improvements
-
-- Updated the Native Android agent to version 7.6.15.
-- Updated the Native iOS agent to version 7.6.1.
-
+- Fixed missing SPM Configuration for Capacitor 8.x compatibility
+- Implemented `CAPBridgedPlugin` protocol for Swift Package Manager support
+- Updated iOS minimum deployment target to iOS 16
 
 ## 1.5.14
 
