@@ -1,5 +1,5 @@
 # Changelog
-## 1.5.17
+## 1.6.0
 
 ## Improvements
 
