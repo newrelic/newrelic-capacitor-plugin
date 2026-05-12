@@ -10,6 +10,8 @@ on:
       - 'LICENSE'
       - '.eslint*'
 name: iOS Unit Tests
+permissions:
+  contents: read
 jobs:
   ios:
     name: iOS Unit Tests
