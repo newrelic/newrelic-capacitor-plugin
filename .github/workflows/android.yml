@@ -10,6 +10,8 @@ on:
       - 'LICENSE'
       - '.eslint*'
 name: Android Unit Tests
+permissions:
+  contents: read
 jobs:
   android:
     name: Android Unit Tests
