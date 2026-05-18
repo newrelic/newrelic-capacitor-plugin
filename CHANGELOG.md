@@ -1,4 +1,11 @@
 # Changelog
+## 1.6.5
+
+## Improvements
+
+- Updated the Native Android agent to version 7.7.4.
+
+
 ## 1.6.4
 
 ## Improvements
