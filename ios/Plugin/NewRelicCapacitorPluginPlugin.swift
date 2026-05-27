@@ -102,7 +102,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
         
-        var logLevel = NRLogLevelInfo.rawValue
+        var logLevel = NRLogLevelWarning.rawValue
         var collectorAddress: String? = nil
         var crashCollectorAddress: String? = nil
         

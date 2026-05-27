@@ -72,7 +72,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.networkErrorRequestEnabled = true;
             this.httpResponseBodyCaptureEnabled = true;
             this.loggingEnabled = true;
-            this.logLevel = "INFO";
+            this.logLevel = "WARNING";
             this.collectorAddress = "mobile-collector.newrelic.com";
             this.crashCollectorAddress = "mobile-crash.newrelic.com";
             this.sendConsoleEvents = true;
@@ -115,7 +115,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         }
 
         boolean loggingEnabled = true;
-        int logLevel = AgentLog.INFO;
+        int logLevel = AgentLog.WARN;
         String collectorAddress = null;
         String crashCollectorAddress = null;
 
