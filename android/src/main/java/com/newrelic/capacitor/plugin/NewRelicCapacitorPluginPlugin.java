@@ -205,6 +205,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 Map<String, Integer> strToLogLevel = new HashMap<>();
                 strToLogLevel.put("ERROR", AgentLog.ERROR);
                 strToLogLevel.put("WARNING", AgentLog.WARN);
+                strToLogLevel.put("WARN", AgentLog.WARN);
                 strToLogLevel.put("INFO", AgentLog.INFO);
                 strToLogLevel.put("VERBOSE", AgentLog.VERBOSE);
                 strToLogLevel.put("AUDIT", AgentLog.AUDIT);
@@ -834,6 +835,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         Map<String, LogLevel> strToLogLevel = new HashMap<>();
         strToLogLevel.put("ERROR", LogLevel.ERROR);
         strToLogLevel.put("WARNING", LogLevel.WARN);
+        strToLogLevel.put("WARN", LogLevel.WARN);
         strToLogLevel.put("INFO", LogLevel.INFO);
         strToLogLevel.put("VERBOSE", LogLevel.VERBOSE);
         strToLogLevel.put("AUDIT", LogLevel.DEBUG);

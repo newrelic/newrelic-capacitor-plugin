@@ -178,6 +178,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
                 let strToLogLevel = [
                     "ERROR": NRLogLevelError.rawValue,
                     "WARNING": NRLogLevelWarning.rawValue,
+                    "WARN": NRLogLevelWarning.rawValue,
                     "INFO": NRLogLevelInfo.rawValue,
                     "VERBOSE": NRLogLevelVerbose.rawValue,
                     "AUDIT": NRLogLevelAudit.rawValue
@@ -710,6 +711,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
         let strToLogLevel = [
             "ERROR": NRLogLevelError,
             "WARNING": NRLogLevelWarning,
+            "WARN": NRLogLevelWarning,
             "INFO": NRLogLevelInfo,
             "VERBOSE": NRLogLevelVerbose,
             "AUDIT": NRLogLevelAudit
