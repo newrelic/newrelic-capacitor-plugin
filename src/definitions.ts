@@ -106,6 +106,7 @@ export namespace NREnums {
     INFO = 'INFO',
     VERBOSE = 'VERBOSE',
     AUDIT = 'AUDIT',
+    DEBUG = 'DEBUG',
   }
   export enum NetworkFailure {
     Unknown = 'Unknown',

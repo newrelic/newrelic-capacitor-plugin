@@ -102,7 +102,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
         
-        var logLevel = NRLogLevelInfo.rawValue
+        var logLevel = NRLogLevelWarning.rawValue
         var collectorAddress: String? = nil
         var crashCollectorAddress: String? = nil
         
@@ -178,9 +178,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
                 let strToLogLevel = [
                     "ERROR": NRLogLevelError.rawValue,
                     "WARNING": NRLogLevelWarning.rawValue,
+                    "WARN": NRLogLevelWarning.rawValue,
                     "INFO": NRLogLevelInfo.rawValue,
                     "VERBOSE": NRLogLevelVerbose.rawValue,
-                    "AUDIT": NRLogLevelAudit.rawValue
+                    "AUDIT": NRLogLevelAudit.rawValue,
+                    "DEBUG": NRLogLevelDebug.rawValue
                 ]
                 
                 if let configLogLevel = agentConfiguration["logLevel"] as? String, strToLogLevel[configLogLevel] != nil {
@@ -710,9 +712,11 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
         let strToLogLevel = [
             "ERROR": NRLogLevelError,
             "WARNING": NRLogLevelWarning,
+            "WARN": NRLogLevelWarning,
             "INFO": NRLogLevelInfo,
             "VERBOSE": NRLogLevelVerbose,
-            "AUDIT": NRLogLevelAudit
+            "AUDIT": NRLogLevelAudit,
+            "DEBUG": NRLogLevelDebug
         ]
 
         let configLogLevel = strToLogLevel[level!]

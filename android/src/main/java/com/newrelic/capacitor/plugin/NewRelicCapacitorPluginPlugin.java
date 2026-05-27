@@ -72,7 +72,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
             this.networkErrorRequestEnabled = true;
             this.httpResponseBodyCaptureEnabled = true;
             this.loggingEnabled = true;
-            this.logLevel = "INFO";
+            this.logLevel = "WARNING";
             this.collectorAddress = "mobile-collector.newrelic.com";
             this.crashCollectorAddress = "mobile-crash.newrelic.com";
             this.sendConsoleEvents = true;
@@ -115,7 +115,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         }
 
         boolean loggingEnabled = true;
-        int logLevel = AgentLog.INFO;
+        int logLevel = AgentLog.WARN;
         String collectorAddress = null;
         String crashCollectorAddress = null;
 
@@ -205,9 +205,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 Map<String, Integer> strToLogLevel = new HashMap<>();
                 strToLogLevel.put("ERROR", AgentLog.ERROR);
                 strToLogLevel.put("WARNING", AgentLog.WARN);
+                strToLogLevel.put("WARN", AgentLog.WARN);
                 strToLogLevel.put("INFO", AgentLog.INFO);
                 strToLogLevel.put("VERBOSE", AgentLog.VERBOSE);
                 strToLogLevel.put("AUDIT", AgentLog.AUDIT);
+                strToLogLevel.put("DEBUG", AgentLog.DEBUG);
 
                 Integer configLogLevel = strToLogLevel.get(agentConfiguration.getString("logLevel"));
                 if(configLogLevel != null) {
@@ -834,9 +836,11 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         Map<String, LogLevel> strToLogLevel = new HashMap<>();
         strToLogLevel.put("ERROR", LogLevel.ERROR);
         strToLogLevel.put("WARNING", LogLevel.WARN);
+        strToLogLevel.put("WARN", LogLevel.WARN);
         strToLogLevel.put("INFO", LogLevel.INFO);
         strToLogLevel.put("VERBOSE", LogLevel.VERBOSE);
         strToLogLevel.put("AUDIT", LogLevel.DEBUG);
+        strToLogLevel.put("DEBUG", LogLevel.DEBUG);
 
         LogLevel logLevel = strToLogLevel.get(level);
 
