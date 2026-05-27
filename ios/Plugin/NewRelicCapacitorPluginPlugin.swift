@@ -181,7 +181,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
                     "WARN": NRLogLevelWarning.rawValue,
                     "INFO": NRLogLevelInfo.rawValue,
                     "VERBOSE": NRLogLevelVerbose.rawValue,
-                    "AUDIT": NRLogLevelAudit.rawValue
+                    "AUDIT": NRLogLevelAudit.rawValue,
+                    "DEBUG": NRLogLevelDebug.rawValue
                 ]
                 
                 if let configLogLevel = agentConfiguration["logLevel"] as? String, strToLogLevel[configLogLevel] != nil {
@@ -714,7 +715,8 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
             "WARN": NRLogLevelWarning,
             "INFO": NRLogLevelInfo,
             "VERBOSE": NRLogLevelVerbose,
-            "AUDIT": NRLogLevelAudit
+            "AUDIT": NRLogLevelAudit,
+            "DEBUG": NRLogLevelDebug
         ]
 
         let configLogLevel = strToLogLevel[level!]

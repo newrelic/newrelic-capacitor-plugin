@@ -209,6 +209,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
                 strToLogLevel.put("INFO", AgentLog.INFO);
                 strToLogLevel.put("VERBOSE", AgentLog.VERBOSE);
                 strToLogLevel.put("AUDIT", AgentLog.AUDIT);
+                strToLogLevel.put("DEBUG", AgentLog.DEBUG);
 
                 Integer configLogLevel = strToLogLevel.get(agentConfiguration.getString("logLevel"));
                 if(configLogLevel != null) {
@@ -839,6 +840,7 @@ public class NewRelicCapacitorPluginPlugin extends Plugin {
         strToLogLevel.put("INFO", LogLevel.INFO);
         strToLogLevel.put("VERBOSE", LogLevel.VERBOSE);
         strToLogLevel.put("AUDIT", LogLevel.DEBUG);
+        strToLogLevel.put("DEBUG", LogLevel.DEBUG);
 
         LogLevel logLevel = strToLogLevel.get(level);
 
