@@ -168,6 +168,16 @@ jobs:
 
           echo "Updated NewrelicNewrelicCapacitorPlugin.podspec"
 
+      - name: Update Package.swift
+        if: steps.check_updates.outputs.ios_updated == 'true'
+        run: |
+          IOS_VERSION="${{ steps.ios_version.outputs.version }}"
+
+          # Update iOS agent version in Package.swift (newrelic-ios-agent-spm dependency)
+          sed -i "s|\(\.package(url: \"https://github.com/newrelic/newrelic-ios-agent-spm.git\", from: \"\)[0-9.]\+\(\"\))|\1$IOS_VERSION\2)|" Package.swift
+
+          echo "Updated Package.swift"
+
       - name: Update Android Plugin Version
         if: steps.check_updates.outputs.needs_update == 'true'
         run: |
@@ -255,7 +265,7 @@ jobs:
           git checkout -b "$BRANCH_NAME"
 
           # Add changes
-          git add package.json README.md CHANGELOG.md android/build.gradle NewrelicNewrelicCapacitorPlugin.podspec android/src/main/java/com/newrelic/capacitor/plugin/NewRelicCapacitorPluginPlugin.java ios/Plugin/NewRelicCapacitorPluginPlugin.swift
+          git add package.json README.md CHANGELOG.md android/build.gradle NewrelicNewrelicCapacitorPlugin.podspec Package.swift android/src/main/java/com/newrelic/capacitor/plugin/NewRelicCapacitorPluginPlugin.java ios/Plugin/NewRelicCapacitorPluginPlugin.swift
 
           # Create commit message
           COMMIT_MSG="chore: Update native agents to v${NEW_VERSION}"
@@ -285,7 +295,7 @@ jobs:
           fi
 
           PR_BODY="${PR_BODY}- **Plugin Version**: ${CURRENT_VERSION} → ${NEW_VERSION}\n\n"
-          PR_BODY="${PR_BODY}## Files Updated\n\n- \`package.json\`\n- \`README.md\`\n- \`CHANGELOG.md\`\n- \`android/build.gradle\`\n- \`NewrelicNewrelicCapacitorPlugin.podspec\`\n- \`android/src/main/java/com/newrelic/capacitor/plugin/NewRelicCapacitorPluginPlugin.java\`\n- \`ios/Plugin/NewRelicCapacitorPluginPlugin.swift\`\n\n"
+          PR_BODY="${PR_BODY}## Files Updated\n\n- \`package.json\`\n- \`README.md\`\n- \`CHANGELOG.md\`\n- \`android/build.gradle\`\n- \`NewrelicNewrelicCapacitorPlugin.podspec\`\n- \`Package.swift\`\n- \`android/src/main/java/com/newrelic/capacitor/plugin/NewRelicCapacitorPluginPlugin.java\`\n- \`ios/Plugin/NewRelicCapacitorPluginPlugin.swift\`\n\n"
           PR_BODY="${PR_BODY}## Testing\n\n- [ ] Tests pass\n- [ ] Android app builds successfully\n- [ ] iOS app builds successfully\n- [ ] Manual testing completed\n\n---\n\n"
           PR_BODY="${PR_BODY}This PR was automatically created by the Update Native Agent Versions workflow.\n\n"
           PR_BODY="${PR_BODY}🤖 Generated with [Claude Code](https://claude.com/claude-code)"
