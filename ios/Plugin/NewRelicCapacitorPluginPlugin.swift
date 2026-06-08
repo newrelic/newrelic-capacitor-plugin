@@ -233,7 +233,7 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
         
         NewRelic.setPlatform(NRMAApplicationPlatform.platform_Capacitor)
         let selector = NSSelectorFromString("setPlatformVersion:")
-        NewRelic.perform(selector, with:"1.6.6")
+        NewRelic.perform(selector, with:"1.6.7")
 
         DispatchQueue.main.async {
             if collectorAddress == nil && crashCollectorAddress == nil {
