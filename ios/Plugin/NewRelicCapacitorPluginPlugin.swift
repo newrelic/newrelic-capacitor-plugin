@@ -643,11 +643,17 @@ public class NewRelicCapacitorPluginPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func generateDistributedTracingHeaders(_ call: CAPPluginCall) {
         let headersDict = NewRelic.generateDistributedTracingHeaders()
-        call.resolve([
-            NRTraceConstants.TRACE_PARENT: headersDict[NRTraceConstants.TRACE_PARENT] as Any,
-            NRTraceConstants.TRACE_STATE: headersDict[NRTraceConstants.TRACE_STATE] as Any,
-            NRTraceConstants.NEWRELIC: headersDict[NRTraceConstants.NEWRELIC] as Any
-        ])
+        var dtHeaders: [String: Any] = [:]
+        if let traceParent = headersDict[NRTraceConstants.TRACE_PARENT] {
+            dtHeaders[NRTraceConstants.TRACE_PARENT] = traceParent
+        }
+        if let traceState = headersDict[NRTraceConstants.TRACE_STATE] {
+            dtHeaders[NRTraceConstants.TRACE_STATE] = traceState
+        }
+        if let newrelic = headersDict[NRTraceConstants.NEWRELIC] {
+            dtHeaders[NRTraceConstants.NEWRELIC] = newrelic
+        }
+        call.resolve(dtHeaders)
     }
     
     @objc func addHTTPHeadersTrackingFor(_ call: CAPPluginCall) {
