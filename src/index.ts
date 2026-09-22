@@ -173,7 +173,9 @@ window.fetch = function fetch() {
     if(options && 'headers' in options) {
 
       if(agentConfig.distributedTracingEnabled) {
-      options.headers['newrelic'] = headers['newrelic'];
+      if(headers['newrelic'] !== undefined) {
+        options.headers['newrelic'] = headers['newrelic'];
+      }
       options.headers['traceparent'] = headers['traceparent'];
       options.headers['tracestate'] = headers['tracestate'];
       }
@@ -189,7 +191,9 @@ window.fetch = function fetch() {
       }
       if(agentConfig.distributedTracingEnabled) {
         options['headers']={};
-        options.headers['newrelic'] = headers['newrelic'];
+        if(headers['newrelic'] !== undefined) {
+          options.headers['newrelic'] = headers['newrelic'];
+        }
         options.headers['traceparent'] = headers['traceparent'];
         options.headers['tracestate'] = headers['tracestate'];
         }
