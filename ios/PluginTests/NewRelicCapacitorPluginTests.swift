@@ -850,7 +850,27 @@ class NewRelicCapacitorPluginTests: XCTestCase {
         NewRelicCapacitorPlugin.getAgentConfiguration(call)
     }
 
+    func testGenerateDistributedTracingHeaders() {
+        // NR-382850: without a started/connected agent session, NewRelic.generateDistributedTracingHeaders()
+        // returns an empty dictionary (no traceparent/tracestate/newrelic at all), so this test can only
+        // assert the call resolves. The important behavior -- the plugin must pass through whatever the
+        // native SDK actually returns, never fabricating a "newrelic" entry itself -- is enforced by the
+        // conditional key assignment in generateDistributedTracingHeaders below and is covered end-to-end
+        // once a real agent session is running.
+        guard let call = CAPPluginCall(callbackId: "generateDistributedTracingHeaders",
+                                 options: [:],
+                                 success: { (result, call) in
+            XCTAssertNotNil(result)
+        },
+                                 error:{ (err) in
+            XCTFail("Error shouldn't have been called")
+        }) else {
+            XCTFail("Bad call in testGenerateDistributedTracingHeaders")
+            return
+        }
 
+        NewRelicCapacitorPlugin.generateDistributedTracingHeaders(call)
+    }
 
 }
 

@@ -6,6 +6,8 @@
 package com.getcapacitor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +18,7 @@ import com.newrelic.capacitor.plugin.NewRelicCapacitorPluginPlugin;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 public class NewRelicCapacitorPluginUnitTest {
@@ -574,7 +577,14 @@ public class NewRelicCapacitorPluginUnitTest {
 
         plugin.generateDistributedTracingHeaders(callWithGoodParams);
 
-        verify(callWithGoodParams, times(1)).resolve(Mockito.any());
+        ArgumentCaptor<JSObject> resolvedHeaders = ArgumentCaptor.forClass(JSObject.class);
+        verify(callWithGoodParams, times(1)).resolve(resolvedHeaders.capture());
+
+        JSObject dtHeaders = resolvedHeaders.getValue();
+        assertTrue(dtHeaders.has("traceparent"));
+        assertTrue(dtHeaders.has("tracestate"));
+        // NR-382850: the plugin must never fabricate a "newrelic" DT header itself.
+        assertFalse(dtHeaders.has("newrelic"));
     }
 
     @Test
