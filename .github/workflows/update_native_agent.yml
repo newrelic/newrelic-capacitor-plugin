@@ -19,9 +19,11 @@ on:
         required: false
         type: boolean
         default: true
+  # Only on main: a run from a feature branch would build the bump on that branch and push
+  # update-native-agents-<version> (the open bump PR's branch) from it. Test a change with a manual run.
   push:
     branches:
-      - '**'
+      - main
     paths:
       - '.github/workflows/update_native_agent.yml'
   schedule:
