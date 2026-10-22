@@ -44,7 +44,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24.x]
+        node-version: [24.22.1]
         os: [ubuntu-latest]
 
     # Steps represent a sequence of tasks that
