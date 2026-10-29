@@ -40,6 +40,10 @@ npx cap sync
 
 ### Swift Package Manager (SPM) Support
 
+> **CocoaPods trunk is becoming read-only.** [CocoaPods plans to make its trunk read-only on December 2, 2026](https://blog.cocoapods.org/CocoaPods-Specs-Repo/). Builds that use already-published pod versions keep working, but no new pod versions, including new releases of the `NewRelicAgent` pod, can be published after that date.
+>
+> We recommend Swift Package Manager for iOS so that your app keeps receiving new iOS agent versions.
+
 This plugin supports Swift Package Manager (SPM) for iOS dependency management, available since Capacitor 6. If your project uses SPM instead of CocoaPods, the plugin will automatically integrate using the `Package.swift` manifest included in the package.
 
 The SPM integration includes:
