@@ -1,0 +1,27 @@
+# Changes to CI, build, packaging and publishing files need a review from the
+# Mobile Agents release owners. The last matching pattern wins, so keep this
+# file's own entry at the bottom.
+
+# CI: workflows, scripts and dependency update config
+/.github/                       @newrelic/mobagent
+
+# npm package: dependencies, published files and the JS build
+/package.json                   @newrelic/mobagent
+/rollup.config.mjs              @newrelic/mobagent
+/tsconfig.json                  @newrelic/mobagent
+
+# iOS packaging and native agent dependency
+/NewrelicNewrelicCapacitorPlugin.podspec @newrelic/mobagent
+/Package.swift                  @newrelic/mobagent
+/ios/Podfile                    @newrelic/mobagent
+
+# Android build, wrapper and native agent dependency
+/android/build.gradle           @newrelic/mobagent
+/android/settings.gradle        @newrelic/mobagent
+/android/gradle.properties      @newrelic/mobagent
+/android/gradlew                @newrelic/mobagent
+/android/gradlew.bat            @newrelic/mobagent
+/android/gradle/                @newrelic/mobagent
+
+# This file
+/.github/CODEOWNERS             @newrelic/mobagent
